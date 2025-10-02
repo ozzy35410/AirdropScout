@@ -1,0 +1,45 @@
+import React from 'react';
+import { Wallet } from 'lucide-react';
+import { useAddressTracking } from '../hooks/useAddressTracking';
+import { useTranslation } from '../lib/i18n';
+
+interface AddressTrackerProps {
+  language: 'en' | 'tr';
+}
+
+export function AddressTracker({ language }: AddressTrackerProps) {
+  const { trackingAddress, isValidAddress, updateTrackingAddress } = useAddressTracking();
+  const { t } = useTranslation(language);
+
+  return (
+    <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2">
+        <Wallet className="w-4 h-4 text-gray-500" />
+        <span className="text-sm font-medium text-gray-700">{t('track_by_address')}</span>
+      </div>
+      <div className="relative">
+        <input
+          type="text"
+          value={trackingAddress}
+          onChange={(e) => updateTrackingAddress(e.target.value)}
+          placeholder={t('enter_address')}
+          className={`px-3 py-2 border rounded-lg text-sm w-64 focus:outline-none focus:ring-2 transition-all ${
+            trackingAddress && !isValidAddress
+              ? 'border-red-300 focus:ring-red-500'
+              : 'border-gray-300 focus:ring-blue-500'
+          }`}
+        />
+        {isValidAddress && (
+          <div className="absolute -bottom-6 left-0 text-xs text-green-600">
+            Tracking: {trackingAddress.slice(0, 6)}...{trackingAddress.slice(-4)}
+          </div>
+        )}
+        {trackingAddress && !isValidAddress && (
+          <div className="absolute -bottom-6 left-0 text-xs text-red-600">
+            Invalid address format
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
