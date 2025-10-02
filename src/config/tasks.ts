@@ -111,71 +111,7 @@ export const PHAROS_TASKS: AirdropTask[] = [
   }
 ];
 
-export const GIWA_TASKS: AirdropTask[] = [
-  {
-    id: 'giwa-faucet',
-    title: 'get_test_tokens',
-    description: 'get_free_test_tokens_giwa_desc',
-    url: '/faucets',
-    network: 'giwa',
-    category: 'faucet',
-    completed: false
-  },
-  {
-    id: 'giwa-nft-mint',
-    title: 'mint_nfts',
-    description: 'mint_nfts_desc',
-    url: '/nfts',
-    network: 'giwa',
-    category: 'nft',
-    completed: false
-  },
-  {
-    id: 'giwa-swap',
-    title: 'token_swaps',
-    description: 'token_swaps_giwa_desc',
-    url: '#',
-    network: 'giwa',
-    category: 'swap',
-    completed: false
-  },
-  {
-    id: 'giwa-liquidity',
-    title: 'provide_liquidity',
-    description: 'provide_liquidity_giwa_desc',
-    url: '#',
-    network: 'giwa',
-    category: 'liquidity',
-    completed: false
-  },
-  {
-    id: 'giwa-bridge',
-    title: 'bridge_assets',
-    description: 'bridge_assets_desc',
-    url: '#',
-    network: 'giwa',
-    category: 'bridge',
-    completed: false
-  },
-  {
-    id: 'giwa-interactions',
-    title: 'protocol_interactions',
-    description: 'protocol_interactions_desc',
-    url: '#',
-    network: 'giwa',
-    category: 'interaction',
-    completed: false
-  }
-];
-
 export const FAUCETS: FaucetLink[] = [
-  {
-    id: 'giwa-faucet',
-    title: 'giwa_faucet',
-    url: 'https://faucet.giwa.io/#/',
-    network: 'giwa',
-    description: 'giwa_faucet_desc'
-  },
   {
     id: 'pharos-main',
     title: 'pharos_network_faucet',

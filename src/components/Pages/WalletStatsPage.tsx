@@ -14,7 +14,7 @@ export function WalletStatsPage({ language }: WalletStatsPageProps) {
   const [stats, setStats] = useState<WalletStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'giwa' | 'pharos'>('base');
+  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'pharos'>('base');
 
   useEffect(() => {
     if (isValidAddress && trackingAddress) {
@@ -97,7 +97,7 @@ export function WalletStatsPage({ language }: WalletStatsPageProps) {
         </div>
 
         <div className="flex justify-center mb-8 space-x-2">
-          {(['base', 'sei', 'giwa', 'pharos'] as const).map((chain) => (
+          {(['base', 'sei', 'pharos'] as const).map((chain) => (
             <button
               key={chain}
               onClick={() => setSelectedChain(chain)}

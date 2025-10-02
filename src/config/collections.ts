@@ -57,32 +57,6 @@ export const NFT_COLLECTIONS: Record<string, NFTCollection[]> = {
   ],
   
   // Testnet collections
-  giwa: [
-    {
-      slug: 'giwa-genesis',
-      name: 'GIWA Genesis',
-      symbol: 'GENESIS',
-      contract: '0x4567890123456789012345678901234567890123',
-      standard: 'erc721',
-      image: '/images/collections/giwa-genesis.png',
-      description: 'First NFT collection on GIWA testnet',
-      tags: ['genesis', 'testnet', 'giwa', 'experimental'],
-      mintUrl: 'https://testnet.giwa.io/mint/genesis',
-      addedAt: '2024-03-01T00:00:00Z'
-    },
-    {
-      slug: 'test-collection',
-      name: 'Test Collection',
-      symbol: 'TEST',
-      contract: '0x5678901234567890123456789012345678901234',
-      standard: 'erc1155',
-      image: '/images/collections/test-collection.png',
-      description: 'Testing ERC-1155 functionality',
-      tags: ['test', 'erc1155', 'multitoken'],
-      mintUrl: 'https://testnet.giwa.io/mint/test',
-      addedAt: '2024-03-10T00:00:00Z'
-    }
-  ],
   
   pharos: [
     {

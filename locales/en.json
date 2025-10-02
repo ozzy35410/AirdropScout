@@ -41,6 +41,8 @@
   "admin": "Admin",
   "mainnet": "Mainnet",
   "testnet": "Testnet",
+  "lightMode": "Switch to Light Mode",
+  "darkMode": "Switch to Dark Mode",
   "connect_wallet": "Connect Wallet",
   "airdrop_tasks": "Airdrop Tasks",
   "complete_tasks_description": "Complete these tasks to qualify for potential airdrops",

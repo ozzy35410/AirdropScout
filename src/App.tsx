@@ -7,7 +7,6 @@ import { FaucetsPage } from './components/Pages/FaucetsPage';
 import { WalletStatsPage } from './components/Pages/WalletStatsPage';
 import { NFTPage } from './components/Pages/NFTPage';
 import { AdminPanel } from './components/Admin/AdminPanel';
-import { NETWORKS } from './config/networks';
 
 // Extend window type for ethereum
 declare global {
@@ -65,7 +64,7 @@ function App() {
           />
         );
       case 'nfts':
-        return <NFTPage networkType={networkType} />;
+        return <NFTPage networkType={networkType} language={language} />;
       case 'faucets':
         return (
           <FaucetsPage
@@ -84,7 +83,7 @@ function App() {
         return (
           <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <AdminPanel networks={NETWORKS} />
+              <AdminPanel language={language} />
             </div>
           </div>
         );
