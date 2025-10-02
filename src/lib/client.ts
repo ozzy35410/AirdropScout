@@ -1,4 +1,4 @@
-import { createPublicClient, http, defineChain, type Chain } from 'viem';
+import { createPublicClient, http, type Chain, defineChain } from 'viem';
 import { base, mainnet } from 'viem/chains';
 import { RPC_ENDPOINTS } from '../config/rpc';
 
@@ -66,10 +66,6 @@ export const clients = {
   sei: createPublicClient({
     chain: seiChain,
     transport: http(RPC_ENDPOINTS.sei),
-  }),
-  giwa: createPublicClient({
-    chain: giwaChain,
-    transport: http(RPC_ENDPOINTS.giwa),
   }),
   pharos: createPublicClient({
     chain: pharosChain,

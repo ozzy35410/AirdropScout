@@ -41,6 +41,8 @@
   "admin": "Admin",
   "mainnet": "Mainnet",
   "testnet": "Testnet",
+  "lightMode": "Aydınlık Mod",
+  "darkMode": "Karanlık Mod",
   "connect_wallet": "Cüzdan Bağla",
   "airdrop_tasks": "Airdrop Görevleri",
   "complete_tasks_description": "Potansiyel airdrop'lara hak kazanmak için bu görevleri tamamlayın",

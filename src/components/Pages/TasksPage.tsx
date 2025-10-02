@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Circle, ExternalLink, Users, ChevronDown, ChevronRight, Droplets, Palette, Zap, Wallet, Activity, TrendingUp, Coins, Package, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { PHAROS_TASKS, GIWA_TASKS, BASE_TASKS, SEI_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
+import { PHAROS_TASKS, BASE_TASKS, SEI_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
 import { NETWORKS } from '../../config/networks';
 import { useProgress } from '../../hooks/useProgress';
 import { useAddressTracking } from '../../hooks/useAddressTracking';
@@ -29,7 +29,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
   const [stats, setStats] = useState<WalletStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsError, setStatsError] = useState<string | null>(null);
-  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'giwa' | 'pharos'>('base');
+  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'pharos'>('base');
 
   // Auto-detection component for individual tasks
   function TaskWithDetection({ task, networkKey }: { task: any; networkKey: string }) {
@@ -106,7 +106,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
 
   const allTasks = networkType === 'mainnet' 
     ? [...BASE_TASKS, ...SEI_TASKS]
-    : [...PHAROS_TASKS, ...GIWA_TASKS];
+    : PHAROS_TASKS;
   const tasksByNetwork = allTasks.reduce((acc, task) => {
     if (!acc[task.network]) acc[task.network] = [];
     acc[task.network].push(task);
@@ -259,7 +259,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
               <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-6">
                 <h2 className="text-2xl font-bold text-white mb-4">{t('wallet_stats')}</h2>
                 <div className="flex space-x-2">
-                  {(['base', 'sei', 'giwa', 'pharos'] as const).map((chain) => (
+                  {(['base', 'sei', 'pharos'] as const).map((chain) => (
                     <button
                       key={chain}
                       onClick={() => setSelectedChain(chain)}

@@ -49,21 +49,6 @@ export const CHAINS: Record<string, ChainConfig> = {
   },
   
   // Testnet chains
-  giwa: {
-    id: 1248,
-    name: 'GIWA Sepolia',
-    slug: 'giwa',
-    displayName: 'GIWA Sepolia',
-    rpcUrl: 'https://rpc.sepolia.giwa.io',
-    explorer: 'https://explorer.sepolia.giwa.io',
-    nativeCurrency: {
-      name: 'Ethereum',
-      symbol: 'ETH',
-      decimals: 18
-    },
-    color: '#FFEEDA',
-    type: 'testnet'
-  },
   pharos: {
     id: 1234,
     name: 'Pharos Testnet',

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Sparkles, Globe, Settings, Menu, X } from 'lucide-react';
+import { Sparkles, Globe, Settings, Menu, X, Sun, Moon } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
+import { useTheme } from '../../hooks/useTheme';
 
 interface HeaderProps {
   currentPage: string;
@@ -21,6 +22,7 @@ export function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation(language);
+  const { theme, toggleTheme } = useTheme();
 
   const navigation = [
     { id: 'home', label: t('home') },
@@ -63,6 +65,19 @@ export function Header({
 
           {/* Controls */}
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200"
+              title={theme === 'light' ? t('darkMode') : t('lightMode')}
+            >
+              {theme === 'light' ? (
+                <Moon className="w-5 h-5" />
+              ) : (
+                <Sun className="w-5 h-5" />
+              )}
+            </button>
+
             {/* Network Type Toggle */}
             <div className="hidden sm:flex bg-white/20 backdrop-blur-sm rounded-lg p-1">
               <button

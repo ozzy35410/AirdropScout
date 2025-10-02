@@ -1,4 +1,4 @@
-// Router/DEX/LP/NFT/NameService contract addresses for each chain
+// Router/DEX/LP/NFT/NameService con  pharos: { for each chain
 // Easy to update and maintain allowlists
 
 export const INDEXER_CONTRACTS = {

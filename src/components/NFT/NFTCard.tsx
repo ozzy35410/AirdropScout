@@ -1,6 +1,6 @@
 import React from 'react';
 import { NFTCollection } from '../../types';
-import { CheckIcon, ExternalLinkIcon, CalendarIcon, TagIcon } from 'lucide-react';
+import { CheckIcon, ExternalLinkIcon, TagIcon } from 'lucide-react';
 
 interface NftCardProps {
   collection: NFTCollection;
@@ -18,65 +18,49 @@ export const NftCard: React.FC<NftCardProps> = ({ collection, isMinted = false, 
   return (
     <div 
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 
-                 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] 
-                 ${!isMinted ? 'cursor-pointer' : 'cursor-default'} 
-                 ${isMinted ? 'ring-2 ring-green-500' : ''}`}
+        transition-all duration-300 hover:shadow-xl hover:scale-105 group overflow-hidden ${
+          isMinted ? 'opacity-75' : 'cursor-pointer hover:border-blue-400 dark:hover:border-blue-500'
+        }`}
       onClick={handleCardClick}
     >
-      {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
-        {collection.image ? (
-          <img
-            src={collection.image}
-            alt={collection.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // Fallback to gradient background if image fails
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-white text-4xl font-bold">
-              {collection.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
+      {/* NFT Image */}
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={collection.image}
+          alt={collection.name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          onError={(e) => {
+            e.currentTarget.src = '/images/collections/default.png';
+          }}
+        />
         
-        {/* Mint Status Badge */}
+        {/* Minted Badge */}
         {isMinted && (
-          <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-sm font-medium">
+          <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
             <CheckIcon className="w-4 h-4" />
             Minted
           </div>
         )}
 
-        {/* Chain Badge */}
-        <div className="absolute top-3 left-3 bg-black bg-opacity-50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
-          {collection.chain.toUpperCase()}
+        {/* Network Badge */}
+        <div className="absolute top-3 left-3">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white bg-blue-600">
+            {collection.contract.slice(0, 6)}...
+          </span>
         </div>
       </div>
 
-      {/* Content */}
+      {/* NFT Details */}
       <div className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 line-clamp-1">
-              {collection.name}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {collection.symbol}
-            </p>
-          </div>
-          <div className="text-right">
-            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              {collection.standard}
-            </span>
-          </div>
+        <div className="flex items-start justify-between mb-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate">
+            {collection.name}
+          </h3>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium ml-2">
+            {collection.symbol}
+          </span>
         </div>
 
-        {/* Description */}
         {collection.description && (
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
             {collection.description}
@@ -84,164 +68,49 @@ export const NftCard: React.FC<NftCardProps> = ({ collection, isMinted = false, 
         )}
 
         {/* Tags */}
-        {collection.tags && collection.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {collection.tags.slice(0, 3).map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 
-                         text-blue-800 dark:text-blue-200 text-xs rounded-full"
-              >
-                <TagIcon className="w-3 h-3" />
-                {tag}
-              </span>
-            ))}
-            {collection.tags.length > 3 && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
-                +{collection.tags.length - 3} more
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Metadata */}
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
-          {collection.launchDate && (
-            <div className="flex items-center gap-1">
-              <CalendarIcon className="w-3 h-3" />
-              {new Date(collection.launchDate).toLocaleDateString()}
-            </div>
-          )}
-          {collection.totalSupply && (
-            <div>
-              Supply: {collection.totalSupply.toLocaleString()}
-            </div>
+        <div className="flex flex-wrap gap-1 mb-4">
+          {collection.tags?.slice(0, 3).map((tag, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            >
+              <TagIcon className="w-3 h-3 mr-1" />
+              {tag}
+            </span>
+          ))}
+          {(collection.tags?.length || 0) > 3 && (
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              +{(collection.tags?.length || 0) - 3} more
+            </span>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2">
-          {!isMinted && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onMintClick(collection);
-              }}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 
-                       rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-            >
-              <span>Mint NFT</span>
-            </button>
-          )}
-          
-          {collection.website && (
-            <a
-              href={collection.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className={`${isMinted ? 'flex-1' : ''} bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
-                       text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg 
-                       transition-colors duration-200 flex items-center justify-center gap-2`}
-            >
+        {/* Action Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onMintClick(collection);
+          }}
+          disabled={isMinted}
+          className={`w-full py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+            isMinted
+              ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg'
+          }`}
+        >
+          {isMinted ? (
+            <>
+              <CheckIcon className="w-4 h-4" />
+              Already Minted
+            </>
+          ) : (
+            <>
               <ExternalLinkIcon className="w-4 h-4" />
-              {isMinted ? 'Visit' : ''}
-            </a>
+              Mint NFT
+            </>
           )}
-        </div>
-
-        {/* Contract Address */}
-        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Contract:</span>
-            <code className="text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-              {collection.contract.slice(0, 6)}...{collection.contract.slice(-4)}
-            </code>
-          </div>
-        </div>
+        </button>
       </div>
     </div>
   );
-}; 
-            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white shadow-lg"
-            style={{ backgroundColor: networkColor }}
-          >
-            {network?.name || nft.network}
-          </span>
-        </div>
-        <div className="absolute bottom-4 left-4">
-          <span className="inline-flex items-center px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs rounded-md font-medium">
-            {nft.token_standard}
-          </span>
-        </div>
-      </div>
-      
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{nft.title}</h3>
-            {nft.description && (
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">{nft.description}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Price Section */}
-        {nft.price_eth && (
-          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-lg font-bold text-gray-900">{nft.price_eth}</span>
-                <span className="text-sm font-medium text-green-600">ETH</span>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-green-600 font-medium">26.09.2025</div>
-                <div className="text-xs text-orange-500">Manual (Outdated)</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Hash className="w-4 h-4" />
-            <span className="font-mono">Token ID: {nft.token_id}</span>
-          </div>
-
-          <div className="text-xs text-gray-400 font-mono break-all">
-            Contract: {nft.contract_address.slice(0, 8)}...{nft.contract_address.slice(-6)}
-          </div>
-
-          {nft.tags && nft.tags.length > 0 && (
-            <div className="flex items-center space-x-1 flex-wrap gap-1">
-              <Tag className="w-3 h-3 text-gray-400" />
-              {nft.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-block px-2 py-1 text-xs bg-purple-50 text-purple-600 rounded-md font-medium"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {nft.external_link && (
-          <div className="mt-5 pt-4 border-t border-gray-100">
-            <a
-              href={nft.external_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center space-x-2 w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700 text-sm font-medium transition-all duration-200"
-            >
-              <span>View on Marketplace</span>
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+};
