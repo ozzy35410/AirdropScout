@@ -1,6 +1,20 @@
 # NFT Listing & Wallet Filter Web Application
 
-A comprehensive NFT listing platform with wallet-based filtering across multiple blockchain networks (Linea, zkSync, Base, Scroll, Zora).
+# 🚀 Airdrop Scout
+
+Türkçe ve İngilizce dil desteği ile airdrop görevleri takip platformu.
+
+## ✨ Özellikler
+
+- **Çoklu Dil Desteği**: Türkçe ↔ İngilizce
+- **Airdrop Görevleri**: Pharos, GIWA, Base, Sei ağları
+- **NFT Koleksiyonları**: Curated NFT mint işlemleri  
+- **Faucet Bağlantıları**: Test token'ları için faucet'ler
+- **Cüzdan İstatistikleri**: Aktivite takibi
+
+## 🔥 Canlı Demo
+
+Bolt üzerinde deploy edilmiş versiyonu: [buraya link gelecek]
 
 ## Features
 
