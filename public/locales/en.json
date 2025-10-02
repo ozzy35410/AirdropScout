@@ -128,5 +128,6 @@
   "zenithswap_faucet": "ZenithSwap Faucet",
   "zenithswap_faucet_desc": "Get test tokens for ZenithSwap",
   "brokex_faucet": "BrokeX Faucet",
-  "brokex_faucet_desc": "Get test tokens for BrokeX trading"
+  "brokex_faucet_desc": "Get test tokens for BrokeX trading",
+  "get_free_test_tokens_network": "Get free test tokens for this network"
 }

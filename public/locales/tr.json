@@ -128,5 +128,6 @@
   "zenithswap_faucet": "ZenithSwap Faucet",
   "zenithswap_faucet_desc": "ZenithSwap için test tokenları alın",
   "brokex_faucet": "BrokeX Faucet",
-  "brokex_faucet_desc": "BrokeX ticareti için test tokenları alın"
+  "brokex_faucet_desc": "BrokeX ticareti için test tokenları alın",
+  "get_free_test_tokens_network": "Bu ağ için ücretsiz test tokenları alın"
 }

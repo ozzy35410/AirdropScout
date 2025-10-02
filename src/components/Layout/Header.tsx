@@ -169,13 +169,6 @@ export function Header({
           </div>
         )}
       </div>
-
-      {/* Security Banner */}
-      <div className="bg-blue-600 text-white text-center py-2 text-sm">
-        <span className="font-medium">
-          ⚡ {t('notice')}
-        </span>
-      </div>
     </header>
   );
 }

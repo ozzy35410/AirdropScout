@@ -410,7 +410,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
                               <Droplets className="w-5 h-5 text-blue-600" />
                               <div>
                                 <h4 className="font-semibold text-blue-900">{t('get_test_tokens')}</h4>
-                                <p className="text-sm text-blue-700">Get free test tokens for this network</p>
+                                <p className="text-sm text-blue-700">{t('get_free_test_tokens_network')}</p>
                               </div>
                             </div>
                             <ExternalLink className="w-4 h-4 text-blue-600" />
