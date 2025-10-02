@@ -1,5 +1,9 @@
 import { AirdropTask, FaucetLink } from '../types';
 
+export const PHAROS_REFERRAL_URL = 'https://testnet.pharosnetwork.xyz/experience?inviteCode=CktVYkx8FeejVAHr';
+export const PHAROS_REFERRAL_COOKIE = 'pharos_referral_opened';
+export const PHAROS_REFERRAL_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
 export const GIWA_TASKS: AirdropTask[] = [
   {
     id: 'giwa-faucet',
@@ -144,7 +148,7 @@ export const FAUCETS: FaucetLink[] = [
   {
     id: 'pharos-main',
     title: 'pharos_network_faucet',
-    url: 'https://testnet.pharosnetwork.xyz/',
+    url: PHAROS_REFERRAL_URL,
     network: 'pharos',
     description: 'pharos_network_faucet_desc',
     type: 'external'
@@ -168,10 +172,6 @@ export const FAUCETS: FaucetLink[] = [
 ];
 
 export const DEFAULT_SEND_ADDRESS = '0x5583BA39732db8006938A83BF64BBB029A0b12A0';
-
-export const PHAROS_REFERRAL_URL = 'https://testnet.pharosnetwork.xyz/experience?inviteCode=CktVYkx8FeejVAHr';
-export const PHAROS_REFERRAL_COOKIE = 'pharos_referral_opened';
-export const PHAROS_REFERRAL_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 // Mainnet tasks
 export const BASE_TASKS: AirdropTask[] = [
