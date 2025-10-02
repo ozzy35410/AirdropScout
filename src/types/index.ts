@@ -23,6 +23,23 @@ export interface NFT {
   owned?: boolean;
 }
 
+export interface NFTCollection {
+  slug: string;
+  name: string;
+  symbol: string;
+  description?: string;
+  contract: string;
+  standard: 'erc721' | 'erc1155';
+  image?: string;
+  website?: string;
+  tags?: string[];
+  launchDate?: string;
+  totalSupply?: number;
+  mintPrice?: string;
+  mintUrl?: string;
+  addedAt?: string;
+}
+
 export interface NetworkConfig {
   name: string;
   displayName: string;
