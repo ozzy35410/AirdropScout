@@ -1,140 +1,128 @@
-import React from 'react';
+import { ExternalLink as ExternalLinkIcon, Tag as TagIcon } from 'lucide-react';
+import { useMemo } from 'react';
+import { useMintedDetection } from '../../hooks/useMintedDetection';
 import { NFTCollection } from '../../types';
-import { CheckIcon, ExternalLinkIcon, CalendarIcon, TagIcon } from 'lucide-react';
+import { MintedBadge } from './MintedBadge';
 
 interface NftCardProps {
   collection: NFTCollection;
-  isMinted?: boolean;
   onMintClick: (collection: NFTCollection) => void;
+  trackingAddress?: string;
+  language: 'en' | 'tr';
+  chainSlug: string;
 }
 
-export const NftCard: React.FC<NftCardProps> = ({ collection, isMinted = false, onMintClick }) => {
-  const handleCardClick = () => {
-    if (!isMinted) {
-      onMintClick(collection);
-    }
+export function NftCard({
+  collection,
+  onMintClick,
+  trackingAddress = '',
+  language,
+  chainSlug
+}: NftCardProps) {
+  const { mintedStatus, isLoading: isMintedLoading } = useMintedDetection({
+    address: trackingAddress,
+    chain: chainSlug,
+    enabled: Boolean(trackingAddress)
+  });
+
+  const isMinted = useMemo(() => mintedStatus?.[collection.slug] ?? false, [mintedStatus, collection.slug]);
+
+  const handleMintClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    onMintClick(collection);
+  };
+
+  const handleVisitClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.stopPropagation();
   };
 
   return (
-    <div 
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 
-                 overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] 
-                 ${!isMinted ? 'cursor-pointer' : 'cursor-default'} 
-                 ${isMinted ? 'ring-2 ring-green-500' : ''}`}
-      onClick={handleCardClick}
+    <div
+      className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
     >
-      {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
         {collection.image ? (
           <img
             src={collection.image}
             alt={collection.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // Fallback to gradient background if image fails
-              e.currentTarget.style.display = 'none';
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none';
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-white text-4xl font-bold">
-              {collection.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
-        
-        {/* Mint Status Badge */}
-        {isMinted && (
-          <div className="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-sm font-medium">
-            <CheckIcon className="w-4 h-4" />
-            Minted
+          <div className="flex h-full w-full items-center justify-center">
+            <span className="text-4xl font-bold text-white">{collection.name.charAt(0).toUpperCase()}</span>
           </div>
         )}
 
-        {/* Standard Badge */}
-        <div className="absolute top-3 left-3 bg-black bg-opacity-50 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium">
+        <div className="absolute right-3 top-3">
+          <MintedBadge isMinted={isMinted} isLoading={isMintedLoading} language={language} />
+        </div>
+
+        <div className="absolute left-3 top-3 rounded-full bg-black/60 px-2 py-1 text-xs font-medium text-white backdrop-blur">
           {collection.standard.toUpperCase()}
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="mb-3 flex items-start justify-between">
           <div>
-            <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 line-clamp-1">
-              {collection.name}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {collection.symbol}
-            </p>
+            <h3 className="line-clamp-1 text-lg font-semibold text-gray-900">{collection.name}</h3>
+            <p className="text-sm text-gray-600">{collection.symbol}</p>
           </div>
         </div>
 
-        {/* Description */}
         {collection.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-            {collection.description}
-          </p>
+          <p className="mb-3 line-clamp-2 text-sm text-gray-600">{collection.description}</p>
         )}
 
-        {/* Tags */}
         {collection.tags && collection.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {collection.tags.slice(0, 3).map((tag: string) => (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {collection.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 
-                         text-blue-800 dark:text-blue-200 text-xs rounded-full"
+                className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
               >
-                <TagIcon className="w-3 h-3" />
+                <TagIcon className="h-3 w-3" />
                 {tag}
               </span>
             ))}
             {collection.tags.length > 3 && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
-                +{collection.tags.length - 3} more
-              </span>
+              <span className="px-2 py-1 text-xs text-gray-500">+{collection.tags.length - 3} more</span>
             )}
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex gap-2 mb-3">
+        <div className="mb-3 flex gap-2">
           {!isMinted && collection.mintUrl && (
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onMintClick(collection);
-              }}
-              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 
-                       rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              type="button"
+              onClick={handleMintClick}
+              className="flex-1 items-center justify-center gap-2 rounded-lg bg-blue-500 py-2 px-4 font-medium text-white transition-colors duration-200 hover:bg-blue-600"
             >
-              <span>Mint NFT</span>
+              <span>{language === 'tr' ? 'NFT Mintle' : 'Mint NFT'}</span>
             </button>
           )}
-          
+
           {collection.mintUrl && (
             <a
               href={collection.mintUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className={`${isMinted || !collection.mintUrl ? 'flex-1' : ''} bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 
-                       text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-lg 
-                       transition-colors duration-200 flex items-center justify-center gap-2`}
+              onClick={handleVisitClick}
+              className={`${isMinted || !collection.mintUrl ? 'flex-1' : ''} flex items-center justify-center gap-2 rounded-lg bg-gray-100 py-2 px-4 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200`}
             >
-              <ExternalLinkIcon className="w-4 h-4" />
-              {isMinted ? 'Visit' : 'View'}
+              <ExternalLinkIcon className="h-4 w-4" />
+              {isMinted ? (language === 'tr' ? 'Ziyaret Et' : 'Visit') : language === 'tr' ? 'Sayfayı Aç' : 'View'}
             </a>
           )}
         </div>
 
-        {/* Contract Address */}
-        <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Contract:</span>
-            <code className="text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+        <div className="border-t border-gray-200 pt-3">
+          <div className="flex items-center justify-between text-xs text-gray-600">
+            <span>Contract:</span>
+            <code className="rounded bg-gray-100 px-2 py-1 text-gray-700">
               {collection.contract.slice(0, 6)}...{collection.contract.slice(-4)}
             </code>
           </div>
@@ -142,4 +130,4 @@ export const NftCard: React.FC<NftCardProps> = ({ collection, isMinted = false, 
       </div>
     </div>
   );
-};
+}

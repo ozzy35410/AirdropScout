@@ -86,6 +86,7 @@ export interface FaucetLink {
   url: string;
   network: string;
   description: string;
+  type: 'external' | 'internal';
 }
 
 export interface SubmittedAddress {

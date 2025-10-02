@@ -1,4 +1,4 @@
-import { createPublicClient, http, Address } from 'viem';
+import { createPublicClient, http } from 'viem';
 import { RPC_ENDPOINTS } from './rpc';
 
 export type Detector = (client: any, address: string) => Promise<boolean>;
@@ -12,7 +12,7 @@ function getPublicClient(network: keyof typeof RPC_ENDPOINTS) {
 
 // Helper detector functions
 export function detectSwap(network: keyof typeof RPC_ENDPOINTS, routerAddresses: string[]): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement swap detection by checking transaction logs
     // Look for Swap events from router contracts in the last 50k blocks
     console.log(`Detecting swaps for ${address} on ${network} with routers:`, routerAddresses);
@@ -21,7 +21,7 @@ export function detectSwap(network: keyof typeof RPC_ENDPOINTS, routerAddresses:
 }
 
 export function detectLiquidity(network: keyof typeof RPC_ENDPOINTS, routerAddresses: string[]): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement liquidity provision detection
     // Look for AddLiquidity events from router contracts
     console.log(`Detecting liquidity for ${address} on ${network} with routers:`, routerAddresses);
@@ -30,7 +30,7 @@ export function detectLiquidity(network: keyof typeof RPC_ENDPOINTS, routerAddre
 }
 
 export function detectNameRegistered(network: keyof typeof RPC_ENDPOINTS, nameServiceAddresses: string[]): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement name service registration detection
     // Look for NameRegistered events
     console.log(`Detecting name registration for ${address} on ${network} with services:`, nameServiceAddresses);
@@ -39,7 +39,7 @@ export function detectNameRegistered(network: keyof typeof RPC_ENDPOINTS, nameSe
 }
 
 export function detectTransferTo(targetAddresses: string[]): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement token transfer detection
     // Look for Transfer events where from=address and to=targetAddress
     console.log(`Detecting transfers from ${address} to:`, targetAddresses);
@@ -47,8 +47,8 @@ export function detectTransferTo(targetAddresses: string[]): Detector {
   };
 }
 
-export function detectAnyInteraction(network: keyof typeof RPC_ENDPOINTS, urls: string[], contractAddresses: string[]): Detector {
-  return async (client, address) => {
+export function detectAnyInteraction(network: keyof typeof RPC_ENDPOINTS, _urls: string[], contractAddresses: string[]): Detector {
+  return async (_client, address) => {
     // TODO: Implement general contract interaction detection
     // Look for any transaction to the specified contracts
     console.log(`Detecting interactions for ${address} on ${network} with contracts:`, contractAddresses);
@@ -57,7 +57,7 @@ export function detectAnyInteraction(network: keyof typeof RPC_ENDPOINTS, urls: 
 }
 
 export function detectMultipleMints(nftContracts: string[], minCount: number): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement NFT mint detection
     // Look for Transfer events from 0x0 to address across multiple contracts
     console.log(`Detecting ${minCount}+ mints for ${address} from contracts:`, nftContracts);
@@ -66,7 +66,7 @@ export function detectMultipleMints(nftContracts: string[], minCount: number): D
 }
 
 export function detectGameCalls(gameContracts: string[]): Detector {
-  return async (client, address) => {
+  return async (_client, address) => {
     // TODO: Implement game interaction detection
     // Look for transactions to game contracts
     console.log(`Detecting game calls for ${address} to contracts:`, gameContracts);
@@ -87,9 +87,6 @@ export const detectors = {
     trading: detectAnyInteraction("pharos", [], ["0xBrokexCore...", "0xBitverseCore..."]), // TODO: Add real contract addresses
     rwafi: detectAnyInteraction("pharos", [], ["0xAquafluxCore..."]) // TODO: Add real contract address
   },
-  giwa: {
-    // TODO: Add GIWA detector tasks when addresses are available
-  },
   base: {
     mintVariety: detectMultipleMints(["0xNFT2SME1...", "0xNFT2SME2..."], 2), // TODO: Add real NFT contract addresses
     dailyGames: detectGameCalls(["0xBaseGameContract..."]) // TODO: Add real game contract address
@@ -105,7 +102,7 @@ export async function runDetector(network: string, taskId: string, address: stri
   const networkDetectors = detectors[network as keyof typeof detectors];
   if (!networkDetectors) return false;
 
-  const detector = networkDetectors[taskId as keyof typeof networkDetectors];
+  const detector = (networkDetectors as Record<string, Detector>)[taskId];
   if (!detector) return false;
 
   try {

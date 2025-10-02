@@ -1,198 +1,176 @@
-import React, { useEffect, useState } from 'react';
-import { ExternalLink, Droplets, ChevronDown, ChevronRight } from 'lucide-react';
-import { FAUCETS, PHAROS_REFERRAL_URL } from '../../config/tasks';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ChevronDown, ChevronRight, Droplets, ExternalLink } from 'lucide-react';
+import { FAUCETS } from '../../config/tasks';
 import { NETWORKS } from '../../config/networks';
 import { useTranslation } from '../../lib/i18n';
 import { isPharosReferralOpen, openPharosReferral } from '../../lib/referral';
+import type { FaucetLink } from '../../types';
 
 interface FaucetsPageProps {
-  networkType: 'mainnet' | 'testnet';
-  language: 'en' | 'tr';
-  selectedNetwork?: string;
+	networkType: 'mainnet' | 'testnet';
+	language: 'en' | 'tr';
+	selectedNetwork?: string;
+	onPageChange?: (page: string, params?: string) => void;
 }
 
-export function FaucetsPage({ networkType, language, selectedNetwork }: FaucetsPageProps) {
-  const [expandedProjects, setExpandedProjects] = useState<Record<string, boolean>>({});
-  const { t } = useTranslation(language);
-  const [pharosUnlocked, setPharosUnlocked] = useState(isPharosReferralOpen());
+export function FaucetsPage({ networkType, language, selectedNetwork, onPageChange }: FaucetsPageProps) {
+	const { t } = useTranslation(language);
+	const [expandedNetworks, setExpandedNetworks] = useState<Record<string, boolean>>({});
+	const [pharosUnlocked, setPharosUnlocked] = useState(isPharosReferralOpen());
 
-  useEffect(() => {
-    if (selectedNetwork) {
-      setExpandedProjects(prev => ({
-        ...prev,
-        [selectedNetwork]: true
-      }));
-    }
-  }, [selectedNetwork]);
+	useEffect(() => {
+		if (selectedNetwork) {
+			setExpandedNetworks(prev => ({ ...prev, [selectedNetwork]: true }));
+		}
+	}, [selectedNetwork]);
 
-  const toggleProject = (networkKey: string) => {
-    setExpandedProjects(prev => ({
-      ...prev,
-      [networkKey]: !prev[networkKey]
-    }));
-  };
+	const faucetsByNetwork = useMemo(() => {
+		return FAUCETS.reduce<Record<string, FaucetLink[]>>((acc, faucet) => {
+			if (!acc[faucet.network]) {
+				acc[faucet.network] = [];
+			}
+			acc[faucet.network].push(faucet);
+			return acc;
+		}, {});
+	}, []);
 
-  const handlePharosReferral = () => {
-    openPharosReferral();
-    setPharosUnlocked(true);
-  };
+	const toggleNetwork = (networkKey: string) => {
+		setExpandedNetworks(prev => ({
+			...prev,
+			[networkKey]: !prev[networkKey]
+		}));
+	};
 
-  if (networkType === 'mainnet') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-16">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('testnet_faucets')}</h1>
-            <p className="text-gray-600 text-lg">{t('faucets_only_testnet')}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+	const handleLinkClick = (faucet: FaucetLink) => {
+		if (faucet.type === 'internal') {
+			if (!onPageChange) return;
+			const [path, query] = faucet.url.split('?');
+			const page = path.replace('/', '') || 'home';
+			onPageChange(page, query ?? undefined);
+			return;
+		}
 
-  const faucetsByNetwork = FAUCETS.reduce((acc, faucet) => {
-    if (!acc[faucet.network]) acc[faucet.network] = [];
-    acc[faucet.network].push(faucet);
-    return acc;
-  }, {} as Record<string, typeof FAUCETS>);
+		window.open(faucet.url, '_blank', 'noopener,noreferrer');
+	};
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('testnet_faucets')}</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{t('get_free_tokens')}</p>
-        </div>
+	const handlePharosReferral = () => {
+		openPharosReferral();
+		setPharosUnlocked(true);
+	};
 
-        <div className="space-y-12">
-          {faucetsByNetwork.pharos && (
-            <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
-              <button
-                onClick={() => toggleProject('pharos')}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 p-6 hover:from-blue-700 hover:to-cyan-700 transition-all"
-              >
-                <div className="flex items-center space-x-3">
-                  {expandedProjects.pharos ? (
-                    <ChevronDown className="w-6 h-6 text-white" />
-                  ) : (
-                    <ChevronRight className="w-6 h-6 text-white" />
-                  )}
-                  <div className="w-6 h-6 rounded-full bg-blue-500"></div>
-                  <h2 className="text-2xl font-bold text-white">{NETWORKS.pharos.displayName}</h2>
-                </div>
-              </button>
+	if (networkType === 'mainnet') {
+		return (
+			<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12">
+				<div className="mx-auto max-w-3xl px-4 text-center">
+					<h1 className="text-4xl font-bold text-gray-900">{t('testnet_faucets')}</h1>
+					<p className="mt-4 text-lg text-gray-600">{t('faucets_only_testnet')}</p>
+				</div>
+			</div>
+		);
+	}
 
-              {expandedProjects.pharos && (
-                <div className="p-6">
-                  {/* Primary Pharos Button */}
-                  <div className="mb-6">
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <Droplets className="w-8 h-8 text-blue-600" />
-                        <h4 className="font-semibold text-gray-900">Open Pharos</h4>
-                      </div>
-                      <button
-                        onClick={handlePharosReferral}
-                        className="inline-flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full justify-center font-medium"
-                      >
-                        <span>{t('faucet_open')}</span>
-                        <ExternalLink className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+	const orderedNetworkKeys = ['giwa', 'pharos', ...Object.keys(faucetsByNetwork).filter(key => !['giwa', 'pharos'].includes(key))];
 
-                  {!pharosUnlocked && (
-                    <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-                      <p className="text-orange-800 text-sm">{t('pharos_unlock_hint')}</p>
-                    </div>
-                  )}
+	return (
+		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-10">
+			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="text-center">
+					<h1 className="text-4xl font-bold text-gray-900">{t('testnet_faucets')}</h1>
+					<p className="mt-3 text-lg text-gray-600">{t('get_free_tokens')}</p>
+				</div>
 
-                  {pharosUnlocked && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {faucetsByNetwork.pharos.map((faucet) => (
-                        <div
-                          key={faucet.id}
-                          className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-center space-x-3 mb-4">
-                            <Droplets className="w-8 h-8 text-blue-600" />
-                            <h4 className="font-semibold text-gray-900">{t(faucet.title) || faucet.title}</h4>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-4">{t(faucet.description) || faucet.description}</p>
-                          <a
-                            href={faucet.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full justify-center font-medium"
-                          >
-                            <span>{t('faucet_open')}</span>
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+				<div className="mt-12 space-y-10">
+					{orderedNetworkKeys.map((networkKey) => {
+						const network = NETWORKS[networkKey];
+						const faucets = faucetsByNetwork[networkKey];
+						if (!network || !faucets) return null;
 
-          {/* Other Networks */}
-          {Object.entries(faucetsByNetwork)
-            .filter(([networkKey]) => networkKey !== 'pharos')
-            .map(([networkKey, faucets]) => {
-              const network = NETWORKS[networkKey];
-              if (!network) return null;
+						const isExpanded = expandedNetworks[networkKey] ?? networkKey === 'giwa';
+						const faucetsToRender = networkKey === 'pharos' && !pharosUnlocked ? [] : faucets;
 
-              return (
-                <div key={networkKey} className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
-                  <button
-                    onClick={() => toggleProject(networkKey)}
-                    className="w-full bg-gradient-to-r from-green-600 to-blue-600 p-6 hover:from-green-700 hover:to-blue-700 transition-all"
-                  >
-                    <div className="flex items-center space-x-3">
-                      {expandedProjects[networkKey] ? (
-                        <ChevronDown className="w-6 h-6 text-white" />
-                      ) : (
-                        <ChevronRight className="w-6 h-6 text-white" />
-                      )}
-                      <div className={`w-6 h-6 rounded-full ${network.color}`}></div>
-                      <h2 className="text-2xl font-bold text-white">{network.displayName}</h2>
-                    </div>
-                  </button>
+						const headerGradient = networkKey === 'giwa'
+							? 'from-sky-500 to-cyan-500'
+							: 'from-indigo-500 to-blue-500';
 
-                  {expandedProjects[networkKey] && (
-                    <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {faucets.map((faucet) => (
-                        <div
-                          key={faucet.id}
-                          className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-center space-x-3 mb-4">
-                            <Droplets className="w-8 h-8 text-blue-600" />
-                            <h4 className="font-semibold text-gray-900">{t(faucet.title) || faucet.title}</h4>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-4">{t(faucet.description) || faucet.description}</p>
-                          <a
-                            href={faucet.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors w-full justify-center font-medium"
-                          >
-                            <span>{t('get_test_tokens')}</span>
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-        </div>
-      </div>
-    </div>
-  );
+						return (
+							<div
+								key={networkKey}
+								className="overflow-hidden rounded-3xl border border-white/30 bg-white/70 shadow-xl backdrop-blur"
+							>
+								<button
+									type="button"
+									onClick={() => toggleNetwork(networkKey)}
+									className={`flex w-full items-center justify-between px-6 py-5 text-left text-white transition-colors duration-200 bg-gradient-to-r ${headerGradient}`}
+								>
+									<div className="flex items-center gap-3">
+										{isExpanded ? <ChevronDown className="h-6 w-6" /> : <ChevronRight className="h-6 w-6" />}
+										<span className="text-2xl font-semibold">{network.displayName}</span>
+									</div>
+								</button>
+
+								{isExpanded && (
+									<div className="space-y-8 px-6 py-8">
+										{networkKey === 'pharos' && !pharosUnlocked && (
+											<div className="rounded-2xl border border-orange-200 bg-orange-50 p-5 text-sm text-orange-800">
+												<p>{t('pharos_unlock_hint')}</p>
+												<button
+													type="button"
+													onClick={handlePharosReferral}
+													className="mt-4 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-white transition-colors hover:bg-orange-600"
+												>
+													{t('faucet_open')}
+													<ExternalLink className="h-4 w-4" />
+												</button>
+											</div>
+										)}
+
+															<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+																						{faucetsToRender.map((faucet) => {
+																							const buttonLabelKey = faucet.id === 'giwa-official'
+																								? 'task_faucet_giwa_button'
+																								: 'faucet_open';
+
+																							return (
+																								<div
+														key={faucet.id}
+														className="group relative overflow-hidden rounded-2xl border border-white/40 bg-white/80 p-6 shadow-md transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl"
+													>
+														<div className="absolute inset-0 bg-gradient-to-br from-sky-100/70 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+														<div className="relative flex h-full flex-col justify-between space-y-5">
+															<div className="flex items-center gap-3">
+																<div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-100 text-sky-500">
+																	<Droplets className="h-6 w-6" />
+																</div>
+																<div>
+																	<h3 className="text-lg font-semibold text-gray-900">
+																		{t(faucet.title) || faucet.title}
+																	</h3>
+																	<p className="mt-1 text-sm text-gray-600">
+																		{t(faucet.description) || faucet.description}
+																	</p>
+																</div>
+															</div>
+
+															<button
+																type="button"
+																onClick={() => handleLinkClick(faucet)}
+																className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+															>
+																<span>{t(buttonLabelKey)}</span>
+																<ExternalLink className="h-4 w-4" />
+															</button>
+														</div>
+													</div>
+												);
+											})}
+										</div>
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</div>
+	);
 }

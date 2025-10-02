@@ -1,5 +1,26 @@
 import { AirdropTask, FaucetLink } from '../types';
 
+export const GIWA_TASKS: AirdropTask[] = [
+  {
+    id: 'giwa-faucet',
+    title: 'task_faucet_giwa',
+    description: 'task_faucet_giwa_desc',
+    url: '/faucets?network=giwa',
+    network: 'giwa',
+    category: 'faucet',
+    completed: false
+  },
+  {
+    id: 'giwa-mint-nft',
+    title: 'task_mint_nft_giwa',
+    description: 'task_mint_nft_giwa_desc',
+    url: '/nfts?network=giwa',
+    network: 'giwa',
+    category: 'nft',
+    completed: false
+  }
+];
+
 export const PHAROS_TASKS: AirdropTask[] = [
   {
     id: 'pharos-faucet',
@@ -113,25 +134,36 @@ export const PHAROS_TASKS: AirdropTask[] = [
 
 export const FAUCETS: FaucetLink[] = [
   {
+    id: 'giwa-official',
+    title: 'faucet_giwa_title',
+    url: 'https://sepolia-faucet.giwa.io/',
+    network: 'giwa',
+    description: 'faucet_giwa_description',
+    type: 'external'
+  },
+  {
     id: 'pharos-main',
     title: 'pharos_network_faucet',
     url: 'https://testnet.pharosnetwork.xyz/',
     network: 'pharos',
-    description: 'pharos_network_faucet_desc'
+    description: 'pharos_network_faucet_desc',
+    type: 'external'
   },
   {
     id: 'pharos-zenith',
     title: 'zenithswap_faucet',
     url: 'https://testnet.zenithswap.xyz/faucet',
     network: 'pharos',
-    description: 'zenithswap_faucet_desc'
+    description: 'zenithswap_faucet_desc',
+    type: 'external'
   },
   {
     id: 'pharos-brokex',
     title: 'brokex_faucet',
     url: 'https://brokex.trade/faucet',
     network: 'pharos',
-    description: 'brokex_faucet_desc'
+    description: 'brokex_faucet_desc',
+    type: 'external'
   }
 ];
 
@@ -165,3 +197,10 @@ export const SEI_TASKS: AirdropTask[] = [
     completed: false
   }
 ];
+
+export const NETWORK_TASKS: Record<string, AirdropTask[]> = {
+  giwa: GIWA_TASKS,
+  pharos: PHAROS_TASKS,
+  base: BASE_TASKS,
+  sei: SEI_TASKS
+};

@@ -43,7 +43,7 @@ export function useConfigNFTs(networkType: 'mainnet' | 'testnet') {
   
   // Set default network based on networkType
   const getDefaultNetwork = () => {
-    return networkType === 'mainnet' ? 'base' : 'pharos';
+    return networkType === 'mainnet' ? 'base' : 'giwa';
   };
   
   const [activeNetwork, setActiveNetwork] = useState(getDefaultNetwork());

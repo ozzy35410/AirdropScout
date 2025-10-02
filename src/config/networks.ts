@@ -36,7 +36,7 @@ export const NETWORKS: Record<string, NetworkConfig> = {
     displayName: 'GIWA Sepolia',
     rpcUrl: 'https://sepolia-rpc.giwa.io',
     chainId: 91342, // 0x1652E
-    color: 'bg-green-500',
+    color: 'bg-sky-500',
     explorer: 'https://sepolia-explorer.giwa.io',
     type: 'testnet',
     nativeCurrency: {
@@ -48,14 +48,14 @@ export const NETWORKS: Record<string, NetworkConfig> = {
   pharos: {
     name: 'pharos',
     displayName: 'Pharos Testnet',
-    rpcUrl: 'https://testnet.dplabs-internal.com',
-    chainId: 688688, // 0xA84B0
+    rpcUrl: 'https://pharos-testnet.calderachain.xyz/http',
+    chainId: 1234, // 0x4D2
     color: 'bg-orange-500',
-    explorer: 'https://testnet.pharosscan.xyz',
+    explorer: 'https://pharos-testnet.calderachain.xyz',
     type: 'testnet',
     nativeCurrency: {
-      name: 'PHRS',
-      symbol: 'PHRS',
+      name: 'Ethereum',
+      symbol: 'ETH',
       decimals: 18
     }
   }

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Sparkles, Globe, Settings, Menu, X, Sun, Moon } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Menu, X } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
-import { useTheme } from '../../hooks/useTheme';
 
 interface HeaderProps {
   currentPage: string;
@@ -10,6 +9,8 @@ interface HeaderProps {
   onNetworkTypeChange: (type: 'mainnet' | 'testnet') => void;
   language: 'en' | 'tr';
   onLanguageChange: (lang: 'en' | 'tr') => void;
+  trackingAddress?: string;
+  onTrackingAddressChange?: (value: string) => void;
 }
 
 export function Header({
@@ -18,11 +19,12 @@ export function Header({
   networkType,
   onNetworkTypeChange,
   language,
-  onLanguageChange
+  onLanguageChange,
+  trackingAddress = '',
+  onTrackingAddressChange
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useTranslation(language);
-  const { theme, toggleTheme } = useTheme();
 
   const navigation = [
     { id: 'home', label: t('home') },
@@ -65,18 +67,18 @@ export function Header({
 
           {/* Controls */}
           <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-white hover:bg-white/20 rounded-lg transition-all duration-200"
-              title={theme === 'light' ? t('darkMode') : t('lightMode')}
-            >
-              {theme === 'light' ? (
-                <Moon className="w-5 h-5" />
-              ) : (
-                <Sun className="w-5 h-5" />
-              )}
-            </button>
+            {/* Address Tracking Input */}
+            {onTrackingAddressChange && (
+              <div className="hidden lg:block">
+                <input
+                  type="text"
+                  value={trackingAddress}
+                  onChange={(e) => onTrackingAddressChange(e.target.value)}
+                  placeholder={t('paste_wallet_address')}
+                  className="w-64 px-3 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                />
+              </div>
+            )}
 
             {/* Network Type Toggle */}
             <div className="hidden sm:flex bg-white/20 backdrop-blur-sm rounded-lg p-1">
@@ -157,6 +159,19 @@ export function Header({
                 </button>
               ))}
 
+              {/* Mobile Tracking Input */}
+              {onTrackingAddressChange && (
+                <div className="px-4">
+                  <input
+                    type="text"
+                    value={trackingAddress}
+                    onChange={(e) => onTrackingAddressChange(e.target.value)}
+                    placeholder={t('paste_wallet_address')}
+                    className="w-full px-3 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50"
+                  />
+                </div>
+              )}
+
               {/* Mobile Network Toggle */}
               <div className="flex bg-white/20 backdrop-blur-sm rounded-lg p-1 mx-4 mt-4">
                 <button
@@ -178,6 +193,30 @@ export function Header({
                   }`}
                 >
                   {t('testnet')}
+                </button>
+              </div>
+
+              {/* Mobile Language Toggle */}
+              <div className="flex bg-white/20 backdrop-blur-sm rounded-lg p-1 mx-4">
+                <button
+                  onClick={() => onLanguageChange('en')}
+                  className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                    language === 'en'
+                      ? 'bg-white text-blue-700'
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => onLanguageChange('tr')}
+                  className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                    language === 'tr'
+                      ? 'bg-white text-blue-700'
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  TR
                 </button>
               </div>
             </div>

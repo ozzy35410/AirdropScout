@@ -1,7 +1,5 @@
-import React from 'react';
-import { Sparkles, Shield, Zap, Globe, Plus, ExternalLink } from 'lucide-react';
-import { NETWORKS, MAINNET_NETWORKS, TESTNET_NETWORKS } from '../../config/networks';
-import { useWallet } from '../../hooks/useWallet';
+import { Sparkles, Shield, Zap, Globe } from 'lucide-react';
+import { MAINNET_NETWORKS, TESTNET_NETWORKS } from '../../config/networks';
 import { useTranslation } from '../../lib/i18n';
 
 interface HomePageProps {
@@ -11,26 +9,8 @@ interface HomePageProps {
 }
 
 export function HomePage({ networkType, language, onPageChange }: HomePageProps) {
-  const { addNetwork } = useWallet();
   const { t } = useTranslation(language);
   const currentNetworks = networkType === 'mainnet' ? MAINNET_NETWORKS : TESTNET_NETWORKS;
-
-  const handleAddNetwork = async (networkKey: string) => {
-    const network = NETWORKS[networkKey];
-    if (!network) return;
-
-    try {
-      await addNetwork({
-        chainId: `0x${network.chainId.toString(16)}`,
-        chainName: network.displayName,
-        nativeCurrency: network.nativeCurrency,
-        rpcUrls: [network.rpcUrl],
-        blockExplorerUrls: [network.explorer]
-      });
-    } catch (error) {
-      console.error('Failed to add network:', error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

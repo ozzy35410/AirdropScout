@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
 import { HomePage } from './components/Pages/HomePage';
 import { TasksPage } from './components/Pages/TasksPage';
 import { FaucetsPage } from './components/Pages/FaucetsPage';
 import { WalletStatsPage } from './components/Pages/WalletStatsPage';
-import { NFTPage } from './components/Pages/NFTPage';
+import { NFTPage } from './components/Pages/NFTPageNew';
 import { AdminPanel } from './components/Admin/AdminPanel';
 
 // Extend window type for ethereum
@@ -20,6 +19,7 @@ function App() {
   const [networkType, setNetworkType] = useState<'mainnet' | 'testnet'>('mainnet');
   const [language, setLanguage] = useState<'en' | 'tr'>('en');
   const [pageParams, setPageParams] = useState<string>('');
+  const [trackingAddress, setTrackingAddress] = useState<string>('');
 
   // Handle URL parameters
   useEffect(() => {
@@ -28,24 +28,28 @@ function App() {
     if (page) {
       setCurrentPage(page);
     }
+    if (window.location.search) {
+      setPageParams(window.location.search.slice(1));
+    }
   }, []);
 
   const handlePageChange = (page: string, params?: string) => {
     setCurrentPage(page);
-    setPageParams(params || '');
-    
-    // Update URL if params provided
-    if (params) {
-      const url = new URL(window.location.href);
-      url.search = params;
-      window.history.pushState({}, '', url.toString());
-    }
+
+    const searchParams = new URLSearchParams(params || '');
+    searchParams.set('page', page);
+    const queryString = searchParams.toString();
+    setPageParams(queryString);
+
+    const url = new URL(window.location.href);
+    url.search = queryString;
+    window.history.pushState({}, '', url.toString());
   };
 
   const renderPage = () => {
     const urlParams = new URLSearchParams(pageParams);
     const selectedNetworkFromParams = urlParams.get('network');
-    
+
     switch (currentPage) {
       case 'home':
         return (
@@ -60,24 +64,31 @@ function App() {
           <TasksPage
             networkType={networkType}
             language={language}
+            selectedNetwork={selectedNetworkFromParams || undefined}
             onPageChange={handlePageChange}
           />
         );
       case 'nfts':
-        return <NFTPage networkType={networkType} language={language} />;
+        return (
+          <NFTPage
+            networkType={networkType}
+            language={language}
+            trackingAddress={trackingAddress}
+            selectedNetwork={selectedNetworkFromParams || undefined}
+          />
+        );
       case 'faucets':
         return (
           <FaucetsPage
             networkType={networkType}
             language={language}
             selectedNetwork={selectedNetworkFromParams || undefined}
+            onPageChange={handlePageChange}
           />
         );
       case 'wallet-stats':
         return (
-          <WalletStatsPage
-            language={language}
-          />
+          <WalletStatsPage language={language} />
         );
       case 'admin':
         return (
@@ -107,8 +118,9 @@ function App() {
         onNetworkTypeChange={setNetworkType}
         language={language}
         onLanguageChange={setLanguage}
+        trackingAddress={trackingAddress}
+        onTrackingAddressChange={setTrackingAddress}
       />
-      
       {renderPage()}
     </div>
   );

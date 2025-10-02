@@ -16,28 +16,16 @@ export const NFT_COLLECTIONS: Record<string, NFTCollection[]> = {
   // Mainnet collections
   base: [
     {
-      slug: 'cool-art',
-      name: 'Cool Art Collection',
-      symbol: 'CART',
-      contract: '0x1234567890123456789012345678901234567890',
+      slug: 'airdrop-scout-og-labs',
+      name: 'Airdrop Scout OG Labs',
+      symbol: 'OGSCOUT',
+      contract: '0xd9C0190BE8517C056C04B52C883Fae24E05A47fB',
       standard: 'erc721',
-      image: '/images/collections/cool-art.png',
-      description: 'A beautiful collection of digital art pieces',
-      tags: ['art', 'collectible', 'digital', 'nft2sme'],
-      mintUrl: 'https://opensea.io/collection/cool-art',
-      addedAt: '2024-01-15T00:00:00Z'
-    },
-    {
-      slug: 'base-builders',
-      name: 'Base Builders',
-      symbol: 'BUILD',
-      contract: '0x2345678901234567890123456789012345678901',
-      standard: 'erc721',
-      image: '/images/collections/base-builders.png',
-      description: 'NFTs for the Base ecosystem builders',
-      tags: ['builders', 'utility', 'base', 'community'],
-      mintUrl: 'https://zora.co/collect/base:0x2345678901234567890123456789012345678901',
-      addedAt: '2024-02-01T00:00:00Z'
+      image: '/images/collections/airdrop-scout-og.png',
+      description: 'The inaugural OG badge for early Airdrop Scout community members on Base.',
+      tags: ['airdrop-scout', 'community', 'base', 'og'],
+      mintUrl: 'https://zora.co/collect/base:0xd9c0190be8517c056c04b52c883fae24e05a47fb',
+      addedAt: '2024-07-01T00:00:00Z'
     }
   ],
   
@@ -57,7 +45,21 @@ export const NFT_COLLECTIONS: Record<string, NFTCollection[]> = {
   ],
   
   // Testnet collections
-  
+  giwa: [
+    {
+      slug: 'airdrop-scout-pathfinder-giwa',
+      name: 'Airdrop Scout Pathfinder GIWA',
+      symbol: 'PATH',
+      contract: '0xce4A86c499386FBE4Cd7E37CD4B9E495C972B36F',
+      standard: 'erc721',
+      image: '/images/collections/airdrop-scout-pathfinder.png',
+      description: 'Complete the Pathfinder quest on GIWA Sepolia to mint this commemorative NFT.',
+      tags: ['airdrop-scout', 'quest', 'giwa', 'pathfinder'],
+      mintUrl: 'https://airdrop.scout3.xyz/tasks?network=giwa&task=giwa-mint-nft',
+      addedAt: '2024-07-15T00:00:00Z'
+    }
+  ],
+
   pharos: [
     {
       slug: 'pharos-legends',
