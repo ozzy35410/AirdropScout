@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { ExternalLink, Search, Tag, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
 import { CHAINS, ChainSlug } from '../../config/chains';
+import { useAdminNFTs } from '../../hooks/useAdminNFTs';
 
 interface NFTCollection {
   slug: string;
@@ -12,6 +13,7 @@ interface NFTCollection {
   mintUrl?: string;
   chain: ChainSlug;
   standard: 'erc721' | 'erc1155';
+  isMinted?: boolean;
 }
 
 // Real NFT collections with actual contract addresses and images
@@ -227,12 +229,8 @@ interface NFTsPageProps {
 
 export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPageProps) {
   const { t } = useTranslation(language);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za'>('newest');
-  const [trackingAddress, setTrackingAddress] = useState('');
-  const [mintedFilter, setMintedFilter] = useState<'all' | 'show' | 'hide' | 'only'>('all');
-
+  const { nfts: adminNfts } = useAdminNFTs(); // Get admin NFTs
+  
   // Filter chains by network type
   const availableChains = useMemo(() => {
     return Object.values(CHAINS).filter(chain => chain.kind === networkType);
@@ -241,19 +239,102 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   const [activeChain, setActiveChain] = useState<ChainSlug>(
     selectedNetwork || (availableChains[0]?.slug as ChainSlug)
   );
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za'>('newest');
+  const [trackingAddress, setTrackingAddress] = useState('');
+  const [mintedFilter, setMintedFilter] = useState<'all' | 'show' | 'hide' | 'only'>('all');
+  const [mintedData, setMintedData] = useState<Record<string, boolean>>({});
+  const [loadingMinted, setLoadingMinted] = useState(false);
+
+  // Validate Ethereum address
+  const isValidAddress = (address: string) => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  };
+
+  // Combine static collections with admin NFTs
+  const allCollections = useMemo(() => {
+    const combined: NFTCollection[] = [...NFT_COLLECTIONS];
+    
+    // Add admin NFTs as collections
+    if (adminNfts && adminNfts.length > 0) {
+      adminNfts.forEach(nft => {
+        // Map network names to chain slugs
+        const chainMap: Record<string, ChainSlug> = {
+          'base': 'base',
+          'sei': 'sei',
+          'giwa': 'giwa',
+          'pharos': 'pharos',
+          'linea': 'base', // fallback
+          'zksync': 'base',
+          'scroll': 'base',
+          'zora': 'base'
+        };
+        
+        const chain = chainMap[nft.network] || 'base';
+        
+        combined.push({
+          slug: `admin-${nft.id}`,
+          name: nft.title,
+          contract: nft.contract_address,
+          image: undefined,
+          tags: nft.tags || [],
+          mintUrl: nft.external_link,
+          chain: chain,
+          standard: nft.token_standard === 'ERC-721' ? 'erc721' : 'erc1155'
+        });
+      });
+    }
+    
+    return combined;
+  }, [adminNfts]);
+
+  // Fetch minted status when address changes
+  useEffect(() => {
+    const fetchMintedStatus = async () => {
+      if (!trackingAddress || !isValidAddress(trackingAddress)) {
+        setMintedData({});
+        return;
+      }
+
+      setLoadingMinted(true);
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/nft/minted?chain=${activeChain}&address=${trackingAddress}`
+        );
+        const data = await response.json();
+        
+        if (data.ok) {
+          setMintedData(data.minted || {});
+        }
+      } catch (error) {
+        console.error('Failed to fetch minted status:', error);
+      } finally {
+        setLoadingMinted(false);
+      }
+    };
+
+    // Debounce the fetch
+    const timer = setTimeout(() => {
+      fetchMintedStatus();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [trackingAddress, activeChain]);
 
   // Get all unique tags
   const allTags = useMemo(() => {
     const tags = new Set<string>();
-    NFT_COLLECTIONS.forEach(nft => {
+    allCollections.forEach(nft => {
       nft.tags?.forEach(tag => tags.add(tag));
     });
     return Array.from(tags).sort();
-  }, []);
+  }, [allCollections]);
 
   // Filter and sort collections
   const filteredCollections = useMemo(() => {
-    let filtered = NFT_COLLECTIONS.filter(nft => {
+    let filtered = allCollections.filter(nft => {
       // Filter by chain
       if (nft.chain !== activeChain) return false;
 
@@ -276,6 +357,15 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
         }
       }
 
+      // Filter by minted status (only if tracking address is valid)
+      if (trackingAddress && isValidAddress(trackingAddress) && mintedFilter !== 'all') {
+        const isMinted = mintedData[nft.slug] === true;
+        
+        if (mintedFilter === 'hide' && isMinted) return false; // Hide minted NFTs
+        if (mintedFilter === 'only' && !isMinted) return false; // Show only minted NFTs
+        // 'show' doesn't filter anything
+      }
+
       return true;
     });
 
@@ -287,7 +377,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
     });
 
     return filtered;
-  }, [activeChain, searchQuery, selectedTags, sortBy]);
+  }, [allCollections, activeChain, searchQuery, selectedTags, sortBy, trackingAddress, mintedFilter, mintedData]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
@@ -313,15 +403,28 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t('track_by_address')}
               </label>
-              <input
-                type="text"
-                value={trackingAddress}
-                onChange={(e) => setTrackingAddress(e.target.value)}
-                placeholder={t('enter_address')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={trackingAddress}
+                  onChange={(e) => setTrackingAddress(e.target.value)}
+                  placeholder={t('enter_address')}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {loadingMinted && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  </div>
+                )}
+              </div>
               {!trackingAddress && (
                 <p className="text-xs text-gray-500 mt-1">{t('paste_address_hint')}</p>
+              )}
+              {trackingAddress && !isValidAddress(trackingAddress) && (
+                <p className="text-xs text-red-500 mt-1">⚠️ Invalid Ethereum address</p>
               )}
             </div>
             
@@ -499,6 +602,16 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                   <div className="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
                     {nft.standard.toUpperCase()}
                   </div>
+
+                  {/* Minted Badge - Only if tracking address and minted */}
+                  {trackingAddress && isValidAddress(trackingAddress) && mintedData[nft.slug] === true && (
+                    <div className="absolute bottom-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      Minted
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
