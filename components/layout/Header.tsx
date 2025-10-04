@@ -61,17 +61,37 @@ export function Header() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
         <div className="flex items-center gap-4">
           <Link
-            href="/nfts"
+            href="/"
             className="text-xl font-semibold text-slate-900"
           >
             {t("brand")}
           </Link>
-          <Link
-            href="/admin"
-            className="hidden text-sm font-medium text-slate-500 transition hover:text-slate-900 sm:inline-flex"
-          >
-            {t("admin")}
-          </Link>
+          <nav className="hidden items-center gap-4 sm:flex">
+            <Link
+              href="/tasks"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            >
+              {t("tasks")}
+            </Link>
+            <Link
+              href="/nfts"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            >
+              {t("nfts")}
+            </Link>
+            <Link
+              href="/faucets"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            >
+              {t("faucets")}
+            </Link>
+            <Link
+              href="/admin"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            >
+              {t("admin")}
+            </Link>
+          </nav>
         </div>
         <div className="flex flex-1 items-center justify-end gap-4">
           <div className="hidden items-center gap-2 rounded-full bg-slate-100 p-1 text-sm sm:flex">
