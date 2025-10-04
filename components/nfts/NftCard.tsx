@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ExternalLink, Sparkles } from "lucide-react";
-import { clsx } from "clsx";
+import clsx from "clsx";
 import type { ChainSlug } from "@/config/chains";
 import { CHAINS } from "@/config/chains";
 import type { TranslationKey } from "@/lib/i18n";

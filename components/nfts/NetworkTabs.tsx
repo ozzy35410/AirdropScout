@@ -1,6 +1,6 @@
 "use client";
 
-import { clsx } from "clsx";
+import clsx from "clsx";
 import { CHAINS, type ChainSlug } from "@/config/chains";
 
 type NetworkTabsProps = {

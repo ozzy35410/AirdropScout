@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Plus, Pencil, Trash2, Shield } from "lucide-react";
-import { clsx } from "clsx";
+import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { CHAINS, type ChainSlug } from "@/config/chains";
 import { collectionInputSchema } from "@/lib/schemas/collection";

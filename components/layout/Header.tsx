@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { clsx } from "clsx";
+import clsx from "clsx";
 import { useGlobal, type GlobalState, type NetworkMode } from "@/state/useGlobal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { formatChecksum, isValidAddress, normalizeAddress } from "@/lib/address";

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, RefreshCcw, Search } from "lucide-react";
-import { clsx } from "clsx";
+import clsx from "clsx";
 import { MAINNET_CHAINS, TESTNET_CHAINS, type ChainSlug } from "@/config/chains";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGlobal, type GlobalState } from "@/state/useGlobal";
