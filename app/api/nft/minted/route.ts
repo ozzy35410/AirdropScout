@@ -53,6 +53,8 @@ const TOPIC_ERC1155_BATCH = keccak256(
   stringToBytes("TransferBatch(address,address,address,uint256[],uint256[])")
 ) as Hex;
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);

@@ -23,6 +23,8 @@ function ensureChain(chainParam: string | string[] | undefined): ChainSlug {
   return chainParam as ChainSlug;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(request: NextRequest, context: { params: { chain: string; slug: string } }) {
   try {
     requireAdminSession();
