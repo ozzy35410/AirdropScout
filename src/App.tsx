@@ -5,10 +5,12 @@ import { HomePage } from './components/Pages/HomePage';
 import { TasksPage } from './components/Pages/TasksPage';
 import { FaucetsPage } from './components/Pages/FaucetsPage';
 import { WalletStatsPage } from './components/Pages/WalletStatsPage';
+import { NFTsPage } from './components/Pages/NFTsPage';
 import { NFTGrid } from './components/NFT/NFTGrid';
 import { AdminPanel } from './components/Admin/AdminPanel';
 import { useNFTs } from './hooks/useNFTs';
 import { NETWORKS } from './config/networks';
+import { ChainSlug } from './config/chains';
 
 // Extend window type for ethereum
 declare global {
@@ -80,27 +82,11 @@ function App() {
         );
       case 'nfts':
         return (
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  NFT2SME Collections
-                </h1>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                  Mint NFTs directly from curated collections across multiple networks
-                </p>
-              </div>
-              
-              <NFTGrid
-                nfts={nfts}
-                networks={networks}
-                loading={loading}
-                error={error}
-                walletAddress={walletAddress}
-                hideOwned={hideOwned}
-              />
-            </div>
-          </div>
+          <NFTsPage
+            networkType={networkType}
+            language={language}
+            selectedNetwork={selectedNetworkFromParams as ChainSlug}
+          />
         );
       case 'faucets':
         return (
