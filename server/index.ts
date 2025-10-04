@@ -54,11 +54,17 @@ const setToCache = async (key: string, value: string, ttl = 300) => {
   }
 };
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || '',
-  process.env.VITE_SUPABASE_ANON_KEY || ''
-);
+// Initialize Supabase client (optional)
+let supabase: any = null;
+if (process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_ANON_KEY) {
+  supabase = createClient(
+    process.env.VITE_SUPABASE_URL,
+    process.env.VITE_SUPABASE_ANON_KEY
+  );
+  console.log('✅ Supabase initialized');
+} else {
+  console.log('⚠️  Supabase not configured, some features may be limited');
+}
 
 // Network configurations
 const NETWORK_CONFIGS = {
