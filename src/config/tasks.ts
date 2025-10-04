@@ -141,13 +141,6 @@ export const FAUCETS: FaucetLink[] = [
     description: 'Get test ETH for GIWA Sepolia network'
   },
   {
-    id: 'pharos-main',
-    title: 'Pharos Network Faucet',
-    url: 'https://testnet.pharosnetwork.xyz/',
-    network: 'pharos',
-    description: 'Main Pharos testnet faucet'
-  },
-  {
     id: 'pharos-zenith',
     title: 'ZenithSwap Faucet',
     url: 'https://testnet.zenithswap.xyz/faucet',
