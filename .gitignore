@@ -11,7 +11,19 @@ node_modules
 dist
 dist-ssr
 *.local
+.next
+.vercel
 
+# Next.js build output
+out
+
+# Turbo / SWC caches
+.turbo
+.swc
+
+# Env files
+
+.env.*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

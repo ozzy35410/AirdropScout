@@ -1,282 +1,132 @@
-# NFT Listing & Wallet Filter Web Application
+# Airdrop Scout — NFT Collections Tracker
 
-# 🚀 Airdrop Scout
+Airdrop Scout is a Next.js 14 application for browsing curated NFT drops across Base, GIWA, Sei, Pharos, and more. It combines static configuration with Supabase-backed persistence, offers wallet-aware minted tracking, and ships with a protected admin console for managing collections.
 
-Türkçe ve İngilizce dil desteği ile airdrop görevleri takip platformu.
+## ✨ Highlights
 
-## ✨ Özellikler
+- **Merged catalogue** sourced from static seeds and Supabase records.
+- **Minted detection** via viem log scans with caching and rate-limit backoff.
+- **Wallet-aware filters** to hide or isolate collections already minted.
+- **Instant i18n** (English & Turkish) with persistent language preference.
+- **Admin portal** with cookie auth, Supabase CRUD, and Zod validation.
 
-- **Çoklu Dil Desteği**: Türkçe ↔ İngilizce
-- **Airdrop Görevleri**: Pharos, GIWA, Base, Sei ağları
-- **NFT Koleksiyonları**: Curated NFT mint işlemleri  
-- **Faucet Bağlantıları**: Test token'ları için faucet'ler
-- **Cüzdan İstatistikleri**: Aktivite takibi
+## 🧱 Tech Stack
 
-## 🔥 Canlı Demo
+- **Framework**: Next.js 14 (App Router) + React 18 + TypeScript
+- **Styling**: Tailwind CSS, Lucide React icons
+- **State**: Zustand for global settings, custom hooks for blockchain state
+- **Blockchain**: viem clients per network for log inspection
+- **Persistence**: Supabase (PostgreSQL) for admin-authored collections
+- **Validation**: Zod schemas shared across server & client
 
-Bolt üzerinde deploy edilmiş versiyonu: [buraya link gelecek]
-
-## Features
-
-### Core Functionality
-- **Multi-Network Support**: Linea, zkSync Era, Base, Scroll, and Zora networks
-- **Smart Contract Integration**: ERC-721 and ERC-1155 token standards
-- **Wallet Filtering**: Hide NFTs already owned by connected wallet
-- **Admin Panel**: Full CRUD operations for NFT management
-- **Ownership Verification**: Real-time blockchain ownership checking
-- **Caching System**: Redis-based caching for performance optimization
-
-### User Experience
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Network Tabs**: Easy switching between blockchain networks
-- **Real-time Filtering**: Instant wallet-based NFT filtering
-- **Loading States**: Professional loading and error handling
-- **Form Validation**: Comprehensive input validation and error messages
-
-### Admin Features
-- **NFT Management**: Add, edit, delete, and toggle visibility
-- **Bulk Operations**: CSV/JSON import capabilities (extensible)
-- **Tag System**: Organized categorization and filtering
-- **Visibility Control**: Show/hide NFTs from public view
-- **External Links**: Direct marketplace integration
-
-## Technology Stack
-
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: Supabase (PostgreSQL)
-- **Blockchain**: ethers.js with multi-network RPC providers
-- **Caching**: Redis with in-memory fallback
-- **UI Components**: Custom components with Lucide React icons
-
-## Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
-- Supabase account
-- Redis (optional - uses in-memory cache as fallback)
 
-### Setup
+- Node.js 18+
+- Supabase project (PostgreSQL 14+)
+- Supabase CLI *(optional)*
 
-1. **Clone and Install**
-   ```bash
-   git clone <repository-url>
-   cd nft-listing-platform
-   npm install
-   ```
+### 1. Install dependencies
 
-2. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   # Update with your Supabase credentials
-   ```
+```bash
+npm install
+```
 
-3. **Database Setup**
-   - Click "Connect to Supabase" button in the app
-   - Run the migration in Supabase SQL Editor:
-     ```sql
-     -- Copy content from supabase/migrations/create_nfts_table.sql
-     ```
+### 2. Configure environment
 
-4. **Start Development**
-   ```bash
-   npm run dev
-   ```
-
-   This starts both frontend (http://localhost:5173) and backend (http://localhost:3001)
-
-## Configuration
-
-### Supported Networks
-
-| Network | Chain ID | RPC Endpoint |
-|---------|----------|-------------|
-| Linea | 59144 | https://rpc.linea.build |
-| zkSync Era | 324 | https://mainnet.era.zksync.io |
-| Base | 8453 | https://mainnet.base.org |
-| Scroll | 534352 | https://rpc.scroll.io |
-| Zora | 7777777 | https://rpc.zora.energy |
-
-### Environment Variables
+Create `.env.local` with the required keys:
 
 ```env
-# Required
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-anon-key
+# Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=public-anon-key
+SUPABASE_SERVICE_ROLE_KEY=service-role-key
 
-# Optional
-REDIS_URL=redis://localhost:6379
-PORT=3001
+# Admin auth
+# Hash your passphrase once: node -e "console.log(require('crypto').createHash('sha256').update('your-secret').digest('hex'))"
+ADMIN_PASSWORD_HASH=sha256-hash-of-passphrase
+# Generate a random session token: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+ADMIN_SESSION_TOKEN=random-hex-string
 ```
 
-## API Endpoints
+> **Tip:** never commit the service role key or admin secrets.
 
-### Public Endpoints
-- `GET /api/nfts?network=<network>&wallet=<address>&hideOwned=true` - Get filtered NFTs
-- `GET /api/networks` - Get network configurations
-- `POST /api/check-ownership` - Check NFT ownership
-- `GET /api/health` - Health check
+### 3. Run database migration
 
-### Admin Endpoints
-- `GET /api/admin/nfts` - Get all NFTs (admin view)
-- `POST /api/admin/nfts` - Add new NFT
-- `PUT /api/admin/nfts/:id` - Update NFT
-- `DELETE /api/admin/nfts/:id` - Delete NFT
+Apply `supabase/migrations/20251005093000_nft_collections.sql` through the Supabase SQL editor or CLI:
 
-## Usage Guide
-
-### For Users (Public View)
-1. Visit the application homepage
-2. Browse NFTs by network using the tab navigation
-3. Paste wallet address in the top-right input
-4. Check "Hide owned NFTs" to filter out owned tokens
-5. Click external links to view NFTs on marketplaces
-
-### For Admins
-1. Click "Admin Panel" in the header
-2. Use "Add NFT" to create new listings
-3. Edit or delete existing NFTs from the table
-4. Toggle visibility to show/hide NFTs from public view
-5. Use tags for better organization
-
-### Adding NFTs
-Required fields:
-- Title
-- Network (select from dropdown)
-- Contract Address (valid Ethereum address)
-- Token ID (numeric)
-- Token Standard (ERC-721 or ERC-1155)
-
-Optional fields:
-- Description
-- External Link (marketplace URL)
-- Tags (comma-separated)
-
-## Blockchain Integration
-
-### Ownership Verification
-- **ERC-721**: Uses `ownerOf(tokenId)` with `balanceOf(address)` fallback
-- **ERC-1155**: Uses `balanceOf(address, tokenId)` 
-- **Caching**: 5-minute cache for ownership queries
-- **Error Handling**: Graceful degradation for RPC failures
-
-### Smart Contract Interaction
-```typescript
-// ERC-721 Ownership Check
-const owner = await contract.ownerOf(tokenId);
-const isOwner = owner.toLowerCase() === walletAddress.toLowerCase();
-
-// ERC-1155 Ownership Check  
-const balance = await contract.balanceOf(walletAddress, tokenId);
-const isOwner = balance > 0;
-```
-
-## Performance Optimizations
-
-### Caching Strategy
-- **Redis Primary**: 5-minute TTL for ownership queries
-- **Memory Fallback**: In-memory cache when Redis unavailable
-- **Cache Keys**: `ownership:{network}:{contract}:{tokenId}:{wallet}`
-
-### Database Optimization
-- Indexed queries on network, visibility, and creation date
-- Unique constraints prevent duplicate entries
-- Row Level Security for secure multi-tenant access
-
-### Frontend Performance
-- Lazy loading and code splitting
-- Optimized re-renders with React hooks
-- Responsive design with minimal bundle size
-
-## Security Features
-
-### Input Validation
-- Ethereum address format validation (EIP-55)
-- Network whitelist validation
-- SQL injection prevention
-- XSS protection with input sanitization
-
-### Access Control
-- Row Level Security (RLS) on database
-- Public read access for visible NFTs only
-- Admin operations require authentication
-- Rate limiting on API endpoints
-
-## Deployment
-
-### Frontend (Vercel)
 ```bash
-npm run build
-# Deploy dist folder to Vercel
+supabase db push   # if the CLI is linked to your project
 ```
 
-### Backend Options
-- **Heroku**: `git push heroku main`
-- **DigitalOcean App Platform**: Connect repository
-- **Railway**: One-click deployment
-- **Render**: Auto-deploy from GitHub
+The migration provisions the `nft_collections` table, indices, RLS policy, and timestamp trigger.
 
-### Database
-- Supabase managed PostgreSQL
-- Run migrations through Supabase dashboard
-- Configure RLS policies for security
+### 4. Start the app
 
-## Monitoring & Maintenance
+```bash
+npm run dev
+```
 
-### Health Checks
-- `GET /api/health` endpoint for uptime monitoring
-- Database connection validation
-- Redis connectivity status
+The site runs at `http://localhost:3000`. The admin portal lives at `/admin/login`; sign in with the passphrase that produced `ADMIN_PASSWORD_HASH` and you’ll be redirected to `/admin/nfts`.
 
-### Error Handling
-- Comprehensive error logging
-- User-friendly error messages
-- Graceful degradation for external dependencies
+## 🔐 Admin Workflow
 
-### Cache Management
-- Automatic cache invalidation
-- Memory cleanup for in-memory fallback
-- TTL-based expiration policies
+1. Visit `/admin/login` and authenticate with the configured passphrase.
+2. A secure, HTTP-only cookie (30 day expiry) is issued; middleware enforces all `/admin` and `/api/admin` routes.
+3. Manage collections at `/admin/nfts`:
+   - **Create** custom drops with chain, contract, metadata, links, start block, and tags.
+   - **Edit/Delete** Supabase-backed entries (static seeds remain read-only).
+   - **Filter** by chain or search text for quick triage.
+   - Zod validation runs client + server side, preventing malformed payloads.
 
-## Contributing
+## 🌍 Public Experience
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+- Header controls language, tracked wallet, and mainnet/testnet mode.
+- `/nfts` merges static seeds with Supabase data per chain.
+- Minted status pill shows cache state (`MISS/HIT/STALE`), rate-limit warnings, and minted totals.
+- Wallet input is debounced, normalised, and checksum-formatted in the UI.
 
-## License
+## 🛠️ Project Structure
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```
+app/                → App Router pages & API routes (public + admin)
+components/         → Layout, NFT cards, admin console UI
+config/             → Static chains & collection seeds
+hooks/              → Client hooks (minted map, translations, etc.)
+lib/                → Auth helpers, Supabase clients, collection merger
+locales/            → EN/TR dictionaries
+supabase/migrations → SQL migrations for persistence
+```
 
-## Support
+## 🔌 API Overview
 
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section below
-- Review API documentation
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/nfts?chain=base` | GET | Public merged catalogue for a chain |
+| `/api/nft/minted?chain=base&address=0x…` | GET | Minted map for a wallet |
+| `/api/admin/session` | POST / DELETE | Admin login & logout |
+| `/api/admin/nfts` | GET / POST | List or create collections (auth required) |
+| `/api/admin/nfts/[chain]/[slug]` | PUT / DELETE | Update or remove Supabase records |
 
-## Troubleshooting
+All admin endpoints require the middleware-issued cookie; Supabase service credentials stay server-side.
 
-### Common Issues
+## 🧪 Quality Notes
 
-**RPC Errors**
-- Check network connectivity
-- Verify RPC endpoints are accessible
-- Consider using premium RPC providers for production
+- TypeScript strict mode and Next.js ESLint configuration are enabled.
+- Minted detector caches responses in-memory for 10 minutes to lighten RPC usage.
+- Collections API serialises bigint fields (startBlock) to JSON-safe strings.
 
-**Database Connection**
-- Verify Supabase credentials in `.env`
-- Check RLS policies are correctly configured
-- Ensure migrations have been run
+## 🆘 Troubleshooting
 
-**Caching Issues**
-- Redis connection timeout → Falls back to memory cache
-- Clear cache manually if ownership data seems stale
-- Monitor cache hit rates for optimization
+| Issue | Remedy |
+|-------|--------|
+| `ADMIN_SESSION_TOKEN is not configured` | Ensure `.env.local` defines the token before `npm run dev`. |
+| Admin API returns 401 | Middleware could not validate the cookie; re-login at `/admin/login`. |
+| Supabase errors appear server-side | Verify service role key + migration completion, and that `SUPABASE_URL` is correct. |
+| Minted API -> `CHAIN_UNAVAILABLE` | Provide a supported slug (see `config/chains.ts`). |
+| Admin cookie missing in production | Cookies require HTTPS in production; set `NEXT_PUBLIC_SITE_URL` and deploy behind TLS. |
 
-**Ownership Check Failures**
-- Contract might not implement standard interfaces
-- Token might not exist or be burned
-- Network RPC might be temporarily unavailable
+## 📄 License
+
+MIT — see [LICENSE](LICENSE).
