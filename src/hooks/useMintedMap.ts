@@ -31,7 +31,7 @@ export function useMintedMap(chain: string, address?: string) {
     setError(undefined);
 
     try {
-      const url = `http://localhost:3001/api/nft/minted?chain=${chain}&address=${address.toLowerCase()}${refresh ? '&refresh=true' : ''}`;
+      const url = `/api/nft/minted?chain=${chain}&address=${address.toLowerCase()}${refresh ? '&refresh=true' : ''}`;
       const response = await fetch(url, { signal: ac.signal });
       const json: MintedResponse = await response.json();
 

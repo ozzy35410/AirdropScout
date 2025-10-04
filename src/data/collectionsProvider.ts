@@ -5,7 +5,7 @@ import { ChainSlug } from '../config/chains';
 export async function fetchAdminCollections(chain: ChainSlug): Promise<Collection[]> {
   // Try to fetch from Supabase if available
   try {
-    const response = await fetch(`http://localhost:3001/api/admin/collections?chain=${chain}`);
+    const response = await fetch(`/api/admin/collections?chain=${chain}`);
     if (!response.ok) return [];
     
     const data = await response.json();
