@@ -22,8 +22,13 @@ out
 .swc
 
 # Env files
-
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
