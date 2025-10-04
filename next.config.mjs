@@ -21,13 +21,6 @@ const nextConfig = {
         pathname: "**"
       }
     ]
-  },
-  // Ensure middleware is properly compiled
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = config.externals || [];
-    }
-    return config;
   }
 };
 
