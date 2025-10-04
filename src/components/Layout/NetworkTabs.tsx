@@ -1,0 +1,88 @@
+import React from 'react';
+import { NetworkConfigs } from '../../types';
+
+interface NetworkTabsProps {
+  networks: NetworkConfigs;
+  selectedNetwork: string;
+  onNetworkChange: (network: string) => void;
+}
+
+export function NetworkTabs({ networks, selectedNetwork, onNetworkChange }: NetworkTabsProps) {
+  const networkKeys = Object.keys(networks);
+
+  return (
+    <div className="mb-8">
+      {/* Hero Section */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Discover NFTs Across
+          </span>
+        </h1>
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+          Multiple Blockchains
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+          Filter NFTs by your wallet ownership across Base, Zora, and Sei networks. Discover new 
+          opportunities while avoiding duplicates you already own.
+        </p>
+        
+        {/* Network Pills */}
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          {networkKeys.slice(0, 3).map((networkKey) => {
+            const network = networks[networkKey];
+            const networkColor = network?.color === '#FFEEDA' ? '#FFA500' : network?.color || '#6B7280';
+            return (
+              <div key={networkKey} className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: networkColor }}
+                />
+                <span className="text-sm font-medium text-gray-700">{network?.name}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Network Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8 justify-center">
+        <button
+          onClick={() => onNetworkChange('')}
+          className={`py-4 px-6 border-b-2 font-medium text-sm transition-colors ${
+            selectedNetwork === ''
+              ? 'border-purple-500 text-purple-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          }`}
+        >
+          All Networks
+        </button>
+        
+        {networkKeys.map((networkKey) => {
+          const network = networks[networkKey];
+          return (
+            <button
+              key={networkKey}
+              onClick={() => onNetworkChange(networkKey)}
+              className={`py-4 px-6 border-b-2 font-medium text-sm transition-colors ${
+                selectedNetwork === networkKey
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: network.color === '#FFEEDA' ? '#FFA500' : network.color }}
+                />
+                <span>{network.name}</span>
+              </div>
+            </button>
+          );
+        })}
+      </nav>
+      </div>
+    </div>
+  );
+}
