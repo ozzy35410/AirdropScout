@@ -86,6 +86,12 @@ export function Header() {
               {t("faucets")}
             </Link>
             <Link
+              href="/wallet-stats"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
+            >
+              {t("wallet_stats")}
+            </Link>
+            <Link
               href="/admin"
               className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
             >
