@@ -129,42 +129,6 @@ export const GIWA_TASKS: AirdropTask[] = [
     network: 'giwa',
     category: 'nft',
     completed: false
-  },
-  {
-    id: 'giwa-swap',
-    title: 'token_swaps',
-    description: 'Perform token swaps on GIWA network',
-    url: '#',
-    network: 'giwa',
-    category: 'swap',
-    completed: false
-  },
-  {
-    id: 'giwa-liquidity',
-    title: 'provide_liquidity',
-    description: 'Add liquidity to GIWA pools',
-    url: '#',
-    network: 'giwa',
-    category: 'liquidity',
-    completed: false
-  },
-  {
-    id: 'giwa-bridge',
-    title: 'Bridge Assets',
-    description: 'Bridge assets to/from GIWA network',
-    url: '#',
-    network: 'giwa',
-    category: 'bridge',
-    completed: false
-  },
-  {
-    id: 'giwa-interactions',
-    title: 'Protocol Interactions',
-    description: 'Interact with various GIWA protocols',
-    url: '#',
-    network: 'giwa',
-    category: 'interaction',
-    completed: false
   }
 ];
 
