@@ -48,12 +48,9 @@
   "simple_games_description": "Play simple on-chain games that only require gas fees. No token approvals needed.",
   "testnet_faucets": "Testnet Faucets",
   "get_free_tokens": "Get free test tokens for testnet networks",
-  "mint_different_nfts": "Mint Different NFTs",
-  "stay_active_games": "Stay Active with Daily Games",
   "security_notice": "These games only require gas fees and never request token approvals or transfers.",
   "xp_earned": "+10 XP",
   "played": "Played",
-  "pharos_unlock_hint": "Please open the Pharos link first to unlock the other faucets.",
   "wallet_stats": "Wallet Stats",
   "interactions": "Interactions",
   "interacted_contracts": "Interacted Contracts",
@@ -134,5 +131,13 @@
   "error_occurred": "An error occurred",
   "confirm_delete": "Are you sure you want to delete this collection?",
   "loading": "Loading...",
-  "no_collections": "No collections found. Add your first collection!"
+  "no_collections": "No collections found. Add your first collection!",
+  "discover_mint_nfts": "Discover and mint NFT collections across multiple chains",
+  "search_collections": "Search collections...",
+  "sort_by": "Sort By",
+  "newest": "Newest First",
+  "collections_found": "collections found",
+  "filter_by_tags": "Filter by Tags",
+  "try_different_filters": "Try adjusting your filters or search query",
+  "view_on_explorer": "View on Explorer"
 }

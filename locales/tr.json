@@ -48,12 +48,9 @@
   "simple_games_description": "Sadece gaz ücreti gerektiren basit zincir üstü oyunlar oynayın. Token onayı gerekmez.",
   "testnet_faucets": "Testnet Faucetleri",
   "get_free_tokens": "Testnet ağları için ücretsiz test tokenları alın",
-  "mint_different_nfts": "Farklı NFT'leri Mintle",
-  "stay_active_games": "Günlük Oyunlarla Aktif Kal",
   "security_notice": "Bu oyunlar sadece gaz ücreti gerektirir ve asla token onayı veya transfer talep etmez.",
   "xp_earned": "+10 XP",
   "played": "Oynandı",
-  "pharos_unlock_hint": "Diğer faucetleri açmadan önce Pharos bağlantısını açmalısınız.",
   "wallet_stats": "Cüzdan İstatistikleri",
   "interactions": "Etkileşimler",
   "interacted_contracts": "Etkileşim Kurulan Kontratlar",
@@ -134,5 +131,13 @@
   "error_occurred": "Bir hata oluştu",
   "confirm_delete": "Bu koleksiyonu silmek istediğinizden emin misiniz?",
   "loading": "Yükleniyor...",
-  "no_collections": "Koleksiyon bulunamadı. İlk koleksiyonunuzu ekleyin!"
+  "no_collections": "Koleksiyon bulunamadı. İlk koleksiyonunuzu ekleyin!",
+  "discover_mint_nfts": "Birden fazla zincirde NFT koleksiyonlarını keşfedin ve mint edin",
+  "search_collections": "Koleksiyon ara...",
+  "sort_by": "Sırala",
+  "newest": "En Yeniler",
+  "collections_found": "koleksiyon bulundu",
+  "filter_by_tags": "Etiketlere Göre Filtrele",
+  "try_different_filters": "Filtrelerinizi veya arama sorgunuzu ayarlamayı deneyin",
+  "view_on_explorer": "Explorer'da Görüntüle"
 }

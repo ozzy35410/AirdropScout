@@ -4,6 +4,7 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
 import Redis from 'redis';
+import { createPublicClient, http, encodeEventTopics, parseAbiItem } from 'viem';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -367,85 +368,189 @@ app.get('/api/networks', (req, res) => {
   res.json({ networks: NETWORK_CONFIGS });
 });
 
-// NFT Mint Detection API
+// NFT Mint Detection API with proper viem implementation
 app.get('/api/nft/minted', async (req, res) => {
   const startTime = Date.now();
-  const { chain, address } = req.query;
+  const { chain, address, refresh } = req.query;
 
+  // Validate inputs
   if (!chain || !address) {
     return res.status(400).json({ 
       ok: false, 
-      error: 'Missing chain or address parameter' 
+      error: 'INVALID_REQUEST',
+      message: 'Missing chain or address parameter' 
     });
   }
 
-  if (!isValidAddress(address as string)) {
+  const cleanAddress = (address as string).toLowerCase();
+  if (!isValidAddress(cleanAddress)) {
     return res.status(400).json({ 
       ok: false, 
-      error: 'Invalid address format' 
+      error: 'INVALID_ADDRESS',
+      message: 'Invalid Ethereum address format'
+    });
+  }
+
+  // Chain configurations
+  const chainConfigs: Record<string, { rpcUrl: string; id: number }> = {
+    base: { rpcUrl: 'https://mainnet.base.org', id: 8453 },
+    sei: { rpcUrl: 'https://evm-rpc.sei-apis.com', id: 1329 },
+    giwa: { rpcUrl: 'https://sepolia-rpc.giwa.io', id: 91342 },
+    pharos: { rpcUrl: 'https://testnet.dplabs-internal.com', id: 688688 }
+  };
+
+  const chainConfig = chainConfigs[chain as string];
+  if (!chainConfig) {
+    return res.status(400).json({ 
+      ok: false, 
+      error: 'CHAIN_UNAVAILABLE',
+      message: 'Unsupported chain'
     });
   }
 
   // Cache key
-  const cacheKey = `nft:minted:${chain}:${address}`;
+  const cacheKey = `minted:${chain}:${cleanAddress}:v1`;
   
   try {
-    // Check cache first
-    const cached = await getFromCache(cacheKey);
-    if (cached) {
-      const data = JSON.parse(cached);
+    // Check cache first (unless refresh=true)
+    if (refresh !== 'true') {
+      const cached = await getFromCache(cacheKey);
+      if (cached) {
+        const data = JSON.parse(cached);
+        return res.json({
+          ...data,
+          meta: {
+            ...data.meta,
+            cache: 'HIT',
+            elapsedMs: Date.now() - startTime
+          }
+        });
+      }
+    }
+
+    // Load collections from config
+    const collections = await loadCollectionsForChain(chain as string);
+    
+    if (collections.length === 0) {
       return res.json({
-        ...data,
+        ok: true,
+        chain,
+        address: cleanAddress,
+        minted: {},
         meta: {
-          ...data.meta,
-          cache: 'HIT',
-          elapsedMs: Date.now() - startTime
+          elapsedMs: Date.now() - startTime,
+          cache: 'MISS',
+          rateLimited: false
         }
       });
     }
 
-    // Get RPC for chain
-    const chainConfig = {
-      base: { rpcUrl: 'https://mainnet.base.org', id: 8453 },
-      sei: { rpcUrl: 'https://evm-rpc.sei-apis.com', id: 1329 },
-      giwa: { rpcUrl: 'https://sepolia-rpc.giwa.io', id: 91342 },
-      pharos: { rpcUrl: 'https://testnet.dplabs-internal.com', id: 688688 }
-    }[chain as string];
+    // Create viem client
+    const client = createPublicClient({
+      transport: http(chainConfig.rpcUrl)
+    });
 
-    if (!chainConfig) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Unsupported chain' 
-      });
-    }
+    // Get current block
+    const latestBlock = await client.getBlockNumber();
 
-    const provider = new ethers.JsonRpcProvider(chainConfig.rpcUrl);
+    // Event signatures
+    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+    const ZERO_TOPIC = '0x' + '0'.repeat(64);
     
-    // Mock mint detection (in real implementation, check Transfer events)
-    // For now, return empty minted object
+    // Pad address to 32 bytes for topic
+    const padTopic = (addr: string) => 
+      '0x' + '0'.repeat(24) + addr.slice(2).toLowerCase();
+    
+    const toTopic = padTopic(cleanAddress);
+
+    // Detect mints for each collection
     const minted: Record<string, boolean> = {};
+    let rateLimited = false;
+
+    for (const collection of collections) {
+      try {
+        const toBlock = latestBlock;
+        const fromBlock = collection.startBlock 
+          ? BigInt(collection.startBlock.toString())
+          : (toBlock > 200_000n ? toBlock - 200_000n : 0n);
+
+        if (collection.standard === 'erc721') {
+          // ERC-721: Transfer(address,address,uint256)
+          const logs = await client.getLogs({
+            address: collection.contract as `0x${string}`,
+            event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'),
+            args: {
+              from: ZERO_ADDRESS as `0x${string}`,
+              to: cleanAddress as `0x${string}`
+            },
+            fromBlock,
+            toBlock
+          }).catch(() => []);
+
+          minted[collection.slug] = logs.length > 0;
+
+        } else if (collection.standard === 'erc1155') {
+          // ERC-1155: TransferSingle and TransferBatch
+          const singleLogs = await client.getLogs({
+            address: collection.contract as `0x${string}`,
+            event: parseAbiItem('event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)'),
+            args: {
+              from: ZERO_ADDRESS as `0x${string}`,
+              to: cleanAddress as `0x${string}`
+            },
+            fromBlock,
+            toBlock
+          }).catch(() => []);
+
+          const batchLogs = await client.getLogs({
+            address: collection.contract as `0x${string}`,
+            event: parseAbiItem('event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values)'),
+            args: {
+              from: ZERO_ADDRESS as `0x${string}`,
+              to: cleanAddress as `0x${string}`
+            },
+            fromBlock,
+            toBlock
+          }).catch(() => []);
+
+          minted[collection.slug] = singleLogs.length > 0 || batchLogs.length > 0;
+        }
+
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+      } catch (error: any) {
+        console.error(`Error checking ${collection.slug}:`, error.message);
+        minted[collection.slug] = false;
+        if (error.message?.includes('rate') || error.message?.includes('429')) {
+          rateLimited = true;
+        }
+      }
+    }
 
     const response = {
       ok: true,
       chain,
-      address,
+      address: cleanAddress,
       minted,
       meta: {
         elapsedMs: Date.now() - startTime,
         cache: 'MISS',
-        rateLimited: false
+        rateLimited
       }
     };
 
-    // Cache for 10 minutes
+    // Cache for 10 minutes (600 seconds)
     await setToCache(cacheKey, JSON.stringify(response), 600);
 
     res.json(response);
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('NFT mint detection error:', error);
     res.status(500).json({ 
       ok: false, 
-      error: 'Failed to check minted status',
+      error: 'UNKNOWN',
+      message: error.message || 'Failed to check minted status',
       meta: {
         elapsedMs: Date.now() - startTime,
         cache: 'ERROR',
@@ -454,6 +559,45 @@ app.get('/api/nft/minted', async (req, res) => {
     });
   }
 });
+
+// Helper function to load collections for a chain
+async function loadCollectionsForChain(chain: string) {
+  // First try to load from config file
+  try {
+    const { NFT_COLLECTIONS } = await import('../src/config/collections.js');
+    const configCollections = NFT_COLLECTIONS[chain as keyof typeof NFT_COLLECTIONS] || [];
+    
+    // Then try to load from Supabase (admin-added collections)
+    let adminCollections: any[] = [];
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('nft_collections')
+          .select('*')
+          .eq('chain', chain)
+          .eq('visible', true);
+        
+        if (data) {
+          adminCollections = data.map((item: any) => ({
+            slug: `admin-${item.id}`,
+            name: item.name,
+            contract: item.contract_address,
+            standard: item.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155',
+            startBlock: item.start_block ? BigInt(item.start_block) : undefined,
+            tags: item.tags || []
+          }));
+        }
+      } catch (e) {
+        console.warn('Could not load admin collections:', e);
+      }
+    }
+
+    return [...configCollections, ...adminCollections];
+  } catch (error) {
+    console.error('Error loading collections:', error);
+    return [];
+  }
+}
 
 // Start server
 app.listen(PORT, () => {
