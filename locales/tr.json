@@ -45,6 +45,7 @@
   "admin_form_chain": "Ağ",
   "admin_form_name": "Ad",
   "admin_form_slug": "Kısa ad",
+  "admin_form_slug_hint": "URL'de kullanılan benzersiz, küçük harfli tanımlayıcı.",
   "admin_form_standard": "Standart",
   "admin_form_standard_hint": "Desteklenen standartlar: ERC-721 veya ERC-1155.",
   "admin_form_contract": "Kontrat",

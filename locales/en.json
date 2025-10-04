@@ -45,6 +45,7 @@
   "admin_form_chain": "Chain",
   "admin_form_name": "Name",
   "admin_form_slug": "Slug",
+  "admin_form_slug_hint": "Lowercase unique identifier used in URLs.",
   "admin_form_standard": "Standard",
   "admin_form_standard_hint": "Supported standards: ERC-721 or ERC-1155.",
   "admin_form_contract": "Contract",
