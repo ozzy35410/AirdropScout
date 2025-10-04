@@ -401,40 +401,6 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
                   <div className="p-6">
                   {Object.entries(tasksByCategory).map(([category, categoryTasks]) => (
                     <div key={category} className="mb-8 last:mb-0">
-                      {/* Add Faucet section at top */}
-                      {category === Object.keys(tasksByCategory)[0] && (
-                        <div className="mb-6">
-                          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer"
-                               onClick={() => onPageChange?.('faucets', `network=${networkKey}`)}>
-                            <div className="flex items-center space-x-3">
-                              <Droplets className="w-5 h-5 text-blue-600" />
-                              <div>
-                                <h4 className="font-semibold text-blue-900">{t('get_test_tokens')}</h4>
-                                <p className="text-sm text-blue-700">Get free test tokens for this network</p>
-                              </div>
-                            </div>
-                            <ExternalLink className="w-4 h-4 text-blue-600" />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Add NFT Mint section */}
-                      {category === Object.keys(tasksByCategory)[0] && (
-                        <div className="mb-6">
-                          <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer"
-                               onClick={() => onPageChange?.('nfts', `network=${networkKey}`)}>
-                            <div className="flex items-center space-x-3">
-                              <Palette className="w-5 h-5 text-purple-600" />
-                              <div>
-                                <h4 className="font-semibold text-purple-900">{t('mint_nfts')}</h4>
-                                <p className="text-sm text-purple-700">Mint NFTs from curated collections</p>
-                              </div>
-                            </div>
-                            <ExternalLink className="w-4 h-4 text-purple-600" />
-                          </div>
-                        </div>
-                      )}
-
                       <h3 className="text-xl font-semibold text-gray-900 mb-4">
                         {t(category)}
                       </h3>
