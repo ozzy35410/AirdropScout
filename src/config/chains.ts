@@ -4,7 +4,7 @@ export const CHAINS = {
     id: 8453,
     name: "Base",
     explorer: "https://basescan.org",
-    rpcUrl: "https://mainnet.base.org",
+    rpcUrl: "https://base.llamarpc.com",
     kind: "mainnet" as const
   },
   sei: {

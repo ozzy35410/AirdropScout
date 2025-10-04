@@ -18,6 +18,16 @@ export interface Collection {
 export const NFT_COLLECTIONS: Record<ChainSlug, Collection[]> = {
   base: [
     {
+      slug: 'darth-sidious',
+      name: 'Darth Sidious',
+      contract: '0x4e477eC092BFd7424aED9260067d0aA6fe2DbBa4',
+      standard: 'erc721',
+      image: 'https://cosmic-darth-sidious.nfts2.me/logo.png',
+      tags: ['star-wars', 'pfp', 'character'],
+      mintUrl: 'https://cosmic-darth-sidious.nfts2.me/',
+      startBlock: 10000000n
+    },
+    {
       slug: 'base-names',
       name: 'Basename',
       contract: '0x03c4738Ee98aE44591e1A4A4F3CAb6641d95DD9a',

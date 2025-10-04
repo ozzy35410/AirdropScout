@@ -83,7 +83,7 @@ const NETWORK_CONFIGS = {
   },
   base: {
     name: 'Base',
-    rpcUrl: 'https://mainnet.base.org',
+    rpcUrl: 'https://base.llamarpc.com',
     chainId: 8453,
     color: '#0052FF'
   },
@@ -393,7 +393,7 @@ app.get('/api/nft/minted', async (req, res) => {
 
   // Chain configurations
   const chainConfigs: Record<string, { rpcUrl: string; id: number }> = {
-    base: { rpcUrl: 'https://mainnet.base.org', id: 8453 },
+    base: { rpcUrl: 'https://base.llamarpc.com', id: 8453 },
     sei: { rpcUrl: 'https://evm-rpc.sei-apis.com', id: 1329 },
     giwa: { rpcUrl: 'https://sepolia-rpc.giwa.io', id: 91342 },
     pharos: { rpcUrl: 'https://testnet.dplabs-internal.com', id: 688688 }
