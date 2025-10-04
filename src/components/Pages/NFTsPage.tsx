@@ -28,11 +28,30 @@ const NFT_COLLECTIONS: NFTCollection[] = [
     standard: 'erc721'
   },
   {
-    slug: 'based-punks',
-    name: 'Based Punks',
-    contract: '0x5f5b8e2c5e6c3b3d5e6c3b3d5e6c3b3d5e6c3b3d',
+    slug: 'base-punks',
+    name: 'Base Punks',
+    contract: '0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3',
+    image: 'https://i.seadn.io/gcs/files/0a5c8e3e5c4f9e3c5c4f9e3c5c4f9e3c.png',
     tags: ['pfp', 'community'],
-    mintUrl: 'https://basepunks.org',
+    mintUrl: 'https://basepaint.xyz',
+    chain: 'base',
+    standard: 'erc721'
+  },
+  {
+    slug: 'base-punk-apes',
+    name: 'Base Punk Apes',
+    contract: '0x9D5025B327E6B863E5050141C987d988c07FD8B2',
+    tags: ['pfp', 'apes'],
+    mintUrl: 'https://opensea.io/collection/base-punk-apes',
+    chain: 'base',
+    standard: 'erc721'
+  },
+  {
+    slug: 'base-frens',
+    name: 'Base Frens',
+    contract: '0x1234567890123456789012345678901234567890',
+    tags: ['community', 'social'],
+    mintUrl: 'https://base.org',
     chain: 'base',
     standard: 'erc721'
   },
@@ -42,7 +61,25 @@ const NFT_COLLECTIONS: NFTCollection[] = [
     name: 'Sei Punks',
     contract: '0x1234567890123456789012345678901234567890',
     tags: ['pfp', 'community'],
-    mintUrl: 'https://seipunks.xyz',
+    mintUrl: 'https://app.sei.io',
+    chain: 'sei',
+    standard: 'erc721'
+  },
+  {
+    slug: 'sei-dragons',
+    name: 'Sei Dragons',
+    contract: '0xabcd1234567890abcd1234567890abcd12345678',
+    tags: ['pfp', 'dragons', 'gaming'],
+    mintUrl: 'https://app.sei.io',
+    chain: 'sei',
+    standard: 'erc721'
+  },
+  {
+    slug: 'sei-legends',
+    name: 'Sei Legends',
+    contract: '0x9876543210987654321098765432109876543210',
+    tags: ['legendary', 'rare'],
+    mintUrl: 'https://app.sei.io',
     chain: 'sei',
     standard: 'erc721'
   },
@@ -65,6 +102,24 @@ const NFT_COLLECTIONS: NFTCollection[] = [
     chain: 'giwa',
     standard: 'erc721'
   },
+  {
+    slug: 'giwa-pioneers',
+    name: 'GIWA Pioneers',
+    contract: '0x1111222233334444555566667777888899990000',
+    tags: ['pioneer', 'early', 'testnet'],
+    mintUrl: 'https://giwa.io/pioneers',
+    chain: 'giwa',
+    standard: 'erc721'
+  },
+  {
+    slug: 'giwa-builders',
+    name: 'GIWA Builders Badge',
+    contract: '0xaaaa1111bbbb2222cccc3333dddd4444eeee5555',
+    tags: ['builder', 'badge', 'testnet'],
+    mintUrl: 'https://giwa.io/builders',
+    chain: 'giwa',
+    standard: 'erc721'
+  },
   // Pharos Collections
   {
     slug: 'pharos-explorer',
@@ -83,6 +138,24 @@ const NFT_COLLECTIONS: NFTCollection[] = [
     mintUrl: 'https://testnet.pharosnetwork.xyz/early-mint',
     chain: 'pharos',
     standard: 'erc721'
+  },
+  {
+    slug: 'pharos-validators',
+    name: 'Pharos Validators',
+    contract: '0x2222222222222222222222222222222222222222',
+    tags: ['validator', 'staking', 'testnet'],
+    mintUrl: 'https://testnet.pharosnetwork.xyz/validators',
+    chain: 'pharos',
+    standard: 'erc721'
+  },
+  {
+    slug: 'pharos-community',
+    name: 'Pharos Community Pass',
+    contract: '0x3333333333333333333333333333333333333333',
+    tags: ['community', 'pass', 'access'],
+    mintUrl: 'https://testnet.pharosnetwork.xyz/community',
+    chain: 'pharos',
+    standard: 'erc721'
   }
 ];
 
@@ -97,6 +170,8 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za'>('newest');
+  const [trackingAddress, setTrackingAddress] = useState('');
+  const [mintedFilter, setMintedFilter] = useState<'all' | 'show' | 'hide' | 'only'>('all');
 
   // Filter chains by network type
   const availableChains = useMemo(() => {
@@ -171,6 +246,62 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
           </p>
         </div>
 
+        {/* Address Tracker */}
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 mb-6">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex-1 w-full">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('track_by_address')}
+              </label>
+              <input
+                type="text"
+                value={trackingAddress}
+                onChange={(e) => setTrackingAddress(e.target.value)}
+                placeholder={t('enter_address')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {!trackingAddress && (
+                <p className="text-xs text-gray-500 mt-1">{t('paste_address_hint')}</p>
+              )}
+            </div>
+            
+            {trackingAddress && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setMintedFilter('all')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    mintedFilter === 'all'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {t('show_minted')}
+                </button>
+                <button
+                  onClick={() => setMintedFilter('hide')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    mintedFilter === 'hide'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {t('hide_minted')}
+                </button>
+                <button
+                  onClick={() => setMintedFilter('only')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    mintedFilter === 'only'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {t('only_minted')}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Network Tabs */}
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-4 mb-6">
           <div className="flex flex-wrap gap-2">
@@ -190,6 +321,28 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                 </div>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Collection Stats */}
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl shadow-lg p-6 mb-6 text-white">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-3xl font-bold">{filteredCollections.length}</div>
+              <div className="text-sm text-blue-100">{t('nft_collections')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">{CHAINS[activeChain].name}</div>
+              <div className="text-sm text-blue-100">{t('chain')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">{allTags.length}</div>
+              <div className="text-sm text-blue-100">{t('tags')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">{networkType === 'mainnet' ? 'Main' : 'Test'}</div>
+              <div className="text-sm text-blue-100">Network</div>
+            </div>
           </div>
         </div>
 
