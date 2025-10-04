@@ -2,9 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { ExternalLink, Search, Tag, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
 import { CHAINS, ChainSlug } from '../../config/chains';
-import { NFT_COLLECTIONS, Collection } from '../../config/collections';
+import { Collection } from '../../config/collections';
+import { getCollections } from '../../data/collectionsProvider';
 import { useMintedMap } from '../../hooks/useMintedMap';
-import { useAdminNFTs } from '../../hooks/useAdminNFTs';
 
 interface NFTsPageProps {
   networkType: 'mainnet' | 'testnet';
@@ -16,7 +16,6 @@ type MintedFilter = 'show' | 'hide' | 'only';
 
 export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPageProps) {
   const { t } = useTranslation(language);
-  const { nfts: adminNfts } = useAdminNFTs();
   
   // Filter chains by network type
   const availableChains = useMemo(() => {
@@ -32,6 +31,8 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za'>('newest');
   const [trackingAddress, setTrackingAddress] = useState('');
   const [mintedFilter, setMintedFilter] = useState<MintedFilter>('show');
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [loadingCollections, setLoadingCollections] = useState(true);
 
   // Validate Ethereum address
   const isValidAddress = (address: string) => {
@@ -42,44 +43,37 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   const { mintedMap, loading: loadingMinted, error: mintedError, lastChecked, refresh } = 
     useMintedMap(activeChain, trackingAddress && isValidAddress(trackingAddress) ? trackingAddress : undefined);
 
-  // Combine static collections with admin NFTs
-  const allCollections = useMemo(() => {
-    const staticCollections = NFT_COLLECTIONS[activeChain] || [];
+  // Load collections when chain changes
+  useEffect(() => {
+    let mounted = true;
+    setLoadingCollections(true);
     
-    // Map admin NFTs to Collection format
-    const adminCollections: Collection[] = (adminNfts || [])
-      .filter(nft => {
-        // Map network names to chain slugs
-        const chainMap: Record<string, ChainSlug> = {
-          'base': 'base',
-          'sei': 'sei',
-          'giwa': 'giwa',
-          'pharos': 'pharos'
-        };
-        return chainMap[nft.network] === activeChain;
+    getCollections(activeChain)
+      .then(cols => {
+        if (mounted) {
+          setCollections(cols);
+          setLoadingCollections(false);
+        }
       })
-      .map(nft => ({
-        slug: `admin-${nft.id}`,
-        name: nft.title,
-        contract: nft.contract_address as `0x${string}`,
-        standard: (nft.token_standard === 'ERC-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
-        image: undefined,
-        tags: nft.tags || [],
-        mintUrl: nft.external_link,
-        addedAt: nft.created_at
-      }));
+      .catch(err => {
+        console.error('Failed to load collections:', err);
+        if (mounted) {
+          setCollections([]);
+          setLoadingCollections(false);
+        }
+      });
     
-    return [...staticCollections, ...adminCollections];
-  }, [activeChain, adminNfts]);
+    return () => { mounted = false; };
+  }, [activeChain]);
 
   // Get all unique tags
   const allTags = useMemo(() => {
     const tags = new Set<string>();
-    allCollections.forEach(nft => {
+    collections.forEach(nft => {
       nft.tags?.forEach(tag => tags.add(tag));
     });
     return Array.from(tags).sort();
-  }, [allCollections]);
+  }, [collections]);
 
   // Apply minted filter function
   const applyMintedFilter = (collections: Collection[]) => {
@@ -98,7 +92,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
 
   // Filter and sort collections
   const filteredCollections = useMemo(() => {
-    let filtered = [...allCollections];
+    let filtered = [...collections];
 
     // Filter by search
     if (searchQuery) {
@@ -128,7 +122,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
     });
 
     return filtered;
-  }, [allCollections, searchQuery, selectedTags, sortBy, mintedMap, mintedFilter, trackingAddress]);
+  }, [collections, searchQuery, selectedTags, sortBy, mintedMap, mintedFilter, trackingAddress]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
@@ -339,14 +333,24 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
         </div>
 
         {/* NFT Grid */}
-        {filteredCollections.length === 0 ? (
+        {loadingCollections ? (
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              {t('loading')}
+            </h3>
+            <p className="text-gray-500">
+              {t('loading_collections')}...
+            </p>
+          </div>
+        ) : filteredCollections.length === 0 ? (
           <div className="text-center py-20">
             <ImageIcon className="w-20 h-20 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
               {t('no_results')}
             </h3>
             <p className="text-gray-500">
-              {t('try_different_filters')}
+              {collections.length === 0 ? t('no_collections_available') : t('try_different_filters')}
             </p>
           </div>
         ) : (

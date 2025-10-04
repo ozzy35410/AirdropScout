@@ -139,5 +139,7 @@
   "collections_found": "koleksiyon bulundu",
   "filter_by_tags": "Etiketlere Göre Filtrele",
   "try_different_filters": "Filtrelerinizi veya arama sorgunuzu ayarlamayı deneyin",
-  "view_on_explorer": "Explorer'da Görüntüle"
+  "view_on_explorer": "Explorer'da Görüntüle",
+  "loading_collections": "Koleksiyonlar yükleniyor",
+  "no_collections_available": "Bu zincir için koleksiyon bulunamadı"
 }

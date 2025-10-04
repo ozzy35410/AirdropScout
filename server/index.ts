@@ -599,6 +599,35 @@ async function loadCollectionsForChain(chain: string) {
   }
 }
 
+// Get admin collections by chain
+app.get('/api/admin/collections', async (req, res) => {
+  const { chain } = req.query;
+  
+  if (!chain) {
+    return res.status(400).json({ error: 'Missing chain parameter' });
+  }
+
+  try {
+    if (!supabase) {
+      return res.json({ collections: [] });
+    }
+
+    const { data, error } = await supabase
+      .from('nft_collections')
+      .select('*')
+      .eq('chain', chain)
+      .eq('visible', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({ collections: data || [] });
+  } catch (error) {
+    console.error('Error fetching admin collections:', error);
+    res.status(500).json({ error: 'Failed to fetch collections' });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

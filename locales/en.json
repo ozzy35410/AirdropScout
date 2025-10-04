@@ -139,5 +139,7 @@
   "collections_found": "collections found",
   "filter_by_tags": "Filter by Tags",
   "try_different_filters": "Try adjusting your filters or search query",
-  "view_on_explorer": "View on Explorer"
+  "view_on_explorer": "View on Explorer",
+  "loading_collections": "Loading collections",
+  "no_collections_available": "No collections available for this chain"
 }
