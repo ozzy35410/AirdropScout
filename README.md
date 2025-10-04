@@ -1,53 +1,62 @@
-# NFT Listing & Wallet Filter Web Application
+# Airdrop Scout - Multi-Chain Airdrop Task Hub
 
-A comprehensive NFT listing platform with wallet-based filtering across multiple blockchain networks (Linea, zkSync, Base, Scroll, Zora).
+A comprehensive platform for discovering and completing on-chain tasks to qualify for airdrops across multiple blockchain networks.
 
-## Features
+## 🚀 Features
 
-### Core Functionality
-- **Multi-Network Support**: Linea, zkSync Era, Base, Scroll, and Zora networks
-- **Smart Contract Integration**: ERC-721 and ERC-1155 token standards
-- **Wallet Filtering**: Hide NFTs already owned by connected wallet
-- **Admin Panel**: Full CRUD operations for NFT management
-- **Ownership Verification**: Real-time blockchain ownership checking
-- **Caching System**: Redis-based caching for performance optimization
+### 🎯 Task Management
+- **Mainnet & Testnet Support**: Pharos, GIWA Sepolia (Testnet) | Base, Sei (Mainnet)
+- **Auto-Detection**: Automatic task completion detection via blockchain
+- **Progress Tracking**: Track completed tasks per wallet address
+- **Multi-Category Tasks**: Faucets, NFT mints, swaps, liquidity, trading, etc.
 
-### User Experience
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Network Tabs**: Easy switching between blockchain networks
-- **Real-time Filtering**: Instant wallet-based NFT filtering
-- **Loading States**: Professional loading and error handling
-- **Form Validation**: Comprehensive input validation and error messages
+### 🎨 NFT Collections (NEW!)
+- **22 Real NFT Collections** with actual contract addresses
+- **Multi-Chain Support**: Base, Sei, GIWA, Pharos
+- **Smart Filtering**: Search, sort, and tag-based filters
+- **Wallet Tracking**: See which NFTs you've minted
+- **Mint Detection API**: Blockchain-based mint verification
+- **Enhanced UI**: Animations, gradients, hover effects
 
-### Admin Features
-- **NFT Management**: Add, edit, delete, and toggle visibility
-- **Bulk Operations**: CSV/JSON import capabilities (extensible)
-- **Tag System**: Organized categorization and filtering
-- **Visibility Control**: Show/hide NFTs from public view
-- **External Links**: Direct marketplace integration
+### 💧 Faucets
+- **Multi-Network Faucets**: Get free testnet tokens
+- **Quick Access**: Direct links to network faucets
+- **Network Selector**: Filter by specific networks
+
+### 📊 Wallet Stats
+- **On-Chain Analytics**: View wallet interactions and stats
+- **Multi-Chain Data**: Base, Sei, GIWA, Pharos support
+- **Transaction History**: Recent transaction preview
+- **Activity Metrics**: Interactions, contracts, volume, fees
+
+### 🌐 Internationalization
+- **Multi-Language**: Full English & Turkish support
+- **Dynamic Translation**: All UI elements translated
+- **Easy Extension**: JSON-based translation system
 
 ## Technology Stack
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: Supabase (PostgreSQL)
-- **Blockchain**: ethers.js with multi-network RPC providers
+- **Blockchain**: ethers.js, viem with multi-network RPC
 - **Caching**: Redis with in-memory fallback
-- **UI Components**: Custom components with Lucide React icons
+- **UI Components**: Lucide React icons
+- **Build Tool**: Vite with HMR
 
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- Supabase account
+- Node.js 18+
+- Supabase account (optional)
 - Redis (optional - uses in-memory cache as fallback)
 
 ### Setup
 
 1. **Clone and Install**
    ```bash
-   git clone <repository-url>
-   cd nft-listing-platform
+   git clone https://github.com/ozzy35410/AirdropScout.git
+   cd AirdropScout
    npm install
    ```
 
