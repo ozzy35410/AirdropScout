@@ -367,6 +367,94 @@ app.get('/api/networks', (req, res) => {
   res.json({ networks: NETWORK_CONFIGS });
 });
 
+// NFT Mint Detection API
+app.get('/api/nft/minted', async (req, res) => {
+  const startTime = Date.now();
+  const { chain, address } = req.query;
+
+  if (!chain || !address) {
+    return res.status(400).json({ 
+      ok: false, 
+      error: 'Missing chain or address parameter' 
+    });
+  }
+
+  if (!isValidAddress(address as string)) {
+    return res.status(400).json({ 
+      ok: false, 
+      error: 'Invalid address format' 
+    });
+  }
+
+  // Cache key
+  const cacheKey = `nft:minted:${chain}:${address}`;
+  
+  try {
+    // Check cache first
+    const cached = await getFromCache(cacheKey);
+    if (cached) {
+      const data = JSON.parse(cached);
+      return res.json({
+        ...data,
+        meta: {
+          ...data.meta,
+          cache: 'HIT',
+          elapsedMs: Date.now() - startTime
+        }
+      });
+    }
+
+    // Get RPC for chain
+    const chainConfig = {
+      base: { rpcUrl: 'https://mainnet.base.org', id: 8453 },
+      sei: { rpcUrl: 'https://evm-rpc.sei-apis.com', id: 1329 },
+      giwa: { rpcUrl: 'https://sepolia-rpc.giwa.io', id: 91342 },
+      pharos: { rpcUrl: 'https://testnet.dplabs-internal.com', id: 688688 }
+    }[chain as string];
+
+    if (!chainConfig) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Unsupported chain' 
+      });
+    }
+
+    const provider = new ethers.JsonRpcProvider(chainConfig.rpcUrl);
+    
+    // Mock mint detection (in real implementation, check Transfer events)
+    // For now, return empty minted object
+    const minted: Record<string, boolean> = {};
+
+    const response = {
+      ok: true,
+      chain,
+      address,
+      minted,
+      meta: {
+        elapsedMs: Date.now() - startTime,
+        cache: 'MISS',
+        rateLimited: false
+      }
+    };
+
+    // Cache for 10 minutes
+    await setToCache(cacheKey, JSON.stringify(response), 600);
+
+    res.json(response);
+  } catch (error) {
+    console.error('NFT mint detection error:', error);
+    res.status(500).json({ 
+      ok: false, 
+      error: 'Failed to check minted status',
+      meta: {
+        elapsedMs: Date.now() - startTime,
+        cache: 'ERROR',
+        rateLimited: false
+      }
+    });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

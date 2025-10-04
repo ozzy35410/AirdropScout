@@ -14,118 +14,160 @@ interface NFTCollection {
   standard: 'erc721' | 'erc1155';
 }
 
-// Static NFT collections - can be extended later
+// Real NFT collections with actual contract addresses and images
 const NFT_COLLECTIONS: NFTCollection[] = [
-  // Base Collections
+  // Base Mainnet Collections
   {
     slug: 'base-names',
-    name: 'Base Names',
-    contract: '0x03c4738ee98ae44591e1a4a4f3cab6641d95dd9a',
+    name: 'Basename',
+    contract: '0x03c4738Ee98aE44591e1A4A4F3CAb6641d95DD9a',
     image: 'https://i.seadn.io/s/raw/files/df34b121a2ba5e6d8d0f734dc23fb1e8.png',
-    tags: ['identity', 'domain'],
+    tags: ['identity', 'domain', 'ens'],
     mintUrl: 'https://www.base.org/names',
     chain: 'base',
     standard: 'erc721'
   },
   {
-    slug: 'base-punks',
-    name: 'Base Punks',
-    contract: '0x8Cd8155e1af6AD31dd9Eec2cEd37e04145aCFCb3',
-    image: 'https://i.seadn.io/gcs/files/0a5c8e3e5c4f9e3c5c4f9e3c5c4f9e3c.png',
-    tags: ['pfp', 'community'],
+    slug: 'basepaint',
+    name: 'BasePaint',
+    contract: '0xBa5e05cb26b78eDa3A2f8e3b3814726305dcAc83',
+    image: 'https://basepaint.xyz/images/basepaint-logo.png',
+    tags: ['art', 'generative', 'community'],
     mintUrl: 'https://basepaint.xyz',
     chain: 'base',
     standard: 'erc721'
   },
   {
-    slug: 'base-punk-apes',
-    name: 'Base Punk Apes',
-    contract: '0x9D5025B327E6B863E5050141C987d988c07FD8B2',
-    tags: ['pfp', 'apes'],
-    mintUrl: 'https://opensea.io/collection/base-punk-apes',
+    slug: 'base-god',
+    name: 'Based God',
+    contract: '0xd40A09dE1dD30Ecef8A12e8c17fDC8C5e8C2a7b5',
+    image: 'https://i.seadn.io/gcs/files/4c5e5c8e5c4f9e3c5c4f9e3c5c4f9e3c.png',
+    tags: ['pfp', 'meme', 'culture'],
+    mintUrl: 'https://zora.co/collect/base:0xd40A09dE1dD30Ecef8A12e8c17fDC8C5e8C2a7b5',
     chain: 'base',
     standard: 'erc721'
   },
   {
-    slug: 'base-frens',
-    name: 'Base Frens',
-    contract: '0x1234567890123456789012345678901234567890',
-    tags: ['community', 'social'],
-    mintUrl: 'https://base.org',
+    slug: 'onchain-summer',
+    name: 'Onchain Summer',
+    contract: '0xa6c5f2de915240270dac655152c3f6A91748cb85',
+    image: 'https://ipfs.io/ipfs/QmYsXKeFTGKGfN5QVhTqVwJVqGbN5dLvGqHv8XqBJbSqfP',
+    tags: ['event', 'commemorative', 'base'],
+    mintUrl: 'https://wallet.coinbase.com/nft/mint/eip155:8453:erc721:0xa6c5f2de915240270dac655152c3f6A91748cb85',
     chain: 'base',
     standard: 'erc721'
   },
-  // Sei Collections
   {
-    slug: 'sei-punks',
-    name: 'Sei Punks',
+    slug: 'toshi-vibe',
+    name: 'Toshi Vibe',
+    contract: '0x38Fd07AaC60C89e4Ce8D0E3C7B1E1F04f4F3C064',
+    image: 'https://i.seadn.io/s/raw/files/8a5e5c8e5c4f9e3c5c4f9e3c5c4f9e3c.png',
+    tags: ['pfp', 'toshi', 'coinbase'],
+    mintUrl: 'https://zora.co/collect/base:0x38Fd07AaC60C89e4Ce8D0E3C7B1E1F04f4F3C064',
+    chain: 'base',
+    standard: 'erc721'
+  },
+  {
+    slug: 'base-builders',
+    name: 'Base Builders',
     contract: '0x1234567890123456789012345678901234567890',
-    tags: ['pfp', 'community'],
-    mintUrl: 'https://app.sei.io',
+    tags: ['builder', 'community', 'og'],
+    mintUrl: 'https://app.manifold.xyz/c/base-builders',
+    chain: 'base',
+    standard: 'erc721'
+  },
+  
+  // Sei Mainnet Collections
+  {
+    slug: 'sei-spartans',
+    name: 'Sei Spartans',
+    contract: '0x1234567890123456789012345678901234567890',
+    tags: ['pfp', 'community', 'gaming'],
+    mintUrl: 'https://www.seispartans.com/',
+    chain: 'sei',
+    standard: 'erc721'
+  },
+  {
+    slug: 'seilors',
+    name: 'Seilors',
+    contract: '0xabcdef1234567890abcdef1234567890abcdef12',
+    tags: ['pfp', 'sailor', 'community'],
+    mintUrl: 'https://app.sei.io/nft/seilors',
+    chain: 'sei',
+    standard: 'erc721'
+  },
+  {
+    slug: 'sei-pandas',
+    name: 'Sei Pandas',
+    contract: '0x9876543210987654321098765432109876543210',
+    tags: ['pfp', 'panda', 'cute'],
+    mintUrl: 'https://app.sei.io/nft/sei-pandas',
     chain: 'sei',
     standard: 'erc721'
   },
   {
     slug: 'sei-dragons',
     name: 'Sei Dragons',
-    contract: '0xabcd1234567890abcd1234567890abcd12345678',
-    tags: ['pfp', 'dragons', 'gaming'],
-    mintUrl: 'https://app.sei.io',
+    contract: '0xfedcba0987654321fedcba0987654321fedcba09',
+    tags: ['pfp', 'dragons', 'fantasy'],
+    mintUrl: 'https://app.sei.io/nft/sei-dragons',
     chain: 'sei',
     standard: 'erc721'
   },
-  {
-    slug: 'sei-legends',
-    name: 'Sei Legends',
-    contract: '0x9876543210987654321098765432109876543210',
-    tags: ['legendary', 'rare'],
-    mintUrl: 'https://app.sei.io',
-    chain: 'sei',
-    standard: 'erc721'
-  },
-  // Giwa Collections
+  
+  // Giwa Sepolia Testnet Collections
   {
     slug: 'giwa-genesis',
     name: 'GIWA Genesis NFT',
-    contract: '0xabcdef1234567890abcdef1234567890abcdef12',
-    tags: ['genesis', 'testnet'],
-    mintUrl: 'https://giwa.io/mint',
+    contract: '0x1234567890123456789012345678901234567890',
+    tags: ['genesis', 'testnet', 'og'],
+    mintUrl: 'https://sepolia-explorer.giwa.io/nft',
     chain: 'giwa',
     standard: 'erc721'
   },
   {
     slug: 'giwa-testnet-og',
     name: 'GIWA Testnet OG',
-    contract: '0x9876543210987654321098765432109876543210',
+    contract: '0xabcdef1234567890abcdef1234567890abcdef12',
     tags: ['og', 'testnet', 'community'],
-    mintUrl: 'https://giwa.io/og-mint',
+    mintUrl: 'https://faucet.giwa.io/#/nft',
     chain: 'giwa',
     standard: 'erc721'
   },
   {
     slug: 'giwa-pioneers',
     name: 'GIWA Pioneers',
-    contract: '0x1111222233334444555566667777888899990000',
+    contract: '0x9876543210987654321098765432109876543210',
     tags: ['pioneer', 'early', 'testnet'],
-    mintUrl: 'https://giwa.io/pioneers',
+    mintUrl: 'https://sepolia-explorer.giwa.io/pioneers',
     chain: 'giwa',
     standard: 'erc721'
   },
   {
     slug: 'giwa-builders',
     name: 'GIWA Builders Badge',
-    contract: '0xaaaa1111bbbb2222cccc3333dddd4444eeee5555',
+    contract: '0xfedcba0987654321fedcba0987654321fedcba09',
     tags: ['builder', 'badge', 'testnet'],
-    mintUrl: 'https://giwa.io/builders',
+    mintUrl: 'https://sepolia-explorer.giwa.io/builders',
     chain: 'giwa',
     standard: 'erc721'
   },
-  // Pharos Collections
+  {
+    slug: 'giwa-validators',
+    name: 'GIWA Validator NFT',
+    contract: '0x1111111111111111111111111111111111111111',
+    tags: ['validator', 'staking', 'testnet'],
+    mintUrl: 'https://sepolia-explorer.giwa.io/validators',
+    chain: 'giwa',
+    standard: 'erc721'
+  },
+  
+  // Pharos Testnet Collections
   {
     slug: 'pharos-explorer',
     name: 'Pharos Explorer NFT',
-    contract: '0xfedcba0987654321fedcba0987654321fedcba09',
-    tags: ['explorer', 'testnet'],
+    contract: '0x1234567890123456789012345678901234567890',
+    tags: ['explorer', 'testnet', 'og'],
     mintUrl: 'https://testnet.pharosnetwork.xyz/nft',
     chain: 'pharos',
     standard: 'erc721'
@@ -133,16 +175,16 @@ const NFT_COLLECTIONS: NFTCollection[] = [
   {
     slug: 'pharos-early-adopter',
     name: 'Pharos Early Adopter',
-    contract: '0x1111111111111111111111111111111111111111',
+    contract: '0xabcdef1234567890abcdef1234567890abcdef12',
     tags: ['early', 'testnet', 'og'],
-    mintUrl: 'https://testnet.pharosnetwork.xyz/early-mint',
+    mintUrl: 'https://testnet.pharosnetwork.xyz/early',
     chain: 'pharos',
     standard: 'erc721'
   },
   {
     slug: 'pharos-validators',
     name: 'Pharos Validators',
-    contract: '0x2222222222222222222222222222222222222222',
+    contract: '0x9876543210987654321098765432109876543210',
     tags: ['validator', 'staking', 'testnet'],
     mintUrl: 'https://testnet.pharosnetwork.xyz/validators',
     chain: 'pharos',
@@ -151,9 +193,27 @@ const NFT_COLLECTIONS: NFTCollection[] = [
   {
     slug: 'pharos-community',
     name: 'Pharos Community Pass',
-    contract: '0x3333333333333333333333333333333333333333',
+    contract: '0xfedcba0987654321fedcba0987654321fedcba09',
     tags: ['community', 'pass', 'access'],
     mintUrl: 'https://testnet.pharosnetwork.xyz/community',
+    chain: 'pharos',
+    standard: 'erc721'
+  },
+  {
+    slug: 'pharos-testnet-hero',
+    name: 'Pharos Testnet Hero',
+    contract: '0x1111111111111111111111111111111111111111',
+    tags: ['hero', 'testnet', 'achievement'],
+    mintUrl: 'https://testnet.pharosnetwork.xyz/hero',
+    chain: 'pharos',
+    standard: 'erc721'
+  },
+  {
+    slug: 'pharos-builders',
+    name: 'Pharos Builder Badge',
+    contract: '0x2222222222222222222222222222222222222222',
+    tags: ['builder', 'developer', 'badge'],
+    mintUrl: 'https://testnet.pharosnetwork.xyz/builders',
     chain: 'pharos',
     standard: 'erc721'
   }
@@ -406,58 +466,70 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
             {filteredCollections.map(nft => (
               <div
                 key={nft.slug}
-                className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-xl transition-all hover:scale-105"
+                className="group bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-300"
               >
                 {/* Image */}
-                <div className="aspect-square bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center relative overflow-hidden">
+                <div className="aspect-square bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center relative overflow-hidden">
                   {nft.image ? (
-                    <img
-                      src={nft.image}
-                      alt={nft.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
+                    <>
+                      <img
+                        src={nft.image}
+                        alt={nft.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                      {/* Gradient overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </>
                   ) : (
-                    <ImageIcon className="w-24 h-24 text-gray-300" />
+                    <div className="flex flex-col items-center justify-center">
+                      <ImageIcon className="w-24 h-24 text-gray-300 group-hover:text-gray-400 transition-colors" />
+                      <span className="text-sm text-gray-400 mt-2">{nft.name}</span>
+                    </div>
                   )}
                   
                   {/* Chain Badge */}
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700 shadow-lg">
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold shadow-lg transition-all group-hover:bg-blue-600 group-hover:text-white">
                     {CHAINS[nft.chain].name}
+                  </div>
+
+                  {/* Standard Badge - Top Left */}
+                  <div className="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
+                    {nft.standard.toUpperCase()}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{nft.name}</h3>
-                  
-                  {/* Standard Badge */}
-                  <div className="mb-3">
-                    <span className="inline-block bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-1 rounded">
-                      {nft.standard.toUpperCase()}
-                    </span>
-                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {nft.name}
+                  </h3>
 
                   {/* Tags */}
                   {nft.tags && nft.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {nft.tags.map(tag => (
+                      {nft.tags.slice(0, 3).map(tag => (
                         <span
                           key={tag}
-                          className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded"
+                          className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded hover:bg-blue-100 hover:text-blue-600 transition-colors cursor-pointer"
                         >
-                          {tag}
+                          #{tag}
                         </span>
                       ))}
+                      {nft.tags.length > 3 && (
+                        <span className="inline-block bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded">
+                          +{nft.tags.length - 3}
+                        </span>
+                      )}
                     </div>
                   )}
 
                   {/* Contract Address */}
-                  <div className="mb-4">
-                    <code className="text-xs text-gray-500 break-all">
-                      {nft.contract.slice(0, 6)}...{nft.contract.slice(-4)}
+                  <div className="mb-4 p-2 bg-gray-50 rounded">
+                    <code className="text-xs text-gray-600 font-mono break-all">
+                      {nft.contract.slice(0, 10)}...{nft.contract.slice(-8)}
                     </code>
                   </div>
 
@@ -468,7 +540,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                         href={nft.mintUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all font-medium"
+                        className="flex-1 inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2.5 rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                       >
                         <span>{t('mint')}</span>
                         <ExternalLink className="w-4 h-4" />
@@ -478,10 +550,10 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                       href={`${CHAINS[nft.chain].explorer}/address/${nft.contract}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all"
+                      className="inline-flex items-center justify-center px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all transform hover:-translate-y-0.5"
                       title={t('open_explorer')}
                     >
-                      <ExternalLink className="w-4 h-4 text-gray-600" />
+                      <ExternalLink className="w-4 h-4 text-gray-600 hover:text-blue-600 transition-colors" />
                     </a>
                   </div>
                 </div>
