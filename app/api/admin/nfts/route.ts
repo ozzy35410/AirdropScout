@@ -4,7 +4,7 @@ import { collectionInputSchema, normalizeCollectionPayload } from "@/lib/schemas
 import { getCollections, serializeCollection, upsertCollection } from "@/lib/collections";
 import { AdminUnauthorizedError, requireAdminSession } from "@/lib/auth/server";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {

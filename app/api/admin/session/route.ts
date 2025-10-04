@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { sha256Hex } from "@/lib/auth/hash";
 import { ADMIN_SESSION_COOKIE, ADMIN_SESSION_MAX_AGE } from "@/lib/auth/constants";
 
+export const dynamic = "force-dynamic";
+
 const isProduction = process.env.NODE_ENV === "production";
 
 type SessionResponse = { ok: true } | { ok: false; error: string };
@@ -9,8 +11,6 @@ type SessionResponse = { ok: true } | { ok: false; error: string };
 type LoginPayload = {
   password?: string;
 };
-
-export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

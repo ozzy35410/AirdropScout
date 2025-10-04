@@ -4,6 +4,8 @@ import { AdminUnauthorizedError, requireAdminSession } from "@/lib/auth/server";
 import { collectionInputSchema, normalizeCollectionPayload } from "@/lib/schemas/collection";
 import { deleteCollection, getCollections, serializeCollection, upsertCollection } from "@/lib/collections";
 
+export const dynamic = "force-dynamic";
+
 class HttpError extends Error {
   status: number;
 
@@ -22,8 +24,6 @@ function ensureChain(chainParam: string | string[] | undefined): ChainSlug {
   }
   return chainParam as ChainSlug;
 }
-
-export const dynamic = 'force-dynamic';
 
 export async function PUT(request: NextRequest, context: { params: { chain: string; slug: string } }) {
   try {

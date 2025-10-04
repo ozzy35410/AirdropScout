@@ -13,6 +13,8 @@ import {
   type PublicClient
 } from "viem";
 
+export const dynamic = "force-dynamic";
+
 type CacheState = "HIT" | "MISS" | "STALE" | "BYPASS";
 
 type MintedSuccessResponse = {
@@ -52,8 +54,6 @@ const TOPIC_ERC1155_SINGLE = keccak256(
 const TOPIC_ERC1155_BATCH = keccak256(
   stringToBytes("TransferBatch(address,address,address,uint256[],uint256[])")
 ) as Hex;
-
-export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CHAINS, type ChainSlug } from "@/config/chains";
 import { getCollections, serializeCollection } from "@/lib/collections";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
