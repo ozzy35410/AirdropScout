@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Wallet, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { Search, EyeOff, Loader2 } from 'lucide-react';
 import { BlockchainService } from '../lib/blockchain';
-import { LoadingSpinner } from './ui/LoadingSpinner';
 
 interface WalletFilterProps {
   onWalletChange: (wallet: string) => void;
@@ -11,13 +10,7 @@ interface WalletFilterProps {
   onError?: (message: string) => void;
 }
 
-export const WalletFilter: React.FC<WalletFilterProps> = ({
-  onWalletChange,
-  onFilterChange,
-  hideOwned,
-  isLoading,
-  onError
-}) => {
+export function WalletFilter({ onWalletChange, onFilterChange, hideOwned, isLoading, onError }: WalletFilterProps) {
   const [wallet, setWallet] = useState('');
   const [isValid, setIsValid] = useState(true);
 
@@ -40,70 +33,53 @@ export const WalletFilter: React.FC<WalletFilterProps> = ({
     }
   };
 
-  const handleFilterChange = (checked: boolean) => {
-    if (checked && (!wallet || !BlockchainService.isValidAddress(wallet))) {
-      onError?.('Please enter a valid wallet address first');
-      return;
-    }
-    onFilterChange(checked);
-  };
-
   return (
-    <div className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 p-6 shadow-lg">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <Wallet className="w-5 h-5 text-blue-600" />
-        Wallet Address
-      </h2>
-      
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20">
       <div className="space-y-4">
         <div>
-          <input
-            type="text"
-            value={wallet}
-            onChange={(e) => handleWalletChange(e.target.value)}
-            placeholder="Enter your wallet address (0x...)"
-            className={`w-full px-4 py-3 border rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 placeholder-gray-400 ${
-              !isValid ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:border-blue-500'
-            }`}
-          />
+          <label htmlFor="wallet" className="block text-sm font-semibold text-gray-700 mb-2">
+            Wallet Address
+          </label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              id="wallet"
+              type="text"
+              value={wallet}
+              onChange={(e) => handleWalletChange(e.target.value)}
+              placeholder="Enter your wallet address (0x...)"
+              className={`w-full pl-10 pr-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                !isValid 
+                  ? 'border-red-300 bg-red-50 focus:border-red-500' 
+                  : 'border-gray-200 bg-white focus:border-blue-500'
+              }`}
+            />
+            {isLoading && (
+              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5 animate-spin" />
+            )}
+          </div>
           {!isValid && (
-            <p className="text-red-500 text-xs mt-1">Invalid wallet address format</p>
+            <p className="mt-2 text-sm text-red-600">
+              Please enter a valid Ethereum address
+            </p>
           )}
         </div>
 
-        <label className="flex items-center gap-3 cursor-pointer">
-          <div className="relative">
-            <input
-              type="checkbox"
-              checked={hideOwned}
-              onChange={(e) => handleFilterChange(e.target.checked)}
-              disabled={!wallet || !isValid || isLoading}
-              className="sr-only"
-            />
-            <div className={`w-5 h-5 border-2 rounded-md flex items-center justify-center transition-colors ${
-              hideOwned 
-                ? 'bg-blue-600 border-blue-600' 
-                : 'border-gray-300 bg-white'
-            } ${(!wallet || !isValid || isLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              {hideOwned && (
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {isLoading ? (
-              <LoadingSpinner size="sm" />
-            ) : (
-              <Filter className="w-4 h-4 text-gray-500" />
-            )}
-            <span className={`text-sm ${(!wallet || !isValid) ? 'text-gray-400' : 'text-gray-700'}`}>
-              Hide NFTs I already own
-            </span>
-          </div>
-        </label>
+        <div className="flex items-center space-x-3">
+          <input
+            id="hideOwned"
+            type="checkbox"
+            checked={hideOwned}
+            onChange={(e) => onFilterChange(e.target.checked)}
+            disabled={!wallet || !isValid}
+            className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+          <label htmlFor="hideOwned" className={`flex items-center text-sm font-medium cursor-pointer ${(!wallet || !isValid) ? 'text-gray-400' : 'text-gray-700'}`}>
+            <EyeOff className="w-4 h-4 mr-2 text-gray-500" />
+            Hide NFTs I already own
+          </label>
+        </div>
       </div>
     </div>
   );
-};
+}
