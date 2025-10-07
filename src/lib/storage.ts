@@ -6,11 +6,11 @@ export class NFTStorage {
   static getAllNFTs(): NFT[] {
     try {
       const data = localStorage.getItem(this.STORAGE_KEY);
-      if (!data) return this.getDefaultNFTs();
+      if (!data) return []; // Boş başlat, default NFT yok
       return JSON.parse(data);
     } catch (error) {
       console.error('Error loading NFTs from storage:', error);
-      return this.getDefaultNFTs();
+      return [];
     }
   }
 
@@ -92,55 +92,5 @@ export class NFTStorage {
     });
 
     this.saveNFTs(allNFTs);
-  }
-
-  private static getDefaultNFTs(): NFT[] {
-    return [
-      {
-        id: '1',
-        title: 'Base Network Builders #100',
-        description: 'Commemorative NFT celebrating the builders of Base network. This exclusive collection represents the pioneering spirit of early adopters.',
-        network: 'base',
-        contract_address: '0x3456789012345678901234567890123456789012',
-        token_id: '100',
-        token_standard: 'ERC-721' as const,
-        external_link: 'https://opensea.io/assets/base/0x3456789012345678901234567890123456789012/100',
-        tags: ['builder', 'base', 'commemorative'],
-        visible: true,
-        price_eth: '0.050000',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: '2',
-        title: 'Base DeFi Genesis #1',
-        description: 'Genesis NFT from Base network DeFi protocols, representing early participation in decentralized finance on Base.',
-        network: 'base',
-        contract_address: '0x1234567890123456789012345678901234567890',
-        token_id: '1',
-        token_standard: 'ERC-721' as const,
-        external_link: 'https://opensea.io/assets/base/0x1234567890123456789012345678901234567890/1',
-        tags: ['genesis', 'defi', 'base'],
-        visible: true,
-        price_eth: '1.2000',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: '3',
-        title: 'Darth Sidious',
-        description: 'Rare collectible from the Zora network featuring iconic characters and unique artwork.',
-        network: 'zora',
-        contract_address: '0xe47f...bba4',
-        token_id: '1',
-        token_standard: 'ERC-721' as const,
-        external_link: 'https://zora.co/collect/0xe47f...bba4/1',
-        tags: ['collectible', 'rare', 'character'],
-        visible: true,
-        price_eth: '0.00002000',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-    ];
   }
 }

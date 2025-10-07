@@ -1,4 +1,3 @@
-import React from 'react';
 import { ExternalLink, Hash, Tag, TrendingUp } from 'lucide-react';
 import { NFT, NetworkConfigs } from '../../types';
 
@@ -13,25 +12,50 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-      {/* NFT Image Placeholder */}
-      <div className="h-48 bg-gradient-to-br from-purple-100 via-blue-50 to-purple-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-blue-400/20 to-purple-400/20"></div>
-        <div className="absolute top-4 right-4">
-          <span 
-            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white shadow-lg"
-            style={{ backgroundColor: networkColor }}
-          >
-            {network?.name || nft.network}
-          </span>
+      {/* NFT Image - Only show if imageUrl exists */}
+      {nft.imageUrl && (
+        <div className="h-48 relative overflow-hidden">
+          <img 
+            src={nft.imageUrl} 
+            alt={nft.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // If image fails to load, hide the container
+              e.currentTarget.parentElement!.style.display = 'none';
+            }}
+          />
+          <div className="absolute top-4 right-4">
+            <span 
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white shadow-lg"
+              style={{ backgroundColor: networkColor }}
+            >
+              {network?.name || nft.network}
+            </span>
+          </div>
+          <div className="absolute bottom-4 left-4">
+            <span className="inline-flex items-center px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs rounded-md font-medium">
+              {nft.token_standard}
+            </span>
+          </div>
         </div>
-        <div className="absolute bottom-4 left-4">
-          <span className="inline-flex items-center px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs rounded-md font-medium">
-            {nft.token_standard}
-          </span>
-        </div>
-      </div>
+      )}
       
       <div className="p-5">
+        {/* Network badge if no image */}
+        {!nft.imageUrl && (
+          <div className="flex items-center justify-between mb-4">
+            <span 
+              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-white"
+              style={{ backgroundColor: networkColor }}
+            >
+              {network?.name || nft.network}
+            </span>
+            <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md font-medium">
+              {nft.token_standard}
+            </span>
+          </div>
+        )}
+
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{nft.title}</h3>
@@ -42,17 +66,13 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
         </div>
 
         {/* Price Section */}
-        {nft.price_eth && (
+        {nft.price_eth && parseFloat(nft.price_eth) > 0 && (
           <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-lg font-bold text-gray-900">{nft.price_eth}</span>
+                <span className="text-lg font-bold text-gray-900">{parseFloat(nft.price_eth).toFixed(6)}</span>
                 <span className="text-sm font-medium text-green-600">ETH</span>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-green-600 font-medium">26.09.2025</div>
-                <div className="text-xs text-orange-500">Manual (Outdated)</div>
               </div>
             </div>
           </div>
