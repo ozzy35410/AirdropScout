@@ -32,7 +32,15 @@ export function TestnetProgramSection({ program, language }: TestnetProgramSecti
               <ChevronRight className="w-6 h-6 text-white" />
             )}
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400"></div>
-            <h2 className="text-2xl font-bold text-white">{programName}</h2>
+            <div className="flex flex-col items-start">
+              <h2 className="text-2xl font-bold text-white">{programName}</h2>
+              {program.code && (
+                <div className="mt-1 flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold">Invite Code:</span>
+                  <code className="text-sm font-mono font-bold">{program.code}</code>
+                </div>
+              )}
+            </div>
           </div>
           
           <button

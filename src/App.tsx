@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from './components/Layout/Header';
 import { HomePage } from './components/Pages/HomePage';
 import { TasksPage } from './components/Pages/TasksPage';
 import { FaucetsPage } from './components/Pages/FaucetsPage';
 import { WalletStatsPage } from './components/Pages/WalletStatsPage';
 import { NFTsPage } from './components/Pages/NFTsPage';
-import { NFTGrid } from './components/NFT/NFTGrid';
-import { AdminPanel } from './components/Admin/AdminPanel';
-import { useNFTs } from './hooks/useNFTs';
-import { NETWORKS } from './config/networks';
 import { ChainSlug } from './config/chains';
 
 // Extend window type for ethereum
@@ -24,28 +19,6 @@ function App() {
   const [networkType, setNetworkType] = useState<'mainnet' | 'testnet'>('mainnet');
   const [language, setLanguage] = useState<'en' | 'tr'>('en');
   const [pageParams, setPageParams] = useState<string>('');
-  
-  const {
-    nfts,
-    networks,
-    loading,
-    error,
-    selectedNetwork,
-    setSelectedNetwork,
-    walletAddress,
-    setWalletAddress,
-    hideOwned,
-    setHideOwned
-  } = useNFTs();
-
-  // Handle URL parameters
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const network = urlParams.get('network');
-    if (network) {
-      setSelectedNetwork(network);
-    }
-  }, [pageParams, setSelectedNetwork]);
 
   const handlePageChange = (page: string, params?: string) => {
     setCurrentPage(page);
@@ -102,14 +75,8 @@ function App() {
             language={language}
           />
         );
-      case 'admin':
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <AdminPanel networks={NETWORKS} />
-            </div>
-          </div>
-        );
+      // Admin panel removed - use Supabase Dashboard for NFT management
+      // Visit: https://supabase.com/dashboard/project/ulungobrkoxwrwaccfwm
       default:
         return (
           <HomePage

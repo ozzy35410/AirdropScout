@@ -26,8 +26,8 @@ export function Header({
     { id: 'home', label: t('home') },
     { id: 'tasks', label: t('tasks') },
     { id: 'nfts', label: t('nfts') },
-    { id: 'faucets', label: t('faucets') },
-    { id: 'admin', label: t('admin') }
+    { id: 'faucets', label: t('faucets') }
+    // Admin panel removed - use Supabase Dashboard for management
   ];
 
   return (
