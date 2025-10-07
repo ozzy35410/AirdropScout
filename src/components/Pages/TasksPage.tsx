@@ -369,7 +369,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
           )}
         </div>
 
-        <div className="space-y-12">
+        <div className="space-y-6 md:space-y-8">
           {Object.entries(tasksByNetwork).map(([networkKey, tasks]) => {
             const network = NETWORKS[networkKey];
             if (!network) return null;
@@ -486,18 +486,19 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
           })}
         </div>
 
-        {/* Individual Testnet Program Sections - Testnet Only */}
-        {networkType === 'testnet' && (
-          <div className="space-y-6">
-            {PROGRAMS.filter(p => p.testnetOnly !== false).map(program => (
-              <TestnetProgramSection
-                key={program.slug}
-                program={program}
-                language={language}
-              />
-            ))}
-          </div>
-        )}
+        {/* Individual Program Sections - Filtered by visibility */}
+        <div className="space-y-6 md:space-y-8">
+          {PROGRAMS.filter(p => {
+            const visibility = p.visibility ?? "testnet";
+            return networkType === "testnet" ? visibility === "testnet" : visibility === "mainnet";
+          }).map(program => (
+            <TestnetProgramSection
+              key={program.slug}
+              program={program}
+              language={language}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

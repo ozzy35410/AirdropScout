@@ -30,6 +30,20 @@ export const NETWORKS: Record<string, NetworkConfig> = {
       decimals: 18
     }
   },
+  soneium: {
+    name: 'soneium',
+    displayName: 'Soneium',
+    rpcUrl: 'https://rpc.soneium.org',
+    chainId: 1868,
+    color: 'bg-purple-500',
+    explorer: 'https://explorer.soneium.org',
+    type: 'mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
   // Testnet Networks
   giwa: {
     name: 'giwa',

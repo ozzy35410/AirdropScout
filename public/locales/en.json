@@ -59,5 +59,12 @@
   "programs": "Programs",
   "open": "Open",
   "invite_code": "Invite code",
-  "daily_task": "Daily task (resets 00:00 UTC)"
+  "daily_task": "Daily task (resets 00:00 UTC)",
+  "why_choose_title": "Why Choose Airdrop Scout?",
+  "feature_gas_title": "Gas-Only Transactions",
+  "feature_gas_desc": "Only gas fees required — no token approvals needed.",
+  "feature_multi_title": "Multi-Network Support",
+  "feature_multi_desc": "Support for mainnet and testnet across Base, Sei, GIWA, Pharos, and Soneium.",
+  "feature_progress_title": "Progress Tracking",
+  "feature_progress_desc": "Track your completed tasks and minted NFTs across all networks."
 }

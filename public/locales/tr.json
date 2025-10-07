@@ -59,5 +59,12 @@
   "programs": "Programlar",
   "open": "Aç",
   "invite_code": "Davet kodu",
-  "daily_task": "Günlük görev (00:00 UTC'de sıfırlanır)"
+  "daily_task": "Günlük görev (00:00 UTC'de sıfırlanır)",
+  "why_choose_title": "Airdrop Scout'u Neden Seçmelisin?",
+  "feature_gas_title": "Yalnızca Gaz Ücreti",
+  "feature_gas_desc": "Sadece gaz ücreti gerekir — token onayı gerekmez.",
+  "feature_multi_title": "Çoklu Ağ Desteği",
+  "feature_multi_desc": "Base, Sei, GIWA, Pharos ve Soneium dahil olmak üzere mainnet ve testnet desteği.",
+  "feature_progress_title": "İlerleme Takibi",
+  "feature_progress_desc": "Tamamladığın görevleri ve mintlediğin NFT'leri tüm ağlar arasında takip et."
 }

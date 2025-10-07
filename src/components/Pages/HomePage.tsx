@@ -56,31 +56,31 @@ export function HomePage({ networkType, language, onPageChange }: HomePageProps)
         {/* Features Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Why Choose {t('brand')}?
+            {t('why_choose_title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
               <div className="bg-green-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                 <Shield className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Gas-Only Transactions</h3>
-              <p className="text-gray-600 leading-relaxed">{t('notice')}</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{t('feature_gas_title')}</h3>
+              <p className="text-gray-600 leading-relaxed">{t('feature_gas_desc')}</p>
             </div>
 
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
               <div className="bg-blue-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                 <Globe className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Multi-Network Support</h3>
-              <p className="text-gray-600 leading-relaxed">Support for mainnet and testnet across Base, Sei, GIWA, and Pharos.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{t('feature_multi_title')}</h3>
+              <p className="text-gray-600 leading-relaxed">{t('feature_multi_desc')}</p>
             </div>
 
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
               <div className="bg-cyan-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
                 <Zap className="w-8 h-8 text-cyan-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Progress Tracking</h3>
-              <p className="text-gray-600 leading-relaxed">Track your completed tasks and minted NFTs across all networks.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">{t('feature_progress_title')}</h3>
+              <p className="text-gray-600 leading-relaxed">{t('feature_progress_desc')}</p>
             </div>
           </div>
         </div>
