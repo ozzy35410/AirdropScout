@@ -485,10 +485,12 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
           })}
         </div>
 
-        {/* Programs Section - Network Agnostic */}
-        <div className="mt-12">
-          <ProgramsSection language={language} />
-        </div>
+        {/* Programs Section - Testnet Only */}
+        {networkType === 'testnet' && (
+          <div className="mt-12">
+            <ProgramsSection language={language} networkType={networkType} />
+          </div>
+        )}
       </div>
     </div>
   );

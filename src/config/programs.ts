@@ -18,6 +18,7 @@ export type Program = {
   tasks: ProgramTask[];
   tags?: string[];
   visible: boolean;
+  testnetOnly?: boolean; // default true for our programs
 };
 
 export const PROGRAMS: Program[] = [
@@ -34,7 +35,8 @@ export const PROGRAMS: Program[] = [
       { id:"social", kind:"social", titleEN:"Do social tasks for XP", titleTR:"XP için sosyal görevleri tamamla" }
     ],
     tags:["xp","faucet","swap","bridge","social"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   },
   {
     slug: "nitrograph",
@@ -48,7 +50,8 @@ export const PROGRAMS: Program[] = [
       { id:"social", kind:"social", titleEN:"Complete social missions", titleTR:"Sosyal görevleri tamamla" }
     ],
     tags:["xp","daily","social"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   },
   {
     slug: "huddle",
@@ -61,7 +64,8 @@ export const PROGRAMS: Program[] = [
       { id:"daily-join", kind:"daily", titleEN:"Join meetings (target 8h/day) to earn $HP", titleTR:"Toplantılara katıl (günlük 8s hedef) ve $HP kazan", href:"https://huddle01.app/room/cey-zyrk-wtu/lobby" }
     ],
     tags:["daily","hp","social"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   },
   {
     slug: "incentiv",
@@ -75,7 +79,8 @@ export const PROGRAMS: Program[] = [
       { id:"send", kind:"once", titleEN:"Send tokens to any address", titleTR:"Herhangi bir adrese token gönder" }
     ],
     tags:["faucet","swap","send","xp"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   },
   {
     slug: "idos",
@@ -90,7 +95,8 @@ export const PROGRAMS: Program[] = [
       { id:"daily-checkin", kind:"daily", titleEN:"Daily check-in for points", titleTR:"Günlük check-in ile puan kazan" }
     ],
     tags:["identity","daily","social"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   },
   {
     slug: "soneium",
@@ -104,6 +110,7 @@ export const PROGRAMS: Program[] = [
       { id:"season-nft", kind:"once", titleEN:"Mint the season NFT", titleTR:"Sezon NFT'sini mintle" }
     ],
     tags:["season","activity","nft"],
-    visible:true
+    visible:true,
+    testnetOnly:true
   }
 ];
