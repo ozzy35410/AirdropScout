@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Eye, EyeOff, Loader2, ExternalLink, Upload } from 'lucide-react';
 import { NFTForm } from './NFTForm';
 import { BulkImport } from './BulkImport';
 import { NFT } from '../../types';
-import { NFTStorage } from '../../lib/storage';
+import { SupabaseNFTStorage } from '../../lib/supabaseStorage';
 import { Toast } from '../ui/Toast';
 
 interface AdminPanelProps {
@@ -11,7 +11,8 @@ interface AdminPanelProps {
 }
 
 export function AdminPanel({ networks }: AdminPanelProps) {
-  const [nfts, setNfts] = useState<NFT[]>(NFTStorage.getAllNFTs());
+  const [nfts, setNfts] = useState<NFT[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [editingNFT, setEditingNFT] = useState<NFT | null>(null);
@@ -20,14 +21,27 @@ export function AdminPanel({ networks }: AdminPanelProps) {
   const [filter, setFilter] = useState('');
   const [networkFilter, setNetworkFilter] = useState('all');
 
-  const refreshNFTs = () => {
-    setNfts(NFTStorage.getAllNFTs());
+  // Load NFTs from Supabase on mount
+  useEffect(() => {
+    refreshNFTs();
+  }, []);
+
+  const refreshNFTs = async () => {
+    setLoading(true);
+    try {
+      const data = await SupabaseNFTStorage.getAllNFTs();
+      setNfts(data);
+    } catch (error) {
+      setToast({ message: 'Failed to load NFTs', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddNFT = async (nftData: Omit<NFT, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      NFTStorage.addNFT(nftData);
-      refreshNFTs();
+      await SupabaseNFTStorage.addNFT(nftData);
+      await refreshNFTs();
       setToast({ message: 'NFT added successfully!', type: 'success' });
       return { success: true };
     } catch (error) {
@@ -39,8 +53,8 @@ export function AdminPanel({ networks }: AdminPanelProps) {
   const handleUpdateNFT = async (nftData: Omit<NFT, 'id' | 'created_at' | 'updated_at'>) => {
     if (!editingNFT) return { success: false, error: 'No NFT selected for editing' };
     try {
-      NFTStorage.updateNFT(editingNFT.id, nftData);
-      refreshNFTs();
+      await SupabaseNFTStorage.updateNFT(editingNFT.id, nftData);
+      await refreshNFTs();
       setEditingNFT(null);
       setToast({ message: 'NFT updated successfully!', type: 'success' });
       return { success: true };
@@ -54,8 +68,8 @@ export function AdminPanel({ networks }: AdminPanelProps) {
     if (window.confirm('Are you sure you want to delete this NFT? This action cannot be undone.')) {
       setDeletingId(id);
       try {
-        NFTStorage.deleteNFT(id);
-        refreshNFTs();
+        await SupabaseNFTStorage.deleteNFT(id);
+        await refreshNFTs();
         setToast({ message: 'NFT deleted successfully!', type: 'success' });
       } catch (error) {
         setToast({ message: 'Failed to delete NFT', type: 'error' });
@@ -64,15 +78,19 @@ export function AdminPanel({ networks }: AdminPanelProps) {
     }
   };
 
-  const handleBulkImportComplete = () => {
+  const handleBulkImportComplete = async () => {
     setShowBulkImport(false);
-    refreshNFTs();
+    await refreshNFTs();
     setToast({ message: 'NFTs imported successfully!', type: 'success' });
   };
 
   const toggleVisibility = async (nft: NFT) => {
-    NFTStorage.updateNFT(nft.id, { visible: !nft.visible });
-    refreshNFTs();
+    try {
+      await SupabaseNFTStorage.updateNFT(nft.id, { visible: !nft.visible });
+      await refreshNFTs();
+    } catch (error) {
+      setToast({ message: 'Failed to update visibility', type: 'error' });
+    }
   };
 
   const openEditForm = (nft: NFT) => {
@@ -178,8 +196,17 @@ export function AdminPanel({ networks }: AdminPanelProps) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        {filteredNFTs.length === 0 ? (
+      {/* Loading State */}
+      {loading ? (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12">
+          <div className="flex flex-col items-center justify-center">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+            <p className="text-gray-600">Loading NFTs from database...</p>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          {filteredNFTs.length === 0 ? (
           <div className="text-center py-16">
             <Plus className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -347,6 +374,7 @@ export function AdminPanel({ networks }: AdminPanelProps) {
           </div>
         )}
       </div>
+      )}
 
       {showBulkImport && (
         <BulkImport
