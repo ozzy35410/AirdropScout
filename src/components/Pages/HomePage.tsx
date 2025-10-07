@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sparkles, Shield, Zap, Globe, Plus, ExternalLink } from 'lucide-react';
 import { NETWORKS, MAINNET_NETWORKS, TESTNET_NETWORKS } from '../../config/networks';
+import { PROGRAMS } from '../../config/programs';
 import { useWallet } from '../../hooks/useWallet';
 import { useTranslation } from '../../lib/i18n';
 
@@ -86,13 +87,13 @@ export function HomePage({ networkType, language, onPageChange }: HomePageProps)
         </div>
 
         {/* Supported Networks */}
-        <div>
+        <div className="mb-16">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Supported Networks
+            {t('supported_networks')}
           </h2>
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">
-              {networkType === 'mainnet' ? 'Mainnet Networks' : 'Testnet Networks'}
+              {networkType === 'mainnet' ? t('mainnet_networks') : t('testnet_networks')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {currentNetworks.map((network) => (
@@ -107,6 +108,40 @@ export function HomePage({ networkType, language, onPageChange }: HomePageProps)
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Supported Protocols */}
+        <div>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
+            {t('supported_protocols')}
+          </h2>
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">
+              {t('all_protocols')}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {PROGRAMS.map((program) => {
+                const programName = language === 'tr' ? program.nameTR : program.nameEN;
+                const visibilityBadge = program.visibility === 'mainnet' ? 'Mainnet' : 'Testnet';
+                const badgeColor = program.visibility === 'mainnet' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700';
+                
+                return (
+                  <div
+                    key={program.slug}
+                    className="flex items-center justify-between p-4 bg-white/50 rounded-xl border border-white/20 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-3 h-3 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400"></div>
+                      <div className="font-semibold text-gray-900">{programName}</div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${badgeColor}`}>
+                      {visibilityBadge}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -66,5 +66,10 @@
   "feature_multi_title": "Multi-Network Support",
   "feature_multi_desc": "Support for mainnet and testnet across Base, Sei, GIWA, Pharos, and Soneium.",
   "feature_progress_title": "Progress Tracking",
-  "feature_progress_desc": "Track your completed tasks and minted NFTs across all networks."
+  "feature_progress_desc": "Track your completed tasks and minted NFTs across all networks.",
+  "supported_networks": "Supported Networks",
+  "supported_protocols": "Supported Protocols",
+  "mainnet_networks": "Mainnet Networks",
+  "testnet_networks": "Testnet Networks",
+  "all_protocols": "All Protocols"
 }

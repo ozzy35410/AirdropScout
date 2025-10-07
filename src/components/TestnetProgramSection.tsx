@@ -22,7 +22,7 @@ export function TestnetProgramSection({ program, language }: TestnetProgramSecti
     <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 p-6 hover:from-purple-700 hover:to-blue-700 transition-all"
+        className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 p-6 hover:from-blue-700 hover:to-cyan-700 transition-all"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -31,7 +31,7 @@ export function TestnetProgramSection({ program, language }: TestnetProgramSecti
             ) : (
               <ChevronRight className="w-6 h-6 text-white" />
             )}
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-blue-400"></div>
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400"></div>
             <h2 className="text-2xl font-bold text-white">{programName}</h2>
           </div>
           
@@ -40,7 +40,7 @@ export function TestnetProgramSection({ program, language }: TestnetProgramSecti
               e.stopPropagation();
               handleOpenProgram();
             }}
-            className="inline-flex items-center space-x-2 bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+            className="inline-flex items-center space-x-2 bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors font-medium"
           >
             <span className="text-sm">{t('open')}</span>
             <ExternalLink className="w-4 h-4" />

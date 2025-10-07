@@ -153,5 +153,10 @@
   "feature_multi_desc": "Base, Sei, GIWA, Pharos ve Soneium dahil olmak üzere mainnet ve testnet desteği.",
   "feature_progress_title": "İlerleme Takibi",
   "feature_progress_desc": "Tamamladığın görevleri ve mintlediğin NFT'leri tüm ağlar arasında takip et.",
-  "start_exploring": "Keşfetmeye Başla"
+  "start_exploring": "Keşfetmeye Başla",
+  "supported_networks": "Desteklenen Ağlar",
+  "supported_protocols": "Desteklenen Protokoller",
+  "mainnet_networks": "Mainnet Ağları",
+  "testnet_networks": "Testnet Ağları",
+  "all_protocols": "Tüm Protokoller"
 }
