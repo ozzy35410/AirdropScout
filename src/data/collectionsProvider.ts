@@ -1,5 +1,6 @@
 import { NFT_COLLECTIONS, Collection } from '../config/collections';
 import { ChainSlug } from '../config/chains';
+import { NFTStorage } from '../lib/storage';
 
 /** Admin mode A: Supabase (if present) */
 export async function fetchAdminCollections(chain: ChainSlug): Promise<Collection[]> {
@@ -29,15 +30,40 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
   }
 }
 
-/** Admin mode B: GitHub PR flow -> file is the source (fallback) */
+/** Admin mode B: LocalStorage NFTs */
+export function getLocalStorageCollections(chain: ChainSlug): Collection[] {
+  try {
+    const nfts = NFTStorage.getAllNFTs();
+    
+    // Filter by chain and convert to Collection format
+    return nfts
+      .filter(nft => nft.network === chain && nft.visible !== false)
+      .map(nft => ({
+        slug: `local-${nft.id}`,
+        name: nft.title,
+        contract: nft.contract_address as `0x${string}`,
+        standard: (nft.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
+        image: nft.imageUrl,
+        tags: nft.tags || [],
+        mintUrl: nft.external_link,
+        startBlock: undefined,
+        addedAt: nft.created_at
+      }));
+  } catch (error) {
+    console.warn('Failed to fetch localStorage collections:', error);
+    return [];
+  }
+}
+
+/** Admin mode C: GitHub PR flow -> file is the source (fallback) */
 export async function getCollections(chain: ChainSlug): Promise<Collection[]> {
   const admin = await fetchAdminCollections(chain).catch(() => []);
+  const local = getLocalStorageCollections(chain);
   const base = NFT_COLLECTIONS[chain] ?? [];
   
-  // If admin returns anything, it overrides base by slug
-  if (admin.length === 0) return base;
-  
+  // Merge all sources, prioritizing: local > admin > base
   const bySlug: Record<string, Collection> = {};
-  [...base, ...admin].forEach(c => { bySlug[c.slug] = c; });
+  [...base, ...admin, ...local].forEach(c => { bySlug[c.slug] = c; });
   return Object.values(bySlug);
 }
+
