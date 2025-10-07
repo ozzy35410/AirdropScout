@@ -29,59 +29,10 @@ const CHAINS = {
   }
 };
 
-// NFT Collections
+// NFT Collections - should be dynamically fetched from Admin API
+// Keeping empty by default - collections should be added via Admin panel
 const NFT_COLLECTIONS = {
-  base: [
-    {
-      slug: 'darth-sidious',
-      name: 'Darth Sidious',
-      contract: '0x4e477eC092BFd7424aED9260067d0aA6fe2DbBa4',
-      standard: 'erc721',
-      startBlock: 10000000n
-    },
-    {
-      slug: 'base-names',
-      name: 'Basename',
-      contract: '0x03c4738Ee98aE44591e1A4A4F3CAb6641d95DD9a',
-      standard: 'erc721',
-      startBlock: 10000000n
-    },
-    {
-      slug: 'basepaint',
-      name: 'BasePaint',
-      contract: '0xBa5e05cb26b78eDa3A2f8e3b3814726305dcAc83',
-      standard: 'erc721',
-      startBlock: 8000000n
-    },
-    {
-      slug: 'base-god',
-      name: 'Based God',
-      contract: '0xd40A09dE1dD30Ecef8A12e8c17fDC8C5e8C2a7b5',
-      standard: 'erc721',
-      startBlock: 9000000n
-    },
-    {
-      slug: 'onchain-summer',
-      name: 'Onchain Summer',
-      contract: '0xD4307E0acD12CF46fD6cf93BC264f5D5D1598792',
-      standard: 'erc721',
-      startBlock: 7000000n
-    },
-    {
-      slug: 'toshi-vibe',
-      name: 'Toshi Vibe',
-      contract: '0x8Fc0D90f2C45a5e7f94904075c952e0943dCcf61',
-      standard: 'erc721',
-      startBlock: 8500000n
-    },
-    {
-      slug: 'base-builders',
-      name: 'Base Builders',
-      contract: '0x1FBB7b7DAb8b8DcBA9D234ABd8EAf24120e46c5d',
-      standard: 'erc721',
-      startBlock: 6000000n
-    }
-  ],
+  base: [],
   sei: [],
   giwa: [],
   pharos: []
