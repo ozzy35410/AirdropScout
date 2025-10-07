@@ -612,16 +612,31 @@ app.get('/api/admin/collections', async (req, res) => {
       return res.json({ collections: [] });
     }
 
+    // Use 'nfts' table instead of 'nft_collections'
     const { data, error } = await supabase
-      .from('nft_collections')
+      .from('nfts')
       .select('*')
-      .eq('chain', chain)
+      .eq('network', chain)
       .eq('visible', true)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
 
-    res.json({ collections: data || [] });
+    // Map nfts table columns to collections format
+    const collections = (data || []).map(nft => ({
+      id: nft.id,
+      name: nft.title,
+      contract_address: nft.contract_address,
+      token_standard: nft.token_standard,
+      image_url: nft.image_url,
+      tags: nft.tags || [],
+      mint_url: nft.external_link,
+      start_block: null,
+      created_at: nft.created_at,
+      chain: nft.network
+    }));
+
+    res.json({ collections });
   } catch (error) {
     console.error('Error fetching admin collections:', error);
     res.status(500).json({ error: 'Failed to fetch collections' });
