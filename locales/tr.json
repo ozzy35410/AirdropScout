@@ -141,5 +141,9 @@
   "try_different_filters": "Filtrelerinizi veya arama sorgunuzu ayarlamayı deneyin",
   "view_on_explorer": "Explorer'da Görüntüle",
   "loading_collections": "Koleksiyonlar yükleniyor",
-  "no_collections_available": "Bu zincir için koleksiyon bulunamadı"
+  "no_collections_available": "Bu zincir için koleksiyon bulunamadı",
+  "programs": "Programlar",
+  "open": "Aç",
+  "invite_code": "Davet kodu",
+  "daily_task": "Günlük görev (00:00 UTC'de sıfırlanır)"
 }

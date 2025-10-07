@@ -55,5 +55,9 @@
   "bridge": "Köprü",
   "interaction": "Etkileşim",
   "nft": "NFT",
-  "faucet": "Faucet"
+  "faucet": "Faucet",
+  "programs": "Programlar",
+  "open": "Aç",
+  "invite_code": "Davet kodu",
+  "daily_task": "Günlük görev (00:00 UTC'de sıfırlanır)"
 }

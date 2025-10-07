@@ -55,5 +55,9 @@
   "bridge": "Bridge",
   "interaction": "Interaction",
   "nft": "NFT",
-  "faucet": "Faucet"
+  "faucet": "Faucet",
+  "programs": "Programs",
+  "open": "Open",
+  "invite_code": "Invite code",
+  "daily_task": "Daily task (resets 00:00 UTC)"
 }

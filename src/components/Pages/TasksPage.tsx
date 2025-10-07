@@ -8,6 +8,7 @@ import { useAutoDetection } from '../../hooks/useAutoDetection';
 import { useTranslation } from '../../lib/i18n';
 import { useState, useEffect } from 'react';
 import { WalletStats } from '../../types';
+import { ProgramsSection } from '../ProgramsSection';
 
 interface TasksPageProps {
   networkType: 'mainnet' | 'testnet';
@@ -482,6 +483,11 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
               </div>
             );
           })}
+        </div>
+
+        {/* Programs Section - Network Agnostic */}
+        <div className="mt-12">
+          <ProgramsSection language={language} />
         </div>
       </div>
     </div>
