@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ExternalLink, Search, Tag, Image as ImageIcon, RefreshCw } from 'lucide-react';
+import { ExternalLink, Search, Tag, Image as ImageIcon, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
 import { CHAINS, ChainSlug } from '../../config/chains';
 import { Collection } from '../../config/collections';
@@ -40,7 +40,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   };
 
   // Use minted map hook
-  const { mintedMap, loading: loadingMinted, error: mintedError, lastChecked, refresh } = 
+  const { mintedMap, loading: loadingMinted } = 
     useMintedMap(activeChain, trackingAddress && isValidAddress(trackingAddress) ? trackingAddress : undefined);
 
   // Load collections when chain changes
@@ -130,16 +130,6 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
     );
   };
 
-  // Format last checked time
-  const formatLastChecked = () => {
-    if (!lastChecked) return '';
-    return lastChecked.toLocaleTimeString(language, { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit' 
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,91 +161,46 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
           ))}
         </div>
 
-        {/* Address Tracking */}
+        {/* Wallet Address Tracking - Simple Version */}
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 mb-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-            <div className="flex-1 w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('track_by_address')}
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={trackingAddress}
-                  onChange={(e) => setTrackingAddress(e.target.value)}
-                  placeholder={t('enter_address')}
-                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                {loadingMinted && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                    <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </div>
-                )}
-              </div>
-              {!trackingAddress && (
-                <p className="text-xs text-gray-500 mt-1">{t('paste_address_hint')}</p>
-              )}
-              {trackingAddress && !isValidAddress(trackingAddress) && (
-                <p className="text-xs text-red-500 mt-1">⚠️ {t('invalid_address')}</p>
-              )}
-              {mintedError && (
-                <p className="text-xs text-red-500 mt-1">⚠️ Error: {mintedError}</p>
-              )}
-            </div>
-            
-            {trackingAddress && isValidAddress(trackingAddress) && (
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setMintedFilter('show')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      mintedFilter === 'show'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {t('show_minted')}
-                  </button>
-                  <button
-                    onClick={() => setMintedFilter('hide')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      mintedFilter === 'hide'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {t('hide_minted')}
-                  </button>
-                  <button
-                    onClick={() => setMintedFilter('only')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                      mintedFilter === 'only'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {t('only_minted')}
-                  </button>
-                </div>
-                {lastChecked && (
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span>{t('last_checked')}: {formatLastChecked()}</span>
-                    <button
-                      onClick={() => refresh()}
-                      disabled={loadingMinted}
-                      className="p-1 hover:bg-gray-200 rounded disabled:opacity-50"
-                      title={t('refresh')}
-                    >
-                      <RefreshCw className={`w-3 h-3 ${loadingMinted ? 'animate-spin' : ''}`} />
-                    </button>
-                  </div>
-                )}
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Wallet Address</h3>
+          
+          <div className="relative mb-3">
+            <input
+              type="text"
+              value={trackingAddress}
+              onChange={(e) => setTrackingAddress(e.target.value)}
+              placeholder="0x5583BA39732db8006..."
+              className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+            {loadingMinted && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
               </div>
             )}
           </div>
+
+          {trackingAddress && isValidAddress(trackingAddress) && (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={mintedFilter === 'hide'}
+                onChange={(e) => setMintedFilter(e.target.checked ? 'hide' : 'show')}
+                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+              />
+              <span className="text-sm text-gray-700 flex items-center gap-2">
+                <EyeOff className="w-4 h-4 text-gray-500" />
+                Hide NFTs I already own
+              </span>
+            </label>
+          )}
+
+          {trackingAddress && !isValidAddress(trackingAddress) && (
+            <p className="text-xs text-red-500 mt-2">⚠️ Invalid Ethereum address</p>
+          )}
         </div>
 
         {/* Filters */}
@@ -422,8 +367,10 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
 
                     {/* Price */}
                     {nft.price && parseFloat(nft.price) > 0 && (
-                      <div className="mb-3 inline-block bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm font-semibold">
-                        💎 {parseFloat(nft.price).toFixed(6)} ETH
+                      <div className="mb-3">
+                        <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                          💎 {parseFloat(nft.price).toFixed(6)} ETH
+                        </span>
                       </div>
                     )}
 
