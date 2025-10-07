@@ -68,6 +68,32 @@ export class NFTStorage {
     return true;
   }
 
+  static importNFTs(nfts: Partial<NFT>[]): void {
+    const allNFTs = this.getAllNFTs();
+    
+    nfts.forEach(nftData => {
+      const newNFT: NFT = {
+        id: crypto.randomUUID(),
+        title: nftData.title || 'Untitled NFT',
+        description: nftData.description,
+        network: nftData.network || 'base',
+        contract_address: nftData.contract_address || '',
+        token_id: nftData.token_id || '0',
+        token_standard: nftData.token_standard || 'ERC-721',
+        external_link: nftData.external_link,
+        tags: nftData.tags,
+        visible: nftData.visible !== false,
+        imageUrl: nftData.imageUrl,
+        price_eth: nftData.price_eth,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      allNFTs.push(newNFT);
+    });
+
+    this.saveNFTs(allNFTs);
+  }
+
   private static getDefaultNFTs(): NFT[] {
     return [
       {

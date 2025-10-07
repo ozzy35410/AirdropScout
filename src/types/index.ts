@@ -9,7 +9,7 @@ export interface NFT {
   id: string;
   title: string;
   description?: string;
-  network: 'base' | 'zora' | 'sei' | 'linea' | 'scroll' | 'giwa' | 'pharos';
+  network: 'base' | 'zora' | 'sei' | 'linea' | 'scroll' | 'giwa' | 'pharos' | 'zksync' | 'soneium';
   contract_address: string;
   token_id: string;
   token_standard: 'ERC-721' | 'ERC-1155';

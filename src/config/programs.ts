@@ -12,6 +12,7 @@ export type Program = {
   nameEN: string;
   nameTR: string;
   url: string;            // referral/main URL — open with this
+  code?: string;          // invite/referral code if any
   visibility?: Visibility; // default "testnet"
   tasksText: SimpleTask[];
 };
@@ -35,6 +36,7 @@ export const PROGRAMS: Program[] = [
     nameEN: "Nitrograph",
     nameTR: "Nitrograph",
     url: "https://community.nitrograph.com/app/missions",
+    code: "K175LH9L",
     visibility: "testnet",
     tasksText: [
       { id: "nitro-check", textEN: "Daily check-in for XP / $NITRO", textTR: "Günlük check-in ile XP / $NITRO al", daily: true },

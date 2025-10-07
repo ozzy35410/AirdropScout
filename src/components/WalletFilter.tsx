@@ -8,29 +8,41 @@ interface WalletFilterProps {
   onFilterChange: (hideOwned: boolean) => void;
   hideOwned: boolean;
   isLoading: boolean;
+  onError?: (message: string) => void;
 }
 
 export const WalletFilter: React.FC<WalletFilterProps> = ({
   onWalletChange,
   onFilterChange,
   hideOwned,
-  isLoading
+  isLoading,
+  onError
 }) => {
   const [wallet, setWallet] = useState('');
   const [isValid, setIsValid] = useState(true);
 
   const handleWalletChange = (value: string) => {
     setWallet(value);
-    const valid = !value || BlockchainService.isValidAddress(value);
+    
+    if (value.trim() === '') {
+      setIsValid(true);
+      onWalletChange('');
+      return;
+    }
+
+    const valid = BlockchainService.isValidAddress(value);
     setIsValid(valid);
     
     if (valid) {
       onWalletChange(value);
+    } else {
+      onError?.('Invalid wallet address format');
     }
   };
 
   const handleFilterChange = (checked: boolean) => {
     if (checked && (!wallet || !BlockchainService.isValidAddress(wallet))) {
+      onError?.('Please enter a valid wallet address first');
       return;
     }
     onFilterChange(checked);
@@ -49,7 +61,7 @@ export const WalletFilter: React.FC<WalletFilterProps> = ({
             type="text"
             value={wallet}
             onChange={(e) => handleWalletChange(e.target.value)}
-            placeholder="Enter your wallet address"
+            placeholder="Enter your wallet address (0x...)"
             className={`w-full px-4 py-3 border rounded-xl bg-white/50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 placeholder-gray-400 ${
               !isValid ? 'border-red-300 focus:ring-red-500' : 'border-gray-200 focus:border-blue-500'
             }`}
