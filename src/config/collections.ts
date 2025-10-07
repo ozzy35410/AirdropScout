@@ -12,6 +12,7 @@ export interface Collection {
   mintUrl?: string;
   startBlock?: bigint;
   addedAt?: string;
+  price?: string; // Price in ETH
 }
 
 // Default collections - can be extended via Admin panel

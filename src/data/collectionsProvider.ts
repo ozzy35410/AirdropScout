@@ -47,7 +47,8 @@ export function getLocalStorageCollections(chain: ChainSlug): Collection[] {
         tags: nft.tags || [],
         mintUrl: nft.external_link,
         startBlock: undefined,
-        addedAt: nft.created_at
+        addedAt: nft.created_at,
+        price: nft.price_eth
       }));
   } catch (error) {
     console.warn('Failed to fetch localStorage collections:', error);
