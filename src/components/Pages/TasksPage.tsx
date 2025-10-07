@@ -2,13 +2,14 @@ import React from 'react';
 import { CheckCircle, Circle, ExternalLink, Users, ChevronDown, ChevronRight, Droplets, Palette, Zap, Wallet, Activity, TrendingUp, Coins, Package, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { PHAROS_TASKS, GIWA_TASKS, BASE_TASKS, SEI_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
 import { NETWORKS } from '../../config/networks';
+import { PROGRAMS } from '../../config/programs';
 import { useProgress } from '../../hooks/useProgress';
 import { useAddressTracking } from '../../hooks/useAddressTracking';
 import { useAutoDetection } from '../../hooks/useAutoDetection';
 import { useTranslation } from '../../lib/i18n';
 import { useState, useEffect } from 'react';
 import { WalletStats } from '../../types';
-import { ProgramsSection } from '../ProgramsSection';
+import { TestnetProgramSection } from '../TestnetProgramSection';
 
 interface TasksPageProps {
   networkType: 'mainnet' | 'testnet';
@@ -485,10 +486,16 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
           })}
         </div>
 
-        {/* Programs Section - Testnet Only */}
+        {/* Individual Testnet Program Sections - Testnet Only */}
         {networkType === 'testnet' && (
-          <div className="mt-12">
-            <ProgramsSection language={language} networkType={networkType} />
+          <div className="space-y-6">
+            {PROGRAMS.filter(p => p.testnetOnly !== false).map(program => (
+              <TestnetProgramSection
+                key={program.slug}
+                program={program}
+                language={language}
+              />
+            ))}
           </div>
         )}
       </div>
