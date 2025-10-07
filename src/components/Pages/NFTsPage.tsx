@@ -364,46 +364,78 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                   className="group bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-blue-300"
                 >
                   {/* Image */}
-                  <div className="aspect-square bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center relative overflow-hidden">
-                    {nft.image ? (
-                      <>
-                        <img
-                          src={nft.image}
-                          alt={nft.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center">
+                  {nft.image ? (
+                    <div className="aspect-square relative overflow-hidden bg-gray-100">
+                      <img
+                        src={nft.image}
+                        alt={nft.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        onError={(e) => {
+                          const parent = (e.target as HTMLImageElement).parentElement;
+                          if (parent) {
+                            parent.innerHTML = `
+                              <div class="w-full h-full bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center">
+                                <div class="flex flex-col items-center">
+                                  <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                  <span class="text-sm text-gray-400 mt-2">${nft.name}</span>
+                                </div>
+                              </div>
+                            `;
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      {/* Chain Badge */}
+                      <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                        {CHAINS[activeChain].name}
+                      </div>
+
+                      {/* Standard Badge */}
+                      <div className="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        {nft.standard.toUpperCase()}
+                      </div>
+
+                      {/* Minted Badge */}
+                      {trackingAddress && isValidAddress(trackingAddress) && isMinted && (
+                        <div className="absolute bottom-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          {t('minted')}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex items-center justify-center relative">
+                      <div className="flex flex-col items-center">
                         <ImageIcon className="w-24 h-24 text-gray-300 group-hover:text-gray-400 transition-colors" />
                         <span className="text-sm text-gray-400 mt-2">{nft.name}</span>
                       </div>
-                    )}
-                    
-                    {/* Chain Badge */}
-                    <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
-                      {CHAINS[activeChain].name}
-                    </div>
-
-                    {/* Standard Badge */}
-                    <div className="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
-                      {nft.standard.toUpperCase()}
-                    </div>
-
-                    {/* Minted Badge */}
-                    {trackingAddress && isValidAddress(trackingAddress) && isMinted && (
-                      <div className="absolute bottom-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        {t('minted')}
+                      
+                      {/* Chain Badge */}
+                      <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                        {CHAINS[activeChain].name}
                       </div>
-                    )}
-                  </div>
+
+                      {/* Standard Badge */}
+                      <div className="absolute top-3 left-3 bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        {nft.standard.toUpperCase()}
+                      </div>
+
+                      {/* Minted Badge */}
+                      {trackingAddress && isValidAddress(trackingAddress) && isMinted && (
+                        <div className="absolute bottom-3 left-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          {t('minted')}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Content */}
                   <div className="p-5">
