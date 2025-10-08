@@ -10,11 +10,12 @@ import { supabase } from '../lib/supabase';
 export async function fetchAdminCollections(chain: ChainSlug): Promise<Collection[]> {
   const chainSlug = (chain || '').toLowerCase();
 
+  // Network is enum type - use only .eq() (no ilike on enums)
   const { data, error } = await supabase
     .from('nfts')
     .select('*')
     .eq('visible', true)
-    .or(`network.eq.${chainSlug},network.ilike.${chainSlug}`)
+    .eq('network', chainSlug)
     .order('created_at', { ascending: false });
 
   if (error) {
