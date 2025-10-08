@@ -1,12 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-const PUBLIC_URL =
-  import.meta.env.VITE_SUPABASE_URL ||
-  'https://ulungobrkoxwrwaccfwm.supabase.co';
-
-const PUBLIC_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsdW5nb2Jya294d3J3YWNjZndtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjA1MDYsImV4cCI6MjA3NTQzNjUwNn0.Y2VaULV2jZ6lp7NvSYb5PKy-yH1wtUSiJddvkUfiz2c';
+// ⚠️ HARDCODED - Ignore env vars (Bolt.host has wrong values)
+const PUBLIC_URL = 'https://ulungobrkoxwrwaccfwm.supabase.co';
+const PUBLIC_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsdW5nb2Jya294d3J3YWNjZndtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjA1MDYsImV4cCI6MjA3NTQzNjUwNn0.Y2VaULV2jZ6lp7NvSYb5PKy-yH1wtUSiJddvkUfiz2c';
 
 export const supabase = createClient(PUBLIC_URL, PUBLIC_ANON_KEY, {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
