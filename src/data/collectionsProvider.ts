@@ -3,115 +3,55 @@ import { ChainSlug } from '../config/chains';
 import { NFTStorage } from '../lib/storage';
 import { supabase } from '../lib/supabase';
 
-/** Admin mode A: Supabase Direct (fallback to API if backend exists) */
+/**
+ * Fetch NFT collections from Supabase (client-side only, no server)
+ * Maps DB columns to UI format
+ */
 export async function fetchAdminCollections(chain: ChainSlug): Promise<Collection[]> {
-  // Normalize chain to lowercase
   const chainSlug = (chain || '').toLowerCase();
-  
-  // Try backend API first
-  try {
-    const response = await fetch(`/api/admin/collections?chain=${encodeURIComponent(chainSlug)}`, {
-      headers: { 'accept': 'application/json' },
-    });
-    
-    // If API works (not 404/HTML), use it
-    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
-      const json = await response.json();
-      
-      if (json.ok === false) {
-        throw new Error(json.error || 'bad response');
-      }
-      
-      const collections = json.ok ? json.collections : json.collections || [];
-      
-      if (Array.isArray(collections) && collections.length > 0) {
-        // Map API response to Collection format
-        return collections.map((item: any) => ({
-          slug: `admin-${item.id}`,
-          name: item.name || item.title,
-          contract: item.contract || item.contract_address as `0x${string}`,
-          standard: (item.standard?.toLowerCase() === 'erc721' || item.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
-          image: item.image || item.image_url,
-          tags: item.tags || [],
-          mintUrl: item.mintUrl || item.mint_url || item.external_link,
-          startBlock: item.start_block ? BigInt(item.start_block) : undefined,
-          addedAt: item.createdAt || item.created_at
-        }));
-      }
-    }
-  } catch (apiError) {
-    console.warn('Backend API not available, falling back to direct Supabase:', apiError);
+
+  const { data, error } = await supabase
+    .from('nfts')
+    .select('*')
+    .eq('visible', true)
+    .or(`network.eq.${chainSlug},network.ilike.${chainSlug}`)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[collectionsProvider] Supabase error:', error);
+    throw error;
   }
-  
-  // Fallback: Direct Supabase query (for static hosting like Bolt.host)
-  try {
-    console.log(`[collectionsProvider] Fetching directly from Supabase for chain="${chainSlug}"`);
-    
-    // First try exact match (most common case)
-    let { data, error } = await supabase
-      .from('nfts')
-      .select('*')
-      .eq('visible', true)
-      .eq('network', chainSlug)
-      .order('created_at', { ascending: false });
-    
-    // If no results, try case-insensitive search
-    if (!error && (!data || data.length === 0)) {
-      console.log(`[collectionsProvider] No exact match, trying case-insensitive for "${chainSlug}"`);
-      const result = await supabase
-        .from('nfts')
-        .select('*')
-        .eq('visible', true)
-        .ilike('network', chainSlug)
-        .order('created_at', { ascending: false });
-      
-      data = result.data;
-      error = result.error;
-    }
-    
-    if (error) {
-      console.error('[collectionsProvider] Supabase error:', error);
-      return [];
-    }
-    
-    if (!data || data.length === 0) {
-      console.log(`[collectionsProvider] No NFTs found for chain="${chainSlug}"`);
-      return [];
-    }
-    
-    console.log(`[collectionsProvider] Found ${data.length} NFTs from Supabase`);
-    
-    // Map Supabase response to Collection format
-    return data.map((nft: any) => {
-      let standard = (nft.token_standard || '').toLowerCase();
-      if (standard === 'erc-721') standard = 'erc721';
-      if (standard === 'erc-1155') standard = 'erc1155';
-      
-      return {
-        slug: `supabase-${nft.id}`,
-        name: nft.title,
-        contract: nft.contract_address as `0x${string}`,
-        standard: standard as 'erc721' | 'erc1155',
-        image: nft.image_url,
-        tags: nft.tags || [],
-        mintUrl: nft.external_link,
-        startBlock: undefined,
-        addedAt: nft.created_at,
-        price: nft.price_eth
-      };
-    });
-  } catch (supabaseError) {
-    console.error('Failed to fetch from Supabase:', supabaseError);
+
+  if (!data || data.length === 0) {
     return [];
   }
+
+  // Map DB → UI format
+  return data.map((nft: any) => {
+    const std = String(nft.token_standard || '').toLowerCase();
+    const isErc1155 = std.includes('1155');
+    
+    return {
+      slug: `supabase-${nft.id}`,
+      name: nft.title,
+      contract: nft.contract_address as `0x${string}`,
+      standard: isErc1155 ? 'erc1155' : 'erc721',
+      image: nft.image_url || undefined,
+      tags: nft.tags || [],
+      mintUrl: nft.external_link || undefined,
+      startBlock: undefined,
+      addedAt: nft.created_at,
+      price: nft.price_eth || undefined
+    } as Collection;
+  });
 }
 
-/** Admin mode B: LocalStorage NFTs */
+
+/** LocalStorage NFTs (optional, for offline/testing) */
 export function getLocalStorageCollections(chain: ChainSlug): Collection[] {
   try {
     const nfts = NFTStorage.getAllNFTs();
     
-    // Filter by chain and convert to Collection format
     return nfts
       .filter(nft => nft.network === chain && nft.visible !== false)
       .map(nft => ({
@@ -132,15 +72,29 @@ export function getLocalStorageCollections(chain: ChainSlug): Collection[] {
   }
 }
 
-/** Admin mode C: GitHub PR flow -> file is the source (fallback) */
+/**
+ * Main collections getter - fetches from Supabase only (no mock/fallback NFTs)
+ * Merges with static config NFTs from collections.ts
+ */
 export async function getCollections(chain: ChainSlug): Promise<Collection[]> {
-  const admin = await fetchAdminCollections(chain).catch(() => []);
-  const local = getLocalStorageCollections(chain);
-  const base = NFT_COLLECTIONS[chain] ?? [];
-  
-  // Merge all sources, prioritizing: local > admin > base
-  const bySlug: Record<string, Collection> = {};
-  [...base, ...admin, ...local].forEach(c => { bySlug[c.slug] = c; });
-  return Object.values(bySlug);
+  try {
+    // Fetch from Supabase (primary source)
+    const supabaseNfts = await fetchAdminCollections(chain);
+    
+    // Get static config NFTs (if any)
+    const staticNfts = NFT_COLLECTIONS[chain] ?? [];
+    
+    // Merge: Supabase NFTs + static config
+    const bySlug: Record<string, Collection> = {};
+    [...staticNfts, ...supabaseNfts].forEach(c => { 
+      bySlug[c.slug] = c; 
+    });
+    
+    return Object.values(bySlug);
+  } catch (error) {
+    console.error('[getCollections] Error:', error);
+    // Fallback to static config only if Supabase fails
+    return NFT_COLLECTIONS[chain] ?? [];
+  }
 }
 
