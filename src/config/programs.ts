@@ -78,17 +78,5 @@ export const PROGRAMS: Program[] = [
       { id: "idos-social", textEN: "Telegram & X tasks", textTR: "Telegram ve X görevleri" },
       { id: "idos-checkin", textEN: "Daily check-in for points", textTR: "Günlük check-in ile puan kazan", daily: true }
     ]
-  },
-  {
-    slug: "soneium",
-    nameEN: "Soneium",
-    nameTR: "Soneium",
-    url: "https://portal.soneium.org",
-    visibility: "mainnet",
-    tasksText: [
-      { id: "son-season", textEN: "Seasonal quests (on-chain)", textTR: "Sezonluk görevler (on-chain)" },
-      { id: "son-daily", textEN: "Daily activity (small transactions)", textTR: "Günlük küçük işlemlerle aktif kal", daily: true },
-      { id: "son-nft", textEN: "Mint the season NFT", textTR: "Sezon NFT'sini mintle" }
-    ]
   }
 ];

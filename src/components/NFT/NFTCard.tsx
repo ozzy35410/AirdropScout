@@ -66,14 +66,26 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
         </div>
 
         {/* Price Section */}
-        {nft.price_eth && parseFloat(nft.price_eth) > 0 && (
-          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
+        {nft.price_eth !== undefined && nft.price_eth !== null && (
+          <div className={`mb-4 p-3 rounded-lg border ${
+            parseFloat(nft.price_eth) === 0 
+              ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-100' 
+              : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-100'
+          }`}>
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-lg font-bold text-gray-900">{parseFloat(nft.price_eth).toFixed(6)}</span>
-                <span className="text-sm font-medium text-green-600">ETH</span>
-              </div>
+              {parseFloat(nft.price_eth) === 0 ? (
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-4 h-4 text-blue-600" />
+                  <span className="text-lg font-bold text-blue-800">FREE</span>
+                  <span className="text-sm font-medium text-blue-600">No cost to mint</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <TrendingUp className="w-4 h-4 text-green-600" />
+                  <span className="text-lg font-bold text-gray-900">{parseFloat(nft.price_eth).toFixed(6)}</span>
+                  <span className="text-sm font-medium text-green-600">ETH</span>
+                </div>
+              )}
             </div>
           </div>
         )}

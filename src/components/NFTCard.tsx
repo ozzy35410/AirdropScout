@@ -11,11 +11,29 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
   const network = NETWORKS[nft.network];
 
   const renderPrice = () => {
-    if (!nft.price_eth) {
+    if (nft.price_eth === undefined || nft.price_eth === null) {
       return (
         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <DollarSign className="w-4 h-4 text-gray-400" />
           <span className="text-sm text-gray-500">Price not set</span>
+        </div>
+      );
+    }
+
+    // If price is 0, show FREE
+    const priceValue = typeof nft.price_eth === 'string' ? parseFloat(nft.price_eth) : nft.price_eth;
+    if (priceValue === 0) {
+      return (
+        <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-blue-600" />
+            <div>
+              <div className="font-bold text-blue-800 text-lg">FREE</div>
+              <div className="text-xs text-blue-600">
+                No cost to mint
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -25,7 +43,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-green-600" />
           <div>
-            <div className="font-semibold text-green-800">{nft.price_eth} ETH</div>
+            <div className="font-semibold text-green-800">{priceValue} ETH</div>
             <div className="text-xs text-green-600">
               Manual <span className="text-orange-500">(Outdated)</span>
             </div>
