@@ -4,28 +4,46 @@ import { NFTStorage } from '../lib/storage';
 
 /** Admin mode A: Supabase (if present) */
 export async function fetchAdminCollections(chain: ChainSlug): Promise<Collection[]> {
-  // Try to fetch from Supabase if available
+  // Normalize chain to lowercase
+  const chainSlug = (chain || '').toLowerCase();
+  
   try {
-    const response = await fetch(`/api/admin/collections?chain=${chain}`);
-    if (!response.ok) return [];
+    const response = await fetch(`/api/admin/collections?chain=${encodeURIComponent(chainSlug)}`, {
+      headers: { 'accept': 'application/json' },
+    });
     
-    const data = await response.json();
-    if (!data.collections || !Array.isArray(data.collections)) return [];
+    if (!response.ok) {
+      throw new Error(`collections ${response.status}`);
+    }
     
-    // Map admin collections to Collection format
-    return data.collections.map((item: any) => ({
+    const json = await response.json();
+    
+    // Check for new API format with 'ok' field
+    if (json.ok === false) {
+      throw new Error(json.error || 'bad response');
+    }
+    
+    const collections = json.ok ? json.collections : json.collections || [];
+    
+    if (!Array.isArray(collections)) {
+      console.warn('Invalid collections response:', json);
+      return [];
+    }
+    
+    // Map API response to Collection format
+    return collections.map((item: any) => ({
       slug: `admin-${item.id}`,
-      name: item.name,
-      contract: item.contract_address as `0x${string}`,
-      standard: (item.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
-      image: item.image_url,
+      name: item.name || item.title,
+      contract: item.contract || item.contract_address as `0x${string}`,
+      standard: (item.standard?.toLowerCase() === 'erc721' || item.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
+      image: item.image || item.image_url,
       tags: item.tags || [],
-      mintUrl: item.mint_url,
+      mintUrl: item.mintUrl || item.mint_url || item.external_link,
       startBlock: item.start_block ? BigInt(item.start_block) : undefined,
-      addedAt: item.created_at
+      addedAt: item.createdAt || item.created_at
     }));
   } catch (error) {
-    console.warn('Failed to fetch admin collections:', error);
+    console.error('Failed to fetch admin collections:', error);
     return [];
   }
 }

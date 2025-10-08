@@ -599,47 +599,65 @@ async function loadCollectionsForChain(chain: string) {
   }
 }
 
-// Get admin collections by chain
+// Get admin collections by chain (Hardened with RLS support & case-insensitive matching)
 app.get('/api/admin/collections', async (req, res) => {
-  const { chain } = req.query;
-  
-  if (!chain) {
-    return res.status(400).json({ error: 'Missing chain parameter' });
-  }
-
   try {
-    if (!supabase) {
-      return res.json({ collections: [] });
+    // 1) Normalize query param
+    const chainRaw = String(req.query.chain || '').trim();
+    const chain = chainRaw.toLowerCase();
+    
+    if (!chain) {
+      return res.status(400).json({ ok: false, error: 'MISSING_CHAIN' });
     }
 
-    // Use 'nfts' table instead of 'nft_collections'
+    if (!supabase) {
+      console.warn('[collections] Supabase not configured');
+      return res.json({ ok: true, collections: [] });
+    }
+
+    // 2) Query Supabase defensively with case-insensitive matching
     const { data, error } = await supabase
       .from('nfts')
       .select('*')
-      .eq('network', chain)
       .eq('visible', true)
+      // Accept both exact and case-insensitive network matching
+      .or(`network.eq.${chain},network.ilike.${chain}`)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('[collections] Supabase error:', error);
+      return res.status(500).json({ ok: false, error: 'SUPABASE_ERROR', details: error.message });
+    }
 
-    // Map nfts table columns to collections format
-    const collections = (data || []).map(nft => ({
-      id: nft.id,
-      name: nft.title,
-      contract_address: nft.contract_address,
-      token_standard: nft.token_standard,
-      image_url: nft.image_url,
-      tags: nft.tags || [],
-      mint_url: nft.external_link,
-      start_block: null,
-      created_at: nft.created_at,
-      chain: nft.network
-    }));
+    // 3) Map to UI-friendly format with normalized fields
+    const collections = (data || []).filter(Boolean).map((nft: any) => {
+      // Normalize token standard
+      let standard = (nft.token_standard || '').toLowerCase();
+      if (standard === 'erc-721') standard = 'erc721';
+      if (standard === 'erc-1155') standard = 'erc1155';
 
-    res.json({ collections });
-  } catch (error) {
-    console.error('Error fetching admin collections:', error);
-    res.status(500).json({ error: 'Failed to fetch collections' });
+      return {
+        id: nft.id,
+        name: nft.title,
+        description: nft.description ?? '',
+        chain: (nft.network || '').toLowerCase(),
+        contract: nft.contract_address,
+        tokenId: nft.token_id,
+        standard: standard,
+        image: nft.image_url || null,
+        tags: nft.tags ?? [],
+        mintUrl: nft.external_link || null,
+        visible: nft.visible ?? true,
+        createdAt: nft.created_at,
+      };
+    });
+
+    console.log(`[collections] Found ${collections.length} NFTs for chain="${chain}"`);
+    return res.json({ ok: true, collections });
+
+  } catch (e: any) {
+    console.error('[collections] Fatal error:', e);
+    return res.status(500).json({ ok: false, error: 'UNKNOWN', details: e.message });
   }
 });
 
