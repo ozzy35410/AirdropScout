@@ -15,6 +15,38 @@ export const CHAINS = {
     rpcUrl: "https://evm-rpc.sei-apis.com",
     kind: "mainnet" as const
   },
+  zora: {
+    slug: "zora",
+    id: 7777777,
+    name: "Zora",
+    explorer: "https://explorer.zora.energy",
+    rpcUrl: "https://rpc.zora.energy",
+    kind: "mainnet" as const
+  },
+  ink: {
+    slug: "ink",
+    id: 57073,
+    name: "Ink",
+    explorer: "https://explorer.inkonchain.com",
+    rpcUrl: "https://rpc-gel.inkonchain.com",
+    kind: "mainnet" as const
+  },
+  soneium: {
+    slug: "soneium",
+    id: 1868,
+    name: "Soneium",
+    explorer: "https://explorer.soneium.org",
+    rpcUrl: "https://rpc.soneium.org",
+    kind: "mainnet" as const
+  },
+  mode: {
+    slug: "mode",
+    id: 34443,
+    name: "Mode",
+    explorer: "https://explorer.mode.network",
+    rpcUrl: "https://mainnet.mode.network",
+    kind: "mainnet" as const
+  },
   giwa: {
     slug: "giwa",
     id: 91342,

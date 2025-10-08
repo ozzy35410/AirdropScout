@@ -30,6 +30,34 @@ export const NETWORKS: Record<string, NetworkConfig> = {
       decimals: 18
     }
   },
+  zora: {
+    name: 'zora',
+    displayName: 'Zora',
+    rpcUrl: 'https://rpc.zora.energy',
+    chainId: 7777777,
+    color: 'bg-black',
+    explorer: 'https://explorer.zora.energy',
+    type: 'mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
+  ink: {
+    name: 'ink',
+    displayName: 'Ink',
+    rpcUrl: 'https://rpc-gel.inkonchain.com',
+    chainId: 57073,
+    color: 'bg-pink-500',
+    explorer: 'https://explorer.inkonchain.com',
+    type: 'mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
   soneium: {
     name: 'soneium',
     displayName: 'Soneium',
@@ -37,6 +65,20 @@ export const NETWORKS: Record<string, NetworkConfig> = {
     chainId: 1868,
     color: 'bg-purple-500',
     explorer: 'https://explorer.soneium.org',
+    type: 'mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
+  mode: {
+    name: 'mode',
+    displayName: 'Mode Network',
+    rpcUrl: 'https://mainnet.mode.network',
+    chainId: 34443,
+    color: 'bg-yellow-500',
+    explorer: 'https://explorer.mode.network',
     type: 'mainnet',
     nativeCurrency: {
       name: 'Ethereum',

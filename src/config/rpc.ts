@@ -2,6 +2,10 @@
 export const RPC_ENDPOINTS = {
   base: 'https://mainnet.base.org',
   sei: 'https://evm-rpc.sei-apis.com',
+  zora: 'https://rpc.zora.energy',
+  ink: 'https://rpc-gel.inkonchain.com',
+  soneium: 'https://rpc.soneium.org',
+  mode: 'https://mainnet.mode.network',
   pharos: 'https://testnet.dplabs-internal.com',
   giwa: 'https://sepolia-rpc.giwa.io'
 } as const;

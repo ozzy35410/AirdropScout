@@ -186,3 +186,51 @@ export const SEI_TASKS: AirdropTask[] = [
     completed: false
   }
 ];
+
+export const ZORA_TASKS: AirdropTask[] = [
+  {
+    id: 'zora-nft-mint',
+    title: 'mint_different_nfts',
+    description: 'Mint different NFTs from various collections',
+    url: '/nfts?network=zora',
+    network: 'zora',
+    category: 'nft',
+    completed: false
+  }
+];
+
+export const INK_TASKS: AirdropTask[] = [
+  {
+    id: 'ink-nft-mint',
+    title: 'mint_different_nfts',
+    description: 'Mint different NFTs from various collections',
+    url: '/nfts?network=ink',
+    network: 'ink',
+    category: 'nft',
+    completed: false
+  }
+];
+
+export const SONEIUM_TASKS: AirdropTask[] = [
+  {
+    id: 'soneium-nft-mint',
+    title: 'mint_different_nfts',
+    description: 'Mint different NFTs from various collections',
+    url: '/nfts?network=soneium',
+    network: 'soneium',
+    category: 'nft',
+    completed: false
+  }
+];
+
+export const MODE_TASKS: AirdropTask[] = [
+  {
+    id: 'mode-nft-mint',
+    title: 'mint_different_nfts',
+    description: 'Mint different NFTs from various collections',
+    url: '/nfts?network=mode',
+    network: 'mode',
+    category: 'nft',
+    completed: false
+  }
+];
