@@ -47,12 +47,27 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
   try {
     console.log(`[collectionsProvider] Fetching directly from Supabase for chain="${chainSlug}"`);
     
-    const { data, error } = await supabase
+    // First try exact match (most common case)
+    let { data, error } = await supabase
       .from('nfts')
       .select('*')
       .eq('visible', true)
-      .or(`network.eq.${chainSlug},network.ilike.${chainSlug}`)
+      .eq('network', chainSlug)
       .order('created_at', { ascending: false });
+    
+    // If no results, try case-insensitive search
+    if (!error && (!data || data.length === 0)) {
+      console.log(`[collectionsProvider] No exact match, trying case-insensitive for "${chainSlug}"`);
+      const result = await supabase
+        .from('nfts')
+        .select('*')
+        .eq('visible', true)
+        .ilike('network', chainSlug)
+        .order('created_at', { ascending: false });
+      
+      data = result.data;
+      error = result.error;
+    }
     
     if (error) {
       console.error('[collectionsProvider] Supabase error:', error);
