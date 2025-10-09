@@ -1,5 +1,6 @@
 import { ExternalLink, Hash, Tag, TrendingUp } from 'lucide-react';
 import { NFT, NetworkConfigs } from '../../types';
+import { normalizePriceEth } from '../../utils/price';
 
 interface NFTCardProps {
   nft: NFT;
@@ -9,6 +10,9 @@ interface NFTCardProps {
 export function NFTCard({ nft, networks }: NFTCardProps) {
   const network = networks[nft.network];
   const networkColor = network?.color === '#FFEEDA' ? '#FFA500' : network?.color || '#6B7280';
+  
+  // ✅ Normalize price: 0 = FREE, null = no badge
+  const priceEth = normalizePriceEth(nft.price_eth);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
@@ -66,14 +70,14 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
         </div>
 
         {/* Price Section */}
-        {nft.price_eth !== undefined && nft.price_eth !== null && (
+        {priceEth !== null && (
           <div className={`mb-4 p-3 rounded-lg border ${
-            parseFloat(nft.price_eth) === 0 
+            priceEth === 0 
               ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-100' 
               : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-100'
           }`}>
             <div className="flex items-center justify-between">
-              {parseFloat(nft.price_eth) === 0 ? (
+              {priceEth === 0 ? (
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-4 h-4 text-blue-600" />
                   <span className="text-lg font-bold text-blue-800">FREE</span>
@@ -82,7 +86,7 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
               ) : (
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-4 h-4 text-green-600" />
-                  <span className="text-lg font-bold text-gray-900">{parseFloat(nft.price_eth).toFixed(6)}</span>
+                  <span className="text-lg font-bold text-gray-900">{priceEth.toFixed(6)}</span>
                   <span className="text-sm font-medium text-green-600">ETH</span>
                 </div>
               )}

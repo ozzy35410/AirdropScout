@@ -20,6 +20,10 @@ export interface Collection {
 export const NFT_COLLECTIONS: Record<ChainSlug, Collection[]> = {
   base: [],
   sei: [],
+  zora: [],
+  ink: [],
+  soneium: [],
+  mode: [],
   giwa: [],
   pharos: []
 };

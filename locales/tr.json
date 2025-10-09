@@ -158,5 +158,6 @@
   "supported_protocols": "Desteklenen Protokoller",
   "mainnet_networks": "Mainnet Ağları",
   "testnet_networks": "Testnet Ağları",
-  "all_protocols": "Tüm Protokoller"
+  "all_protocols": "Tüm Protokoller",
+  "free": "Ücretsiz"
 }

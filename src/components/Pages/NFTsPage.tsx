@@ -5,6 +5,7 @@ import { CHAINS, ChainSlug } from '../../config/chains';
 import { Collection } from '../../config/collections';
 import { getCollections } from '../../data/collectionsProvider';
 import { useMintedMap } from '../../hooks/useMintedMap';
+import { normalizePriceEth } from '../../utils/price';
 
 interface NFTsPageProps {
   networkType: 'mainnet' | 'testnet';
@@ -119,14 +120,10 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
       if (sortBy === 'az') return a.name.localeCompare(b.name);
       if (sortBy === 'za') return b.name.localeCompare(a.name);
       
-      // Price sorting (FREE = 0)
+      // Price sorting using normalized price (FREE = 0, null = 0 for sorting)
       if (sortBy === 'price-low' || sortBy === 'price-high') {
-        const priceA = a.price !== undefined && a.price !== null 
-          ? (typeof a.price === 'string' ? parseFloat(a.price) : a.price) 
-          : 0;
-        const priceB = b.price !== undefined && b.price !== null 
-          ? (typeof b.price === 'string' ? parseFloat(b.price) : b.price) 
-          : 0;
+        const priceA = normalizePriceEth(a.price) ?? 0;
+        const priceB = normalizePriceEth(b.price) ?? 0;
         
         return sortBy === 'price-low' 
           ? priceA - priceB  // Low to high
@@ -382,20 +379,26 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                       {nft.name}
                     </h3>
 
-                    {/* Price */}
-                    {nft.price !== undefined && nft.price !== null && (
-                      <div className="mb-3">
-                        {parseFloat(nft.price) === 0 ? (
-                          <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-bold">
-                            🎁 FREE
-                          </span>
-                        ) : (
-                          <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
-                            💎 {parseFloat(nft.price).toFixed(6)} ETH
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* Price - using normalized price */}
+                    {(() => {
+                      const priceEth = normalizePriceEth(nft.price);
+                      if (priceEth !== null) {
+                        return (
+                          <div className="mb-3">
+                            {priceEth === 0 ? (
+                              <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-bold">
+                                🎁 {t('free')}
+                              </span>
+                            ) : (
+                              <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                                💎 {priceEth.toFixed(6)} ETH
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
 
                     {/* Tags */}
                     {nft.tags && nft.tags.length > 0 && (

@@ -2,6 +2,7 @@ import { NFT_COLLECTIONS, Collection } from '../config/collections';
 import { ChainSlug } from '../config/chains';
 import { NFTStorage } from '../lib/storage';
 import { supabase } from '../lib/supabase';
+import { normalizePriceEth } from '../utils/price';
 
 /**
  * Fetch NFT collections from Supabase (client-side only, no server)
@@ -32,6 +33,9 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
     const std = String(nft.token_standard || '').toLowerCase();
     const isErc1155 = std.includes('1155');
     
+    // ✅ Normalize price: null|""|"free"|"0" → 0, valid number → number, else → undefined
+    const priceEth = normalizePriceEth(nft.price_eth);
+    
     return {
       slug: `supabase-${nft.id}`,
       name: nft.title,
@@ -42,7 +46,7 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
       mintUrl: nft.external_link || undefined,
       startBlock: undefined,
       addedAt: nft.created_at,
-      price: nft.price_eth || undefined
+      price: priceEth !== null ? String(priceEth) : undefined
     } as Collection;
   });
 }
@@ -55,18 +59,22 @@ export function getLocalStorageCollections(chain: ChainSlug): Collection[] {
     
     return nfts
       .filter(nft => nft.network === chain && nft.visible !== false)
-      .map(nft => ({
-        slug: `local-${nft.id}`,
-        name: nft.title,
-        contract: nft.contract_address as `0x${string}`,
-        standard: (nft.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
-        image: nft.imageUrl,
-        tags: nft.tags || [],
-        mintUrl: nft.external_link,
-        startBlock: undefined,
-        addedAt: nft.created_at,
-        price: nft.price_eth
-      }));
+      .map(nft => {
+        const priceEth = normalizePriceEth(nft.price_eth);
+        
+        return {
+          slug: `local-${nft.id}`,
+          name: nft.title,
+          contract: nft.contract_address as `0x${string}`,
+          standard: (nft.token_standard?.toLowerCase() === 'erc-721' ? 'erc721' : 'erc1155') as 'erc721' | 'erc1155',
+          image: nft.imageUrl,
+          tags: nft.tags || [],
+          mintUrl: nft.external_link,
+          startBlock: undefined,
+          addedAt: nft.created_at,
+          price: priceEth !== null ? String(priceEth) : undefined
+        };
+      });
   } catch (error) {
     console.warn('Failed to fetch localStorage collections:', error);
     return [];

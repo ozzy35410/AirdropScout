@@ -158,5 +158,6 @@
   "supported_protocols": "Supported Protocols",
   "mainnet_networks": "Mainnet Networks",
   "testnet_networks": "Testnet Networks",
-  "all_protocols": "All Protocols"
+  "all_protocols": "All Protocols",
+  "free": "FREE"
 }

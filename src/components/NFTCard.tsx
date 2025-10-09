@@ -2,6 +2,7 @@ import React from 'react';
 import { ExternalLink, Tag, Network, DollarSign, TrendingUp } from 'lucide-react';
 import { NFT } from '../types';
 import { NETWORKS } from '../config/networks';
+import { normalizePriceEth } from '../utils/price';
 
 interface NFTCardProps {
   nft: NFT;
@@ -11,7 +12,10 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
   const network = NETWORKS[nft.network];
 
   const renderPrice = () => {
-    if (nft.price_eth === undefined || nft.price_eth === null) {
+    // ✅ Normalize price: 0 = FREE, null = no badge
+    const priceEth = normalizePriceEth(nft.price_eth);
+    
+    if (priceEth === null) {
       return (
         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <DollarSign className="w-4 h-4 text-gray-400" />
@@ -20,9 +24,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
       );
     }
 
-    // If price is 0, show FREE
-    const priceValue = typeof nft.price_eth === 'string' ? parseFloat(nft.price_eth) : nft.price_eth;
-    if (priceValue === 0) {
+    if (priceEth === 0) {
       return (
         <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
           <div className="flex items-center gap-2">
@@ -43,7 +45,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-green-600" />
           <div>
-            <div className="font-semibold text-green-800">{priceValue} ETH</div>
+            <div className="font-semibold text-green-800">{priceEth} ETH</div>
             <div className="text-xs text-green-600">
               Manual <span className="text-orange-500">(Outdated)</span>
             </div>
