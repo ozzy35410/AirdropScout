@@ -28,7 +28,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za'>('newest');
+  const [sortBy, setSortBy] = useState<'newest' | 'az' | 'za' | 'price-low' | 'price-high'>('newest');
   const [trackingAddress, setTrackingAddress] = useState('');
   const [mintedFilter, setMintedFilter] = useState<MintedFilter>('show');
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -118,6 +118,21 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
     filtered.sort((a, b) => {
       if (sortBy === 'az') return a.name.localeCompare(b.name);
       if (sortBy === 'za') return b.name.localeCompare(a.name);
+      
+      // Price sorting (FREE = 0)
+      if (sortBy === 'price-low' || sortBy === 'price-high') {
+        const priceA = a.price !== undefined && a.price !== null 
+          ? (typeof a.price === 'string' ? parseFloat(a.price) : a.price) 
+          : 0;
+        const priceB = b.price !== undefined && b.price !== null 
+          ? (typeof b.price === 'string' ? parseFloat(b.price) : b.price) 
+          : 0;
+        
+        return sortBy === 'price-low' 
+          ? priceA - priceB  // Low to high
+          : priceB - priceA; // High to low
+      }
+      
       return 0; // newest (order in array)
     });
 
@@ -237,6 +252,8 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                 <option value="newest">{t('newest')}</option>
                 <option value="az">A → Z</option>
                 <option value="za">Z → A</option>
+                <option value="price-low">💰 Price: Low to High</option>
+                <option value="price-high">💎 Price: High to Low</option>
               </select>
             </div>
 
@@ -366,11 +383,17 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                     </h3>
 
                     {/* Price */}
-                    {nft.price && parseFloat(nft.price) > 0 && (
+                    {nft.price !== undefined && nft.price !== null && (
                       <div className="mb-3">
-                        <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
-                          💎 {parseFloat(nft.price).toFixed(6)} ETH
-                        </span>
+                        {parseFloat(nft.price) === 0 ? (
+                          <span className="inline-block bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-sm font-bold">
+                            🎁 FREE
+                          </span>
+                        ) : (
+                          <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                            💎 {parseFloat(nft.price).toFixed(6)} ETH
+                          </span>
+                        )}
                       </div>
                     )}
 
