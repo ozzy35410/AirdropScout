@@ -220,6 +220,24 @@ export const SONEIUM_TASKS: AirdropTask[] = [
     network: 'soneium',
     category: 'nft',
     completed: false
+  },
+  {
+    id: 'soneium-season',
+    title: 'Seasonal Quests',
+    description: 'Seasonal quests (on-chain)',
+    url: 'https://portal.soneium.org',
+    network: 'soneium',
+    category: 'interaction',
+    completed: false
+  },
+  {
+    id: 'soneium-daily',
+    title: 'Daily Activity',
+    description: 'Daily activity (small transactions)',
+    url: 'https://portal.soneium.org',
+    network: 'soneium',
+    category: 'interaction',
+    completed: false
   }
 ];
 
