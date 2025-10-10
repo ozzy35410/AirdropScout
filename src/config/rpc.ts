@@ -1,6 +1,7 @@
 // Public RPC endpoints for each supported network
+// Using reliable public RPCs with good CORS support
 export const RPC_ENDPOINTS = {
-  base: 'https://mainnet.base.org',
+  base: 'https://base.blockpi.network/v1/rpc/public', // Better than mainnet.base.org - no rate limits
   sei: 'https://evm-rpc.sei-apis.com',
   zora: 'https://rpc.zora.energy',
   ink: 'https://rpc-gel.inkonchain.com',

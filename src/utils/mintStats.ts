@@ -1,4 +1,4 @@
-import { createPublicClient, http, parseAbiItem } from 'viem';
+import { createPublicClient, http, parseAbiItem, encodeEventTopics } from 'viem';
 import { RPC_ENDPOINTS } from '../config/rpc';
 import type { ChainSlug } from '../config/chains';
 
@@ -8,6 +8,14 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 // TransferSingle for ERC-1155
 const TRANSFER_SINGLE_EVENT = parseAbiItem('event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)');
+
+// Better RPC endpoints with CORS support
+const OPTIMIZED_RPC: Record<string, string> = {
+  'base': 'https://base.blockpi.network/v1/rpc/public',
+  'base-sepolia': 'https://sepolia.base.org',
+  'zora': 'https://rpc.zora.energy',
+  'zora-sepolia': 'https://sepolia.rpc.zora.energy',
+};
 
 interface MintStats {
   totalMinted: number;
@@ -55,8 +63,107 @@ function setCachedStats(chain: ChainSlug, contract: string, stats: MintStats): v
 }
 
 /**
+ * Create optimized RPC client with retry and timeout settings
+ */
+function createOptimizedClient(chain: ChainSlug) {
+  const rpcUrl = OPTIMIZED_RPC[chain] || RPC_ENDPOINTS[chain];
+  
+  if (!rpcUrl) {
+    throw new Error(`No RPC URL configured for chain: ${chain}`);
+  }
+
+  return createPublicClient({
+    transport: http(rpcUrl, {
+      batch: false,       // Single requests for getLogs
+      retryCount: 3,
+      timeout: 20_000,    // 20 second timeout
+    }),
+  });
+}
+
+/**
+ * Get logs in chunks to avoid rate limits and timeouts
+ */
+async function getLogsChunked({
+  client,
+  address,
+  event,
+  args,
+  fromBlock,
+  toBlock,
+  step = 8_000n,
+  delayMs = 120,
+}: {
+  client: ReturnType<typeof createPublicClient>;
+  address: `0x${string}`;
+  event: any;
+  args?: any;
+  fromBlock: bigint;
+  toBlock: bigint;
+  step?: bigint;
+  delayMs?: number;
+}): Promise<any[]> {
+  const logs: any[] = [];
+  
+  for (let start = fromBlock; start <= toBlock; start += step) {
+    const end = start + step - 1n > toBlock ? toBlock : start + step - 1n;
+    
+    try {
+      const part = await client.getLogs({
+        address,
+        event,
+        args,
+        fromBlock: start,
+        toBlock: end,
+      });
+      
+      logs.push(...part);
+      
+      // Small delay between chunks to avoid rate limiting
+      if (delayMs && start + step <= toBlock) {
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    } catch (error) {
+      console.warn(`[mintStats] Error fetching logs from ${start} to ${end}:`, error);
+      // Continue with other chunks even if one fails
+    }
+  }
+  
+  return logs;
+}
+
+/**
+ * Try to get totalSupply() from contract (fastest method)
+ * Returns null if not supported
+ */
+async function tryTotalSupply(
+  client: ReturnType<typeof createPublicClient>,
+  address: `0x${string}`
+): Promise<bigint | null> {
+  try {
+    const supply = await client.readContract({
+      address,
+      abi: [
+        {
+          name: 'totalSupply',
+          type: 'function',
+          stateMutability: 'view',
+          inputs: [],
+          outputs: [{ type: 'uint256' }],
+        },
+      ],
+      functionName: 'totalSupply',
+    });
+
+    return BigInt(supply as any);
+  } catch {
+    return null; // totalSupply() not available
+  }
+}
+
+/**
  * Get mint statistics for an ERC-721 NFT collection
- * Shows total minted tokens and optionally burned tokens
+ * First tries totalSupply(), then falls back to event scanning
  */
 export async function getErc721MintStats({
   chain,
@@ -73,24 +180,34 @@ export async function getErc721MintStats({
     return cached;
   }
 
-  const rpcUrl = RPC_ENDPOINTS[chain];
-  if (!rpcUrl) {
-    throw new Error(`No RPC URL configured for chain: ${chain}`);
-  }
-
-  const client = createPublicClient({
-    transport: http(rpcUrl),
-  });
-
   try {
-    const latest = await client.getBlockNumber();
-    // Use smaller range to avoid rate limits (50k blocks max)
-    const maxRange = 50_000n;
-    const defaultRange = latest > maxRange ? latest - maxRange : 0n;
-    const fromBlock = startBlock ?? defaultRange;
+    const client = createOptimizedClient(chain);
+    
+    // 1) Try totalSupply() first (fastest method)
+    const totalSupply = await tryTotalSupply(client, contract);
+    
+    if (totalSupply !== null) {
+      const stats: MintStats = {
+        totalMinted: Number(totalSupply),
+        totalBurned: 0,
+        circulating: Number(totalSupply),
+        lastUpdated: Date.now(),
+      };
+      
+      setCachedStats(chain, contract, stats);
+      return stats;
+    }
 
-    // Get mint events (from = 0x0)
-    const mintLogs = await client.getLogs({
+    // 2) Fall back to event scanning with chunked requests
+    const latest = await client.getBlockNumber();
+    
+    // Determine block range (use startBlock if provided, otherwise scan last 200k blocks)
+    const maxRange = 200_000n;
+    const fromBlock = startBlock ?? (latest > maxRange ? latest - maxRange : 0n);
+
+    // Get mint events (from = 0x0) in chunks
+    const mintLogs = await getLogsChunked({
+      client,
       address: contract,
       event: TRANSFER_EVENT,
       args: {
@@ -98,6 +215,8 @@ export async function getErc721MintStats({
       },
       fromBlock,
       toBlock: latest,
+      step: 8_000n,       // 8k blocks per request
+      delayMs: 120,       // 120ms delay between requests
     });
 
     // Count unique minted token IDs
@@ -108,13 +227,10 @@ export async function getErc721MintStats({
       }
     }
 
-    // Skip burn tracking to reduce RPC calls (rate limit issues)
-    const burnedTokenIds = new Set<string>();
-
     const stats: MintStats = {
       totalMinted: mintedTokenIds.size,
-      totalBurned: burnedTokenIds.size,
-      circulating: mintedTokenIds.size - burnedTokenIds.size,
+      totalBurned: 0,
+      circulating: mintedTokenIds.size,
       lastUpdated: Date.now(),
     };
 
@@ -123,7 +239,7 @@ export async function getErc721MintStats({
 
     return stats;
   } catch (error) {
-    console.warn(`[mintStats] Rate limit or RPC error for ${contract}, using cached/empty data`);
+    console.warn(`[mintStats] Error fetching stats for ${contract} on ${chain}:`, error);
     
     // Return empty stats on error (will be cached so we don't retry immediately)
     const emptyStats: MintStats = {
@@ -162,24 +278,17 @@ export async function getErc1155MintStats({
     };
   }
 
-  const rpcUrl = RPC_ENDPOINTS[chain];
-  if (!rpcUrl) {
-    throw new Error(`No RPC URL configured for chain: ${chain}`);
-  }
-
-  const client = createPublicClient({
-    transport: http(rpcUrl),
-  });
-
   try {
+    const client = createOptimizedClient(chain);
     const latest = await client.getBlockNumber();
-    // Use smaller range to avoid rate limits (50k blocks max)
-    const maxRange = 50_000n;
-    const defaultRange = latest > maxRange ? latest - maxRange : 0n;
-    const fromBlock = startBlock ?? defaultRange;
+    
+    // Determine block range
+    const maxRange = 200_000n;
+    const fromBlock = startBlock ?? (latest > maxRange ? latest - maxRange : 0n);
 
-    // Get TransferSingle mint events (from = 0x0)
-    const mintLogs = await client.getLogs({
+    // Get TransferSingle mint events (from = 0x0) in chunks
+    const mintLogs = await getLogsChunked({
+      client,
       address: contract,
       event: TRANSFER_SINGLE_EVENT,
       args: {
@@ -187,6 +296,8 @@ export async function getErc1155MintStats({
       },
       fromBlock,
       toBlock: latest,
+      step: 8_000n,
+      delayMs: 120,
     });
 
     let totalUnits = 0;
@@ -215,7 +326,7 @@ export async function getErc1155MintStats({
 
     return result;
   } catch (error) {
-    console.warn(`[mintStats] Rate limit or RPC error for ERC-1155 ${contract}`);
+    console.warn(`[mintStats] Error fetching ERC-1155 stats for ${contract} on ${chain}:`, error);
     
     const emptyResult = {
       totalUnits: 0,
@@ -248,35 +359,21 @@ export async function getTotalSupply({
   contract: `0x${string}`;
   startBlock?: bigint;
 }): Promise<number> {
-  const rpcUrl = RPC_ENDPOINTS[chain];
-  if (!rpcUrl) {
-    return 0;
-  }
-
-  const client = createPublicClient({
-    transport: http(rpcUrl),
-  });
-
   try {
-    // Try calling totalSupply() function
-    const supply = await client.readContract({
-      address: contract,
-      abi: [
-        {
-          name: 'totalSupply',
-          type: 'function',
-          stateMutability: 'view',
-          inputs: [],
-          outputs: [{ type: 'uint256' }],
-        },
-      ],
-      functionName: 'totalSupply',
-    });
+    const client = createOptimizedClient(chain);
+    
+    // Try totalSupply() first
+    const supply = await tryTotalSupply(client, contract);
+    
+    if (supply !== null) {
+      return Number(supply);
+    }
 
-    return Number(supply);
-  } catch {
-    // totalSupply() not available, fall back to event counting
+    // Fall back to event counting
     const stats = await getErc721MintStats({ chain, contract, startBlock });
     return stats.circulating;
+  } catch (error) {
+    console.warn(`[mintStats] Error getting total supply for ${contract}:`, error);
+    return 0;
   }
 }
