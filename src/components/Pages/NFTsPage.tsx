@@ -6,6 +6,7 @@ import { Collection } from '../../config/collections';
 import { getCollections } from '../../data/collectionsProvider';
 import { useMintedMap } from '../../hooks/useMintedMap';
 import { normalizePriceEth } from '../../utils/price';
+import { MintCountBadge } from '../MintStats/MintCountBadge';
 
 interface NFTsPageProps {
   networkType: 'mainnet' | 'testnet';
@@ -399,6 +400,17 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                       }
                       return null;
                     })()}
+
+                    {/* Mint Count Badge */}
+                    <div className="mb-3">
+                      <MintCountBadge
+                        chain={activeChain}
+                        contract={nft.contract}
+                        standard={nft.standard}
+                        startBlock={nft.startBlock}
+                        compact={false}
+                      />
+                    </div>
 
                     {/* Tags */}
                     {nft.tags && nft.tags.length > 0 && (
