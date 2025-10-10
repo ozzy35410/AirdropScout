@@ -2,7 +2,7 @@ import { NFT_COLLECTIONS, Collection } from '../config/collections';
 import { ChainSlug } from '../config/chains';
 import { NFTStorage } from '../lib/storage';
 import { supabase } from '../lib/supabase';
-import { normalizePriceEth } from '../utils/price';
+import { normalizePriceEth, getCurrency } from '../utils/price';
 
 /**
  * Fetch NFT collections from Supabase (client-side only, no server)
@@ -36,6 +36,9 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
     // ✅ Normalize price: null|""|"free"|"0" → 0, valid number → number, else → undefined
     const priceEth = normalizePriceEth(nft.price_eth);
     
+    // ✅ Get currency with network fallback
+    const currency = getCurrency(nft.currency, chainSlug);
+    
     return {
       slug: `supabase-${nft.id}`,
       name: nft.title,
@@ -44,10 +47,10 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
       image: nft.image_url || undefined,
       tags: nft.tags || [],
       mintUrl: nft.external_link || undefined,
-      startBlock: undefined,
+      startBlock: nft.start_block ? BigInt(nft.start_block) : undefined,
       addedAt: nft.created_at,
       price: priceEth !== null ? String(priceEth) : undefined,
-      currency: nft.currency || 'ETH' // Default to ETH if not specified
+      currency: currency // Use getCurrency helper with fallback
     } as Collection;
   });
 }
