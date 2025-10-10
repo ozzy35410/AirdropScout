@@ -84,7 +84,10 @@ export async function getErc721MintStats({
 
   try {
     const latest = await client.getBlockNumber();
-    const fromBlock = startBlock ?? (latest > 200_000n ? latest - 200_000n : 0n);
+    // Use smaller range to avoid rate limits (50k blocks max)
+    const maxRange = 50_000n;
+    const defaultRange = latest > maxRange ? latest - maxRange : 0n;
+    const fromBlock = startBlock ?? defaultRange;
 
     // Get mint events (from = 0x0)
     const mintLogs = await client.getLogs({
@@ -105,27 +108,8 @@ export async function getErc721MintStats({
       }
     }
 
-    // Get burn events (to = 0x0) - optional
-    let burnedTokenIds = new Set<string>();
-    try {
-      const burnLogs = await client.getLogs({
-        address: contract,
-        event: TRANSFER_EVENT,
-        args: {
-          to: ZERO_ADDRESS as `0x${string}`,
-        },
-        fromBlock,
-        toBlock: latest,
-      });
-
-      for (const log of burnLogs) {
-        if (log.args.tokenId !== undefined) {
-          burnedTokenIds.add(log.args.tokenId.toString());
-        }
-      }
-    } catch {
-      // Burn tracking is optional, ignore errors
-    }
+    // Skip burn tracking to reduce RPC calls (rate limit issues)
+    const burnedTokenIds = new Set<string>();
 
     const stats: MintStats = {
       totalMinted: mintedTokenIds.size,
@@ -139,15 +123,18 @@ export async function getErc721MintStats({
 
     return stats;
   } catch (error) {
-    console.error(`[mintStats] Failed to fetch for ${contract}:`, error);
+    console.warn(`[mintStats] Rate limit or RPC error for ${contract}, using cached/empty data`);
     
-    // Return empty stats on error
+    // Return empty stats on error (will be cached so we don't retry immediately)
     const emptyStats: MintStats = {
       totalMinted: 0,
       totalBurned: 0,
       circulating: 0,
       lastUpdated: Date.now(),
     };
+    
+    // Cache empty result to avoid immediate retries
+    setCachedStats(chain, contract, emptyStats);
     
     return emptyStats;
   }
@@ -186,7 +173,10 @@ export async function getErc1155MintStats({
 
   try {
     const latest = await client.getBlockNumber();
-    const fromBlock = startBlock ?? (latest > 200_000n ? latest - 200_000n : 0n);
+    // Use smaller range to avoid rate limits (50k blocks max)
+    const maxRange = 50_000n;
+    const defaultRange = latest > maxRange ? latest - maxRange : 0n;
+    const fromBlock = startBlock ?? defaultRange;
 
     // Get TransferSingle mint events (from = 0x0)
     const mintLogs = await client.getLogs({
@@ -225,12 +215,23 @@ export async function getErc1155MintStats({
 
     return result;
   } catch (error) {
-    console.error(`[mintStats] Failed to fetch ERC-1155 for ${contract}:`, error);
-    return {
+    console.warn(`[mintStats] Rate limit or RPC error for ERC-1155 ${contract}`);
+    
+    const emptyResult = {
       totalUnits: 0,
       uniqueIds: 0,
       lastUpdated: Date.now(),
     };
+    
+    // Cache to avoid immediate retries
+    setCachedStats(chain, contract, {
+      totalMinted: 0,
+      totalBurned: 0,
+      circulating: 0,
+      lastUpdated: Date.now(),
+    });
+    
+    return emptyResult;
   }
 }
 

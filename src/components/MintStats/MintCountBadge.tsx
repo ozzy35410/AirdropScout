@@ -1,4 +1,5 @@
 import { Users } from 'lucide-react';
+import { useState } from 'react';
 import { useMintStats } from '../../hooks/useMintStats';
 import type { ChainSlug } from '../../config/chains';
 
@@ -13,6 +14,7 @@ interface MintCountBadgeProps {
 /**
  * Badge component that shows total minted count for an NFT collection
  * Uses blockchain events to count mints without requiring wallet connection
+ * Lazy loads on hover to avoid rate limits
  */
 export function MintCountBadge({ 
   chain, 
@@ -21,16 +23,28 @@ export function MintCountBadge({
   startBlock,
   compact = false 
 }: MintCountBadgeProps) {
+  const [enabled, setEnabled] = useState(false);
+  
   const { totalMinted, circulating, loading, error } = useMintStats({
     chain,
     contract,
     standard,
     startBlock,
-    enabled: true,
+    enabled, // Only fetch when enabled
   });
 
-  if (error) {
-    return null; // Silently fail - don't show badge on error
+  if (error || !enabled) {
+    // Show a button to load stats on demand
+    return (
+      <button
+        onClick={() => setEnabled(true)}
+        onMouseEnter={() => setEnabled(true)}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-indigo-100 text-gray-600 hover:text-indigo-700 rounded-lg text-xs transition-colors cursor-pointer border border-gray-200 hover:border-indigo-300"
+      >
+        <Users className="w-3.5 h-3.5" />
+        <span>View Mints</span>
+      </button>
+    );
   }
 
   if (loading) {
