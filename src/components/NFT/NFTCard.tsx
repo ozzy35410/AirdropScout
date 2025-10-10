@@ -87,7 +87,7 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-4 h-4 text-green-600" />
                   <span className="text-lg font-bold text-gray-900">{priceEth.toFixed(6)}</span>
-                  <span className="text-sm font-medium text-green-600">ETH</span>
+                  <span className="text-sm font-medium text-green-600">{(nft as any).currency || 'ETH'}</span>
                 </div>
               )}
             </div>

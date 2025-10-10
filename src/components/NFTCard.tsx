@@ -45,7 +45,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-green-600" />
           <div>
-            <div className="font-semibold text-green-800">{priceEth} ETH</div>
+            <div className="font-semibold text-green-800">{priceEth} {(nft as any).currency || 'ETH'}</div>
             <div className="text-xs text-green-600">
               Manual <span className="text-orange-500">(Outdated)</span>
             </div>

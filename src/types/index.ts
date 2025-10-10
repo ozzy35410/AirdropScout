@@ -18,6 +18,7 @@ export interface NFT {
   visible: boolean;
   imageUrl?: string;
   price_eth?: string;
+  currency?: string; // Native token symbol (ETH, PHRS, GIWA, etc.)
   created_at: string;
   updated_at: string;
   owned?: boolean;

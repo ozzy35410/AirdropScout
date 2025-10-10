@@ -12,7 +12,8 @@ export interface Collection {
   mintUrl?: string;
   startBlock?: bigint;
   addedAt?: string;
-  price?: string; // Price in ETH
+  price?: string; // Price in native token
+  currency?: string; // Native token symbol (ETH, PHRS, GIWA, etc.)
 }
 
 // Default collections - can be extended via Admin panel

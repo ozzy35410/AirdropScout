@@ -383,6 +383,8 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                     {/* Price - using normalized price */}
                     {(() => {
                       const priceEth = normalizePriceEth(nft.price);
+                      const currency = nft.currency || 'ETH'; // Default to ETH if not specified
+                      
                       if (priceEth !== null) {
                         return (
                           <div className="mb-3">
@@ -392,7 +394,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                               </span>
                             ) : (
                               <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
-                                💎 {priceEth.toFixed(6)} ETH
+                                💎 {priceEth.toFixed(6)} {currency}
                               </span>
                             )}
                           </div>

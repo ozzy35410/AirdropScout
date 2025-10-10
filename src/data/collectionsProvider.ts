@@ -46,7 +46,8 @@ export async function fetchAdminCollections(chain: ChainSlug): Promise<Collectio
       mintUrl: nft.external_link || undefined,
       startBlock: undefined,
       addedAt: nft.created_at,
-      price: priceEth !== null ? String(priceEth) : undefined
+      price: priceEth !== null ? String(priceEth) : undefined,
+      currency: nft.currency || 'ETH' // Default to ETH if not specified
     } as Collection;
   });
 }
