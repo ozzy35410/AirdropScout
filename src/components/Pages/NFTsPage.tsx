@@ -6,6 +6,7 @@ import { Collection } from '../../config/collections';
 import { getCollections } from '../../data/collectionsProvider';
 import { useMintedMap } from '../../hooks/useMintedMap';
 import { normalizePriceEth } from '../../utils/price';
+import { formatPrice } from '../../utils/formatPrice';
 import { MintCountBadge } from '../MintStats/MintCountBadge';
 
 interface NFTsPageProps {
@@ -394,7 +395,7 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
                               </span>
                             ) : (
                               <span className="inline-block bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold">
-                                💎 {priceEth.toFixed(6)} {currency}
+                                💎 {formatPrice(priceEth, { maxDecimals: 7 })} {currency}
                               </span>
                             )}
                           </div>

@@ -5,6 +5,7 @@ import { BulkImport } from './BulkImport';
 import { NFT } from '../../types';
 import { SupabaseNFTStorage } from '../../lib/supabaseStorage';
 import { Toast } from '../ui/Toast';
+import { formatPrice } from '../../utils/formatPrice';
 
 interface AdminPanelProps {
   networks: any;
@@ -309,7 +310,7 @@ export function AdminPanel({ networks }: AdminPanelProps) {
                         <div className="text-sm">
                           {nft.price_eth ? (
                             <span className="font-semibold text-green-600">
-                              {parseFloat(nft.price_eth).toFixed(4)} ETH
+                              {formatPrice(parseFloat(nft.price_eth), { maxDecimals: 7 })} ETH
                             </span>
                           ) : (
                             <span className="text-gray-400">Free</span>

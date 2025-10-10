@@ -1,6 +1,7 @@
 import { ExternalLink, Hash, Tag, TrendingUp } from 'lucide-react';
 import { NFT, NetworkConfigs } from '../../types';
 import { normalizePriceEth } from '../../utils/price';
+import { formatPrice } from '../../utils/formatPrice';
 
 interface NFTCardProps {
   nft: NFT;
@@ -13,6 +14,9 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
   
   // ✅ Normalize price: 0 = FREE, null = no badge
   const priceEth = normalizePriceEth(nft.price_eth);
+  
+  // Get currency with fallback
+  const currency = (nft as any).currency || 'ETH';
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
@@ -86,8 +90,8 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
               ) : (
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-4 h-4 text-green-600" />
-                  <span className="text-lg font-bold text-gray-900">{priceEth.toFixed(6)}</span>
-                  <span className="text-sm font-medium text-green-600">{(nft as any).currency || 'ETH'}</span>
+                  <span className="text-lg font-bold text-gray-900">{formatPrice(priceEth, { maxDecimals: 7 })}</span>
+                  <span className="text-sm font-medium text-green-600">{currency}</span>
                 </div>
               )}
             </div>
