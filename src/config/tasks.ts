@@ -252,3 +252,15 @@ export const MODE_TASKS: AirdropTask[] = [
     completed: false
   }
 ];
+
+export const OP_TASKS: AirdropTask[] = [
+  {
+    id: 'op-nft-mint',
+    title: 'Mint different NFTs daily to stay active',
+    description: 'Mint different NFTs from various collections on Optimism',
+    url: '/nfts?network=op',
+    network: 'op',
+    category: 'nft',
+    completed: false
+  }
+];

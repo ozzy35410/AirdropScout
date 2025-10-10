@@ -1,6 +1,6 @@
 import React from 'react';
 import { CheckCircle, Circle, ExternalLink, Users, ChevronDown, ChevronRight, Droplets, Palette, Zap, Wallet, Activity, TrendingUp, Coins, Package, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { PHAROS_TASKS, GIWA_TASKS, BASE_TASKS, SEI_TASKS, ZORA_TASKS, INK_TASKS, SONEIUM_TASKS, MODE_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
+import { PHAROS_TASKS, GIWA_TASKS, BASE_TASKS, SEI_TASKS, ZORA_TASKS, INK_TASKS, SONEIUM_TASKS, MODE_TASKS, OP_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
 import { NETWORKS } from '../../config/networks';
 import { PROGRAMS } from '../../config/programs';
 import { useProgress } from '../../hooks/useProgress';
@@ -107,7 +107,7 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
   }
 
   const allTasks = networkType === 'mainnet' 
-    ? [...BASE_TASKS, ...SEI_TASKS, ...ZORA_TASKS, ...INK_TASKS, ...SONEIUM_TASKS, ...MODE_TASKS]
+    ? [...BASE_TASKS, ...SEI_TASKS, ...ZORA_TASKS, ...INK_TASKS, ...SONEIUM_TASKS, ...MODE_TASKS, ...OP_TASKS]
     : [...PHAROS_TASKS, ...GIWA_TASKS];
   const tasksByNetwork = allTasks.reduce((acc, task) => {
     if (!acc[task.network]) acc[task.network] = [];
