@@ -86,6 +86,20 @@ export const NETWORKS: Record<string, NetworkConfig> = {
       decimals: 18
     }
   },
+  op: {
+    name: 'op',
+    displayName: 'Optimism',
+    rpcUrl: 'https://optimism.blockpi.network/v1/rpc/public',
+    chainId: 10,
+    color: 'bg-red-600',
+    explorer: 'https://optimistic.etherscan.io',
+    type: 'mainnet',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
   // Testnet Networks
   giwa: {
     name: 'giwa',

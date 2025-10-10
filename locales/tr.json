@@ -159,5 +159,8 @@
   "mainnet_networks": "Mainnet Ağları",
   "testnet_networks": "Testnet Ağları",
   "all_protocols": "Tüm Protokoller",
-  "free": "Ücretsiz"
+  "free": "Ücretsiz",
+  "Optimism": "Optimism",
+  "Open NFTs": "NFT'leri Aç",
+  "Mint different NFTs daily to stay active": "Günlük farklı NFT mintleyerek aktif kal"
 }

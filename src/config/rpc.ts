@@ -7,6 +7,7 @@ export const RPC_ENDPOINTS = {
   ink: 'https://rpc-gel.inkonchain.com',
   soneium: 'https://rpc.soneium.org',
   mode: 'https://mainnet.mode.network',
+  op: 'https://optimism.blockpi.network/v1/rpc/public', // Optimism mainnet
   pharos: 'https://testnet.dplabs-internal.com',
   giwa: 'https://sepolia-rpc.giwa.io'
 } as const;

@@ -61,6 +61,8 @@ export const NETWORK_CURRENCY_MAP: Record<string, string> = {
   'ink': 'ETH',
   'soneium': 'ETH',
   'mode': 'ETH',
+  'op': 'ETH',            // Optimism uses ETH
+  'optimism': 'ETH',
   'linea': 'ETH',
   'zksync': 'ETH',
   'scroll': 'ETH',

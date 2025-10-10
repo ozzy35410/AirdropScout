@@ -159,5 +159,8 @@
   "mainnet_networks": "Mainnet Networks",
   "testnet_networks": "Testnet Networks",
   "all_protocols": "All Protocols",
-  "free": "FREE"
+  "free": "FREE",
+  "Optimism": "Optimism",
+  "Open NFTs": "Open NFTs",
+  "Mint different NFTs daily to stay active": "Mint different NFTs daily to stay active"
 }

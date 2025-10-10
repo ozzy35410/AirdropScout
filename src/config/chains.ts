@@ -47,6 +47,14 @@ export const CHAINS = {
     rpcUrl: "https://mainnet.mode.network",
     kind: "mainnet" as const
   },
+  op: {
+    slug: "op",
+    id: 10,
+    name: "Optimism",
+    explorer: "https://optimistic.etherscan.io",
+    rpcUrl: "https://optimism.blockpi.network/v1/rpc/public",
+    kind: "mainnet" as const
+  },
   giwa: {
     slug: "giwa",
     id: 91342,
