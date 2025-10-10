@@ -15,6 +15,7 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - ✅ **Multi-Network NFT Browsing**: 9 networks (Base, Sei, Zora, Ink, Soneium, Mode, OP mainnet; Pharos, GIWA testnet)
 - ✅ **Network Tabs**: Mainnet and Testnet separation with clean UI
 - ✅ **NFT Collections**: Grid view with image, title, description, price
+- ✅ **Pretty Price Formatting**: Up to 7 decimals, trailing zeros trimmed, tiny values preserved
 - ✅ **Mint Stats**: Lazy-loaded on hover, 15-minute cache
 - ✅ **Direct Minting Links**: One-click to explorer
 - ✅ **FREE Indicator**: Highlights zero-price mints
@@ -91,6 +92,23 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 3. `add_optimism_support.sql` - OP enum and sample NFT
 
 **Next Action**: User must run in Supabase SQL Editor
+
+### 4. Pretty Price Formatting (100% Complete)
+**Status**: ✅ Implemented and deployed
+
+**Completed**:
+- ✅ Created `src/utils/formatPrice.ts` utility
+- ✅ Applied to NFTCard component
+- ✅ Applied to NFTsPage component
+- ✅ Applied to AdminPanel component
+- ✅ Handles up to 7 decimals with smart trimming
+- ✅ Preserves tiny values (0.0000001 stays exact)
+- ✅ Git commit: e9b792e
+
+**Results**:
+- `0.0100000 SEI` displays as `0.01 SEI`
+- `1.0000000 ETH` displays as `1 ETH`
+- `0.0000001 PHRS` displays as `0.0000001 PHRS`
 
 ---
 
@@ -241,6 +259,7 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - Created CHANGELOG.md
 - Created DEPLOYMENT_GUIDE.md
 - Implemented Memory Bank system
+- Pretty price formatting (7 decimals, smart trimming)
 
 ### Current Phase: Stabilization
 **Focus**: Run migrations, add real NFT collections, test thoroughly

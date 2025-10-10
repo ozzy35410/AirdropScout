@@ -2,7 +2,31 @@
 
 ## Current Work Focus
 
-### Just Completed: Optimism (OP) Network Integration
+### Just Completed: Pretty Price Formatting
+**Date**: October 10, 2025
+
+Successfully implemented elegant price formatting across all NFT cards and components:
+
+1. **New Utility** ✅
+   - Created `src/utils/formatPrice.ts`
+   - Keeps up to 7 decimals, trims trailing zeros
+   - Preserves tiny values (0.0000001 stays intact)
+   - Handles edge cases (0, null, undefined)
+
+2. **Applied Everywhere** ✅
+   - `src/components/NFT/NFTCard.tsx` (main NFT card)
+   - `src/components/NFTCard.tsx` (old card component)
+   - `src/components/Pages/NFTsPage.tsx` (list view)
+   - `src/components/Admin/AdminPanel.tsx` (admin panel)
+
+3. **Results** ✅
+   - `0.0100000 SEI` → `0.01 SEI`
+   - `1.0000000 ETH` → `1 ETH`
+   - `0.0000001 PHRS` → `0.0000001 PHRS` (preserved)
+   - FREE badge still shows for 0 price
+   - Currency symbols remain dynamic
+
+### Previously Completed: Optimism (OP) Network Integration
 **Date**: October 10, 2025
 
 Successfully added full Optimism mainnet support across the entire platform:
@@ -39,6 +63,13 @@ Successfully added full Optimism mainnet support across the entire platform:
    - Ready for real collections
 
 ## Recent Changes (Last 24 Hours)
+
+### Pretty Price Formatting (Oct 10, PM)
+- Created `formatPrice()` utility with 7 decimal support
+- Applied to NFTCard, NFTsPage, AdminPanel
+- Trims trailing zeros: `0.0100000` → `0.01`
+- Preserves tiny values: `0.0000001` stays exact
+- FREE badge logic unchanged for 0 prices
 
 ### Currency & RPC Optimization (Oct 10, AM)
 - Fixed Pharos showing "ETH" instead of "PHRS"
