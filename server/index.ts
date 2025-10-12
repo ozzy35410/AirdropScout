@@ -7,7 +7,6 @@ import { createClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
 import Redis from 'redis';
 import { createPublicClient, http, encodeEventTopics, parseAbiItem } from 'viem';
-import { getMintCountString } from './mintStats.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -666,62 +665,6 @@ app.get('/api/admin/collections', async (req, res) => {
     return res.status(500).json({ ok: false, error: 'UNKNOWN', details: e.message });
   }
 });
-
-// ===== Mint Count API with Cache =====
-// 15-minute cache for mint counts
-const mintCountCache = new Map<string, { value: string; until: number }>();
-const MINT_COUNT_TTL = 15 * 60 * 1000; // 15 minutes
-
-app.get('/api/mints', async (req, res) => {
-  try {
-    const chain = String(req.query.chain || '').toLowerCase().trim();
-    const address = String(req.query.address || '').toLowerCase().trim();
-
-    // Validate inputs
-    if (!chain) {
-      return res.status(400).json({ ok: false, error: 'Missing chain parameter' });
-    }
-    if (!address) {
-      return res.status(400).json({ ok: false, error: 'Missing address parameter' });
-    }
-    if (!address.startsWith('0x') || address.length !== 42) {
-      return res.status(400).json({ ok: false, error: 'Invalid address format' });
-    }
-
-    // Check cache
-    const cacheKey = `${chain}:${address}`;
-    const now = Date.now();
-    const cached = mintCountCache.get(cacheKey);
-
-    if (cached && cached.until > now) {
-      console.log(`✓ Cache hit for ${cacheKey}: ${cached.value}`);
-      return res.json({ ok: true, minted: cached.value, cached: true });
-    }
-
-    // Fetch from blockchain
-    console.log(`⟳ Fetching mint count for ${cacheKey}`);
-    const minted = await getMintCountString(chain, address);
-
-    // Store in cache
-    mintCountCache.set(cacheKey, {
-      value: minted,
-      until: now + MINT_COUNT_TTL,
-    });
-
-    console.log(`✓ Mint count for ${cacheKey}: ${minted}`);
-    return res.json({ ok: true, minted, cached: false });
-
-  } catch (err: any) {
-    console.error('Mint count error:', err);
-    return res.status(500).json({
-      ok: false,
-      error: 'Failed to fetch mint count',
-      details: err?.message || 'Unknown error',
-    });
-  }
-});
-
-// ===== End Mint Count API =====
 
 // ✅ Serve static files from dist (production)
 const distPath = path.join(__dirname, '../dist');
