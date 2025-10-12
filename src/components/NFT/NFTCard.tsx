@@ -1,7 +1,9 @@
-import { ExternalLink, Hash, Tag, TrendingUp } from 'lucide-react';
+import { ExternalLink, Hash, Tag, TrendingUp, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { NFT, NetworkConfigs } from '../../types';
 import { normalizePriceEth } from '../../utils/price';
 import { formatPrice } from '../../utils/formatPrice';
+import { fetchMintCount, formatMintCount } from '../../utils/fetchMintCount';
 
 interface NFTCardProps {
   nft: NFT;
@@ -17,6 +19,47 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
   
   // Get currency with fallback
   const currency = (nft as any).currency || 'ETH';
+
+  // ✅ Mint count state
+  const [mintCount, setMintCount] = useState<string | null>(null);
+  const [mintError, setMintError] = useState(false);
+  const [mintLoading, setMintLoading] = useState(true);
+
+  // ✅ Prefetch mint count on mount
+  useEffect(() => {
+    let mounted = true;
+
+    const loadMintCount = async () => {
+      try {
+        setMintLoading(true);
+        setMintError(false);
+        
+        const count = await fetchMintCount(
+          nft.network,
+          nft.contract_address,
+          8000 // 8 second timeout
+        );
+        
+        if (mounted) {
+          setMintCount(count);
+          setMintLoading(false);
+        }
+      } catch (err) {
+        console.error(`Failed to load mint count for ${nft.contract_address}:`, err);
+        if (mounted) {
+          setMintError(true);
+          setMintLoading(false);
+        }
+      }
+    };
+
+    // Start loading immediately
+    loadMintCount();
+
+    return () => {
+      mounted = false;
+    };
+  }, [nft.network, nft.contract_address]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
@@ -99,6 +142,24 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
         )}
 
         <div className="space-y-3">
+          {/* ✅ Mint Count Display */}
+          <div className="flex items-center space-x-2 text-sm">
+            <TrendingUp className="w-4 h-4 text-purple-500" />
+            <span className="text-gray-600">Minted:</span>
+            {mintLoading ? (
+              <span className="flex items-center space-x-1 text-gray-400">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                <span>Loading...</span>
+              </span>
+            ) : mintError ? (
+              <span className="text-gray-400 font-medium">N/A</span>
+            ) : (
+              <span className="font-bold text-purple-600">
+                {formatMintCount(mintCount || '0')}
+              </span>
+            )}
+          </div>
+
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <Hash className="w-4 h-4" />
             <span className="font-mono">Token ID: {nft.token_id}</span>
