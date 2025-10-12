@@ -1,9 +1,9 @@
 import { ExternalLink, Hash, Tag, TrendingUp, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { NFT, NetworkConfigs } from '../../types';
 import { normalizePriceEth } from '../../utils/price';
 import { formatPrice } from '../../utils/formatPrice';
-import { fetchMintCount, formatMintCount } from '../../utils/fetchMintCount';
+import { useTotalSupply } from '../../hooks/useMintStats';
+import type { ChainSlug } from '../../config/chains';
 
 interface NFTCardProps {
   nft: NFT;
@@ -20,46 +20,18 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
   // Get currency with fallback
   const currency = (nft as any).currency || 'ETH';
 
-  // ✅ Mint count state
-  const [mintCount, setMintCount] = useState<string | null>(null);
-  const [mintError, setMintError] = useState(false);
-  const [mintLoading, setMintLoading] = useState(true);
+  // ✅ Fetch mint count using existing hook with timeout built-in
+  const { totalSupply, loading, error } = useTotalSupply({
+    chain: nft.network as ChainSlug,
+    contract: nft.contract_address as `0x${string}`,
+    startBlock: undefined, // Will use last 200k blocks
+    enabled: true, // Always fetch
+  });
 
-  // ✅ Prefetch mint count on mount
-  useEffect(() => {
-    let mounted = true;
-
-    const loadMintCount = async () => {
-      try {
-        setMintLoading(true);
-        setMintError(false);
-        
-        const count = await fetchMintCount(
-          nft.network,
-          nft.contract_address,
-          8000 // 8 second timeout
-        );
-        
-        if (mounted) {
-          setMintCount(count);
-          setMintLoading(false);
-        }
-      } catch (err) {
-        console.error(`Failed to load mint count for ${nft.contract_address}:`, err);
-        if (mounted) {
-          setMintError(true);
-          setMintLoading(false);
-        }
-      }
-    };
-
-    // Start loading immediately
-    loadMintCount();
-
-    return () => {
-      mounted = false;
-    };
-  }, [nft.network, nft.contract_address]);
+  // Format mint count with thousand separators
+  const formattedMintCount = error || totalSupply === 0 
+    ? 'N/A' 
+    : totalSupply.toLocaleString('en-US');
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
@@ -142,20 +114,18 @@ export function NFTCard({ nft, networks }: NFTCardProps) {
         )}
 
         <div className="space-y-3">
-          {/* ✅ Mint Count Display */}
+          {/* ✅ Mint Count Display - Always visible, loads automatically */}
           <div className="flex items-center space-x-2 text-sm">
             <TrendingUp className="w-4 h-4 text-purple-500" />
             <span className="text-gray-600">Minted:</span>
-            {mintLoading ? (
+            {loading ? (
               <span className="flex items-center space-x-1 text-gray-400">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 <span>Loading...</span>
               </span>
-            ) : mintError ? (
-              <span className="text-gray-400 font-medium">N/A</span>
             ) : (
-              <span className="font-bold text-purple-600">
-                {formatMintCount(mintCount || '0')}
+              <span className={`font-bold ${error ? 'text-gray-400' : 'text-purple-600'}`}>
+                {formattedMintCount}
               </span>
             )}
           </div>

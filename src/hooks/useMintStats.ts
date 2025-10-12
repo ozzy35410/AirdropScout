@@ -103,8 +103,30 @@ export function useMintStats({
 }
 
 /**
+ * Wrap a promise with timeout
+ */
+function withTimeout<T>(promise: Promise<T>, ms = 8000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Request timeout'));
+    }, ms);
+
+    promise
+      .then((value) => {
+        clearTimeout(timeoutId);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        reject(error);
+      });
+  });
+}
+
+/**
  * Simpler hook that just tries totalSupply() first
  * Falls back to event counting if not available
+ * Includes 8-second timeout to prevent infinite spinner
  */
 export function useTotalSupply({
   chain,
@@ -133,7 +155,11 @@ export function useTotalSupply({
       setState(prev => ({ ...prev, loading: true, error: null }));
 
       try {
-        const supply = await getTotalSupply({ chain, contract, startBlock });
+        // ✅ Wrap with 8-second timeout to prevent infinite spinner
+        const supply = await withTimeout(
+          getTotalSupply({ chain, contract, startBlock }),
+          8000
+        );
 
         if (mounted) {
           setState({
