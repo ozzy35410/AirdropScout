@@ -1,10 +1,15 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
 import Redis from 'redis';
 import { createPublicClient, http, encodeEventTopics, parseAbiItem } from 'viem';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -659,6 +664,16 @@ app.get('/api/admin/collections', async (req, res) => {
     console.error('[collections] Fatal error:', e);
     return res.status(500).json({ ok: false, error: 'UNKNOWN', details: e.message });
   }
+});
+
+// ✅ Serve static files from dist (production)
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
+
+// ✅ Catch-all route: serve index.html for all GET requests (SPA routing)
+// This must be AFTER all API routes
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Start server

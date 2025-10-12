@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ExternalLink, Search, Tag, Image as ImageIcon, EyeOff } from 'lucide-react';
 import { useTranslation } from '../../lib/i18n';
 import { CHAINS, ChainSlug } from '../../config/chains';
@@ -12,22 +13,25 @@ import { MintCountBadge } from '../MintStats/MintCountBadge';
 interface NFTsPageProps {
   networkType: 'mainnet' | 'testnet';
   language: 'en' | 'tr';
-  selectedNetwork?: ChainSlug;
 }
 
 type MintedFilter = 'show' | 'hide' | 'only';
 
-export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPageProps) {
+export function NFTsPage({ networkType, language }: NFTsPageProps) {
   const { t } = useTranslation(language);
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // Filter chains by network type
   const availableChains = useMemo(() => {
     return Object.values(CHAINS).filter(chain => chain.kind === networkType);
   }, [networkType]);
 
-  const [activeChain, setActiveChain] = useState<ChainSlug>(
-    selectedNetwork || (availableChains[0]?.slug as ChainSlug)
-  );
+  // ✅ URL'den network parametresini al, yoksa localStorage, yoksa ilk network
+  const urlNetwork = searchParams.get('network');
+  const lsNetwork = localStorage.getItem('nfts_network');
+  const initialNetwork = (urlNetwork || lsNetwork || availableChains[0]?.slug) as ChainSlug;
+
+  const [activeChain, setActiveChain] = useState<ChainSlug>(initialNetwork);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -36,6 +40,16 @@ export function NFTsPage({ networkType, language, selectedNetwork }: NFTsPagePro
   const [mintedFilter, setMintedFilter] = useState<MintedFilter>('show');
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loadingCollections, setLoadingCollections] = useState(true);
+
+  // ✅ Active chain değişince URL ve localStorage'ı güncelle
+  useEffect(() => {
+    if (activeChain) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('network', activeChain);
+      setSearchParams(newParams, { replace: true });
+      localStorage.setItem('nfts_network', activeChain);
+    }
+  }, [activeChain]);
 
   // Validate Ethereum address
   const isValidAddress = (address: string) => {

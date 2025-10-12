@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CheckCircle, Circle, ExternalLink, Users, ChevronDown, ChevronRight, Droplets, Palette, Zap, Wallet, Activity, TrendingUp, Coins, Package, Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { PHAROS_TASKS, GIWA_TASKS, BASE_TASKS, SEI_TASKS, ZORA_TASKS, INK_TASKS, SONEIUM_TASKS, MODE_TASKS, OP_TASKS, DEFAULT_SEND_ADDRESS } from '../../config/tasks';
 import { NETWORKS } from '../../config/networks';
@@ -21,6 +22,8 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
   const { trackingAddress, isValidAddress, updateTrackingAddress } = useAddressTracking();
   const { progress, markTaskCompleted } = useProgress(trackingAddress);
   const { t } = useTranslation(language);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [expandedProjects, setExpandedProjects] = useState<Record<string, boolean>>({});
   const [showAddresses, setShowAddresses] = useState(false);
   const [submittedAddresses, setSubmittedAddresses] = useState<string[]>([DEFAULT_SEND_ADDRESS]);
@@ -31,7 +34,24 @@ export function TasksPage({ networkType, language, onPageChange }: TasksPageProp
   const [stats, setStats] = useState<WalletStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [statsError, setStatsError] = useState<string | null>(null);
-  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'giwa' | 'pharos'>('base');
+  
+  // ✅ URL'den network parametresini al, yoksa localStorage, yoksa varsayılan
+  const urlNetwork = searchParams.get('network');
+  const lsNetwork = localStorage.getItem('tasks_network');
+  const defaultNetwork = networkType === 'mainnet' ? 'base' : 'pharos';
+  const initialNetwork = (urlNetwork || lsNetwork || defaultNetwork) as 'base' | 'sei' | 'giwa' | 'pharos';
+  
+  const [selectedChain, setSelectedChain] = useState<'base' | 'sei' | 'giwa' | 'pharos'>(initialNetwork);
+
+  // ✅ Selected chain değişince URL ve localStorage'ı güncelle
+  useEffect(() => {
+    if (selectedChain) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('network', selectedChain);
+      setSearchParams(newParams, { replace: true });
+      localStorage.setItem('tasks_network', selectedChain);
+    }
+  }, [selectedChain]);
 
   // Auto-detection component for individual tasks
   function TaskWithDetection({ task, networkKey }: { task: any; networkKey: string }) {
