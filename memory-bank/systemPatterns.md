@@ -176,7 +176,78 @@ const isOwned = mintedMap[nft.slug];
 - Easy to test hooks independently
 - Clear data flow
 
-### 8. i18n Translation Pattern
+## i18n Pattern (Translation System)
+
+### Architecture
+```
+Custom Hook-Based i18n (No External Library)
+
+src/lib/i18n.ts
+├── Synchronous JSON Import
+│   ├── import enTranslations from '../../locales/en.json'
+│   └── import trTranslations from '../../locales/tr.json'
+├── translations object (pre-loaded)
+│   ├── en: { ... }
+│   └── tr: { ... }
+└── useTranslation(language) hook
+    └── t(key) → returns translated string
+
+Advantages:
+- Zero dependencies
+- Translations bundled with app (no network delay)
+- Available immediately on first render
+- Type-safe with TypeScript
+```
+
+### Implementation Details
+**Translation Loading**: Synchronous import (bundled with app)
+- Changed from async `fetch()` to `import` statements
+- Translations available before first render
+- No key flashing on initial page load
+- Bundle size increase: ~11 KB (both JSON files)
+
+**Hook Usage Pattern**:
+```typescript
+const { t } = useTranslation(language);
+return <h1>{t('brand')}</h1>; // "Airdrop Scout"
+```
+
+**Fallback Strategy**:
+- If key not found: returns key itself
+- Example: `t('missing_key')` → `"missing_key"`
+- Easy to spot untranslated text in development
+
+**Language Storage**:
+- Stored in component state (Header.tsx)
+- Passed down via props
+- Could be upgraded to Context API for deep nesting
+
+### Critical Decision: Synchronous vs Asynchronous Loading
+
+**Previous (Async)**:
+```typescript
+const loadTranslations = async () => {
+  const response = await fetch('/locales/en.json');
+  translations.en = await response.json();
+};
+loadTranslations(); // Runs in background
+```
+❌ Problem: First render happens before translations load → keys displayed
+
+**Current (Sync)**:
+```typescript
+import enTranslations from '../../locales/en.json';
+const translations = { en: enTranslations, ... };
+```
+✅ Solution: Translations bundled and immediately available
+
+**Trade-offs**:
+- Bundle size: +11 KB (acceptable for UX)
+- Network requests: 0 (no HTTP calls)
+- Performance: Perfect (no delay)
+- Maintenance: Requires rebuild on translation changes
+
+
 
 **Pattern**: Translation files + hook-based access
 

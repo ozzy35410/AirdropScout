@@ -30,6 +30,7 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - ✅ **Supabase Integration**: Real-time data, no backend needed
 - ✅ **Auto-Deploy**: Git push → Bolt.host rebuild (2-3 min)
 - ✅ **Error Handling**: Graceful RPC failures, user-friendly messages
+- ✅ **i18n Synchronous Loading**: Translations bundled, no key flashing on first render
 
 ### Pages and Components
 - ✅ **HomePage**: Network overview, stats, navigation
@@ -109,6 +110,23 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - `0.0100000 SEI` displays as `0.01 SEI`
 - `1.0000000 ETH` displays as `1 ETH`
 - `0.0000001 PHRS` displays as `0.0000001 PHRS`
+
+### 5. i18n Synchronous Loading Fix (100% Complete)
+**Status**: ✅ Implemented and deployed
+
+**Completed**:
+- ✅ Identified translation key flashing issue on first render
+- ✅ Changed from async `fetch()` to synchronous `import`
+- ✅ Updated `src/lib/i18n.ts` with direct imports
+- ✅ Added `resolveJsonModule: true` to `tsconfig.app.json`
+- ✅ Removed async loading and fallback translations
+- ✅ Git commit: bf6e844
+
+**Results**:
+- No more key flashing ("discover_complete" → "Discover Complete NFTs")
+- Perfect UX on first page load
+- Bundle size +11 KB (acceptable trade-off)
+- Translations always available immediately
 
 ---
 
@@ -255,11 +273,12 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - Added Mode network
 - Added Optimism network (in progress)
 
-### Phase 5: Infrastructure (Oct 10, 2025)
+### Phase 5: Infrastructure & UX (Oct 10-12, 2025)
 - Created CHANGELOG.md
 - Created DEPLOYMENT_GUIDE.md
 - Implemented Memory Bank system
 - Pretty price formatting (7 decimals, smart trimming)
+- Fixed i18n key flashing (synchronous loading)
 
 ### Current Phase: Stabilization
 **Focus**: Run migrations, add real NFT collections, test thoroughly

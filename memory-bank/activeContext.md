@@ -2,7 +2,37 @@
 
 ## Current Work Focus
 
-### Just Completed: Pretty Price Formatting
+### Just Completed: i18n Synchronous Loading Fix
+**Date**: October 12, 2025
+
+Fixed the translation key flashing issue on first page load:
+
+1. **Problem Identified** ✅
+   - Translations were loaded asynchronously via `fetch()`
+   - First render showed keys like "discover_complete", "brand" instead of actual text
+   - Switching tabs triggered re-render with loaded translations
+
+2. **Solution Implemented** ✅
+   - Changed from async `fetch()` to synchronous `import`
+   - Translations now bundled with application code
+   - Available immediately on first render
+   - No more key flashing
+
+3. **Changes Made** ✅
+   - Updated `src/lib/i18n.ts`:
+     - Import translations: `import enTranslations from '../../locales/en.json'`
+     - Removed async `loadTranslations()` function
+     - Removed fallback translations (no longer needed)
+   - Updated `tsconfig.app.json`:
+     - Added `"resolveJsonModule": true` for JSON imports
+   
+4. **Results** ✅
+   - Page always shows correct translations on first load
+   - Bundle size increased slightly: 879.51 KB → 891.12 KB (~11 KB for both JSON files)
+   - Trade-off: 11 KB bundle increase for perfect UX
+   - No more flickering or key display
+
+### Previously Completed: Pretty Price Formatting
 **Date**: October 10, 2025
 
 Successfully implemented elegant price formatting across all NFT cards and components:
@@ -63,6 +93,13 @@ Successfully added full Optimism mainnet support across the entire platform:
    - Ready for real collections
 
 ## Recent Changes (Last 24 Hours)
+
+### i18n Synchronous Loading Fix (Oct 12, PM)
+- Fixed translation key flashing on first page load
+- Changed from async fetch to synchronous import
+- Bundle size +11 KB but perfect UX
+- No more "discover_complete", "brand" key display
+- `resolveJsonModule: true` added to tsconfig
 
 ### Pretty Price Formatting (Oct 10, PM)
 - Created `formatPrice()` utility with 7 decimal support
