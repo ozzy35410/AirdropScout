@@ -2,7 +2,55 @@
 
 ## Current Work Focus
 
-### Just Completed: i18n Synchronous Loading Fix
+### Just Completed: React Router + URL Persistence
+**Date**: October 12, 2025
+
+Fixed F5 refresh always redirecting to home page. Now maintains exact page and network selection:
+
+1. **Problem Identified** ✅
+   - F5 on `/nfts?network=base` → Redirected to `/` (home)
+   - Network selection lost on page refresh
+   - Manual URL changes ignored
+   - State-based routing didn't survive page reload
+
+2. **Solution Implemented** ✅
+   - Installed `react-router-dom` v6
+   - Converted from state-based to URL-based routing
+   - Added URL parameter persistence for network selection
+   - Implemented localStorage fallback for preferences
+   - Added server-side SPA fallback
+
+3. **Changes Made** ✅
+   - **src/main.tsx**: Wrapped App with `<BrowserRouter>`
+   - **src/App.tsx**: 
+     - Converted to `<Routes>` and `<Route>` components
+     - Removed manual state-based page switching
+     - Added localStorage for networkType and language
+     - Used `useNavigate()` and `useLocation()` hooks
+   - **src/components/Pages/NFTsPage.tsx**:
+     - Added `useSearchParams()` hook
+     - Network selection synced to URL (`?network=base`)
+     - localStorage fallback for persistence
+   - **src/components/Pages/TasksPage.tsx**:
+     - Same URL + localStorage pattern
+     - Network parameter in URL
+   - **server/index.ts**:
+     - Added catch-all route: `app.get('*', ...)`
+     - Serves `index.html` for all routes (SPA support)
+     - Static files served from `dist/`
+   - **vite.config.ts**:
+     - Added `historyApiFallback: true`
+     - Dev server now supports SPA routing
+
+4. **Results** ✅
+   - F5 on `/nfts?network=base` → Stays on NFTs page with Base selected ✅
+   - F5 on `/tasks?network=pharos` → Stays on Tasks with Pharos ✅
+   - Direct URL navigation works (`/nfts`, `/tasks`, etc.)
+   - Browser back/forward buttons work
+   - Shareable URLs with network selection
+   - Bundle size increase: +33 KB for react-router-dom (924 KB total)
+
+### Previously Completed: i18n Synchronous Loading Fix
 **Date**: October 12, 2025
 
 Fixed the translation key flashing issue on first page load:
@@ -93,6 +141,14 @@ Successfully added full Optimism mainnet support across the entire platform:
    - Ready for real collections
 
 ## Recent Changes (Last 24 Hours)
+
+### React Router + URL Persistence (Oct 12, PM)
+- Fixed F5 always going to home page
+- Installed react-router-dom v6
+- URL-based routing: `/nfts?network=base`
+- Network selection persisted in URL + localStorage
+- Server catch-all route for SPA support
+- Bundle +33 KB but proper SPA behavior
 
 ### i18n Synchronous Loading Fix (Oct 12, PM)
 - Fixed translation key flashing on first page load

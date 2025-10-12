@@ -31,6 +31,7 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - ✅ **Auto-Deploy**: Git push → Bolt.host rebuild (2-3 min)
 - ✅ **Error Handling**: Graceful RPC failures, user-friendly messages
 - ✅ **i18n Synchronous Loading**: Translations bundled, no key flashing on first render
+- ✅ **React Router**: URL-based routing with persistence, shareable links, browser history support
 
 ### Pages and Components
 - ✅ **HomePage**: Network overview, stats, navigation
@@ -127,6 +128,26 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 - Perfect UX on first page load
 - Bundle size +11 KB (acceptable trade-off)
 - Translations always available immediately
+
+### 6. React Router + URL Persistence (100% Complete)
+**Status**: ✅ Implemented and deployed
+
+**Completed**:
+- ✅ Installed react-router-dom package
+- ✅ Converted App.tsx to use Routes/Route components
+- ✅ Added BrowserRouter wrapper in main.tsx
+- ✅ URL parameters for network selection (`?network=base`)
+- ✅ localStorage fallback for preferences
+- ✅ Server catch-all route for SPA support
+- ✅ Vite historyApiFallback enabled
+- ✅ Git commit: b5dac1b
+
+**Results**:
+- F5 maintains exact page and network selection
+- `/nfts?network=base` → Stays on NFTs page with Base
+- Browser back/forward buttons work
+- Shareable URLs with state
+- Bundle size +33 KB (react-router-dom)
 
 ---
 
