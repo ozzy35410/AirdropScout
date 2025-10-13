@@ -666,6 +666,57 @@ app.get('/api/admin/collections', async (req, res) => {
   }
 });
 
+// ============================
+// WALLET STATS API
+// ============================
+
+app.get('/api/wallet-stats', async (req, res) => {
+  try {
+    const { chain, address } = req.query;
+
+    // Validate inputs
+    if (!chain || typeof chain !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid chain parameter' });
+    }
+
+    if (!address || typeof address !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid address parameter' });
+    }
+
+    // Import base adapter
+    const { fetchWalletStats } = await import('./adapters/wallet/base.js');
+    
+    // Chain metadata map
+    const chainMetaMap: Record<string, any> = {
+      base: { slug: 'base', id: 8453, name: 'Base', nativeSymbol: 'ETH', rpcUrl: 'https://base.blockpi.network/v1/rpc/public', explorer: 'https://basescan.org', explorerTx: (h:string) => `https://basescan.org/tx/${h}`, kind: 'mainnet' },
+      op: { slug: 'op', id: 10, name: 'Optimism', nativeSymbol: 'ETH', rpcUrl: 'https://optimism.blockpi.network/v1/rpc/public', explorer: 'https://optimistic.etherscan.io', explorerTx: (h:string) => `https://optimistic.etherscan.io/tx/${h}`, kind: 'mainnet' },
+      zora: { slug: 'zora', id: 7777777, name: 'Zora', nativeSymbol: 'ETH', rpcUrl: 'https://rpc.zora.energy', explorer: 'https://explorer.zora.energy', explorerTx: (h:string) => `https://explorer.zora.energy/tx/${h}`, kind: 'mainnet' },
+      sei: { slug: 'sei', id: 1329, name: 'Sei', nativeSymbol: 'SEI', rpcUrl: 'https://evm-rpc.sei-apis.com', explorer: 'https://seitrace.com', explorerTx: (h:string) => `https://seitrace.com/?module=transaction&action=info&id=${h}`, kind: 'mainnet' },
+      ink: { slug: 'ink', id: 57073, name: 'Ink', nativeSymbol: 'ETH', rpcUrl: 'https://rpc-gel.inkonchain.com', explorer: 'https://explorer.inkonchain.com', explorerTx: (h:string) => `https://explorer.inkonchain.com/tx/${h}`, kind: 'mainnet' },
+      soneium: { slug: 'soneium', id: 1868, name: 'Soneium', nativeSymbol: 'ETH', rpcUrl: 'https://rpc.soneium.org', explorer: 'https://explorer.soneium.org', explorerTx: (h:string) => `https://explorer.soneium.org/tx/${h}`, kind: 'mainnet' },
+      mode: { slug: 'mode', id: 34443, name: 'Mode', nativeSymbol: 'ETH', rpcUrl: 'https://mainnet.mode.network', explorer: 'https://explorer.mode.network', explorerTx: (h:string) => `https://explorer.mode.network/tx/${h}`, kind: 'mainnet' },
+      giwa: { slug: 'giwa', id: 91342, name: 'GIWA Sepolia', nativeSymbol: 'ETH', rpcUrl: 'https://sepolia-rpc.giwa.io', explorer: 'https://sepolia-explorer.giwa.io', explorerTx: (h:string) => `https://sepolia-explorer.giwa.io/tx/${h}`, kind: 'testnet' },
+      pharos: { slug: 'pharos', id: 688688, name: 'Pharos Testnet', nativeSymbol: 'PHRS', rpcUrl: 'https://testnet.dplabs-internal.com', explorer: 'https://testnet.pharosscan.xyz', explorerTx: (h:string) => `https://testnet.pharosscan.xyz/tx/${h}`, kind: 'testnet' }
+    };
+
+    const chainMeta = chainMetaMap[chain];
+    if (!chainMeta) {
+      return res.status(400).json({ error: `Unsupported chain: ${chain}` });
+    }
+
+    // Fetch wallet stats
+    const stats = await fetchWalletStats(address, chainMeta);
+    
+    return res.json(stats);
+  } catch (error: any) {
+    console.error('[wallet-stats] Error:', error);
+    return res.status(500).json({
+      error: 'Failed to fetch wallet stats',
+      details: error.message
+    });
+  }
+});
+
 // ✅ Serve static files from dist (production)
 const distPath = path.join(__dirname, '../dist');
 app.use(express.static(distPath));

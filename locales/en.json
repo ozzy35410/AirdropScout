@@ -162,5 +162,21 @@
   "free": "FREE",
   "Optimism": "Optimism",
   "Open NFTs": "Open NFTs",
-  "Mint different NFTs daily to stay active": "Mint different NFTs daily to stay active"
+  "Mint different NFTs daily to stay active": "Mint different NFTs daily to stay active",
+  "wallet_stats": "Wallet Stats",
+  "wallet_stats_description": "View wallet statistics across all supported networks",
+  "wallet_address_placeholder": "Enter wallet address (0x...)",
+  "show": "Show",
+  "loading_stats": "Loading wallet statistics...",
+  "wallet_fetch_error": "Failed to fetch wallet statistics",
+  "enter_address_to_view_stats": "Enter an address to view wallet statistics",
+  "wallet": {
+    "interactions": "Interactions",
+    "interacted_contracts": "Interacted Contracts",
+    "unique_contracts": "Unique contracts",
+    "volume_out": "Volume Out",
+    "balance": "Balance",
+    "recent_transactions": "Recent Transactions",
+    "no_recent_transactions": "No recent transactions found"
+  }
 }

@@ -162,5 +162,19 @@
   "free": "Ücretsiz",
   "Optimism": "Optimism",
   "Open NFTs": "NFT'leri Aç",
-  "Mint different NFTs daily to stay active": "Günlük farklı NFT mintleyerek aktif kal"
+  "Mint different NFTs daily to stay active": "Günlük farklı NFT mintleyerek aktif kal",
+  "wallet_stats_description": "Tüm desteklenen ağlarda cüzdan istatistiklerini görüntüle",
+  "wallet_address_placeholder": "Cüzdan adresini girin (0x...)",
+  "show": "Göster",
+  "wallet_fetch_error": "Cüzdan istatistikleri alınamadı",
+  "enter_address_to_view_stats": "Cüzdan istatistiklerini görüntülemek için bir adres girin",
+  "wallet": {
+    "interactions": "Etkileşimler",
+    "interacted_contracts": "Etkileşimli Kontratlar",
+    "unique_contracts": "Benzersiz kontratlar",
+    "volume_out": "Giden Hacim",
+    "balance": "Bakiye",
+    "recent_transactions": "Son İşlemler",
+    "no_recent_transactions": "Son işlem bulunamadı"
+  }
 }
