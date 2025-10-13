@@ -1,277 +1,447 @@
-# Airdrop Scout - Multi-Chain Airdrop Task Hub
+<div align="center">
 
-A comprehensive platform for discovering and completing on-chain tasks to qualify for airdrops across multiple blockchain networks.
+# 🚀 AirdropScout
 
-## 🚀 Features
+### Multi-Chain NFT Aggregator & Airdrop Task Hub
 
-### 🎯 Task Management
-- **Mainnet & Testnet Support**: Pharos, GIWA Sepolia (Testnet) | Base, Sei (Mainnet)
-- **Auto-Detection**: Automatic task completion detection via blockchain
-- **Progress Tracking**: Track completed tasks per wallet address
-- **Multi-Category Tasks**: Faucets, NFT mints, swaps, liquidity, trading, etc.
+**Discover, track, and mint NFTs across 9+ blockchain networks**
 
-### 🎨 NFT Collections (NEW!)
-- **22 Real NFT Collections** with actual contract addresses
-- **Multi-Chain Support**: Base, Sei, GIWA, Pharos
-- **Smart Filtering**: Search, sort, and tag-based filters
-- **Wallet Tracking**: See which NFTs you've minted
-- **Mint Detection API**: Blockchain-based mint verification
-- **Enhanced UI**: Animations, gradients, hover effects
+[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen)]()
+[![Networks](https://img.shields.io/badge/networks-9%20chains-blue)]()
+[![License](https://img.shields.io/badge/license-MIT-green)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)]()
 
-### 💧 Faucets
-- **Multi-Network Faucets**: Get free testnet tokens
-- **Quick Access**: Direct links to network faucets
-- **Network Selector**: Filter by specific networks
+[Live Demo](https://airdrop-scout-lax0.bolt.host/) • [Report Bug](https://github.com/ozzy35410/AirdropScout/issues) • [Request Feature](https://github.com/ozzy35410/AirdropScout/issues)
 
-### 📊 Wallet Stats
-- **On-Chain Analytics**: View wallet interactions and stats
-- **Multi-Chain Data**: Base, Sei, GIWA, Pharos support
-- **Transaction History**: Recent transaction preview
-- **Activity Metrics**: Interactions, contracts, volume, fees
+</div>
 
-### 🌐 Internationalization
-- **Multi-Language**: Full English & Turkish support
-- **Dynamic Translation**: All UI elements translated
-- **Easy Extension**: JSON-based translation system
+---
 
-## Technology Stack
+## 📖 Overview
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS, Vite
-- **Backend**: Node.js, Express, TypeScript
-- **Database**: Supabase (PostgreSQL)
-- **Blockchain**: ethers.js, viem with multi-network RPC
-- **Caching**: Redis with in-memory fallback
-- **UI Components**: Lucide React icons
-- **Build Tool**: Vite with HMR
+AirdropScout is a production-ready multi-chain platform that helps crypto enthusiasts discover and mint NFTs across **7 mainnet networks** and **2 testnets**. Built with React, TypeScript, and blockchain technology, it provides real-time mint statistics, wallet tracking, and a seamless multilingual experience.
 
-## Quick Start
+### ✨ Key Features
 
-### Prerequisites
-- Node.js 18+
-- Supabase account (optional)
-- Redis (optional - uses in-memory cache as fallback)
+🌐 **Multi-Network Support**
+- 7 Mainnet: Base, Optimism, Sei, Zora, Ink, Soneium, Mode
+- 2 Testnet: Pharos, GIWA Sepolia
+- Easy config-driven architecture for adding new networks
 
-### Setup
+🎨 **NFT Discovery**
+- 20+ curated NFT collections with real contract addresses
+- Real-time mint count statistics from blockchain
+- FREE tag highlighting for zero-cost mints
+- Smart price formatting with proper currency symbols (ETH, PHRS, SEI, GIWA)
 
-1. **Clone and Install**
-   ```bash
-   git clone https://github.com/ozzy35410/AirdropScout.git
-   cd AirdropScout
-   npm install
-   ```
+📊 **Advanced Features**
+- Backend-powered mint statistics (bypasses CORS/rate limits)
+- Wallet-based tracking with "Hide Minted" filter
+- React Router with URL persistence and shareable links
+- 15-minute intelligent caching system
 
-2. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   # Update with your Supabase credentials
-   ```
+🌍 **Fully Bilingual**
+- Complete English & Turkish translations
+- Synchronous loading (no key flashing)
+- Culturally appropriate terminology
 
-3. **Database Setup**
-   - Click "Connect to Supabase" button in the app
-   - Run the migration in Supabase SQL Editor:
-     ```sql
-     -- Copy content from supabase/migrations/create_nfts_table.sql
-     ```
+🎯 **Task System**
+- Network-specific task cards
+- Direct links to faucets, DEXs, and protocols
+- Manual progress tracking
 
-4. **Start Development**
-   ```bash
-   npm run dev
-   ```
+---
 
-   This starts both frontend (http://localhost:5173) and backend (http://localhost:3001)
+## �️ Technology Stack
 
-## Configuration
+### Core
+- **React 18.3** - Modern UI with hooks
+- **TypeScript 5.6** - Strict type safety
+- **Vite 5.4** - Lightning-fast build tool
+- **TailwindCSS 3.4** - Utility-first styling
+- **React Router 6** - URL-based routing with persistence
 
-### Supported Networks
+### Blockchain
+- **viem 2.21** - Modern Ethereum library (primary)
+- **ethers 6.13** - Legacy support
+- **Optimized RPC** - Chunked queries, retry logic, caching
 
-| Network | Chain ID | RPC Endpoint |
-|---------|----------|-------------|
-| Linea | 59144 | https://rpc.linea.build |
-| zkSync Era | 324 | https://mainnet.era.zksync.io |
-| Base | 8453 | https://mainnet.base.org |
-| Scroll | 534352 | https://rpc.scroll.io |
-| Zora | 7777777 | https://rpc.zora.energy |
+### Backend & Data
+- **Express + TypeScript** - Mint stats API server
+- **Supabase** - PostgreSQL with real-time capabilities
+- **In-Memory Cache** - 15-minute TTL for RPC responses
 
-### Environment Variables
+### Developer Experience
+- **ESLint 9** - Code quality
+- **Lucide React** - Beautiful icons
+- **Auto-Deploy** - Push to main → Live in 2-3 minutes
 
-```env
-# Required
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_ANON_KEY=your-anon-key
+---
 
-# Optional
-REDIS_URL=redis://localhost:6379
-PORT=3001
+## 📚 Project Structure
+
+```
+AirdropScout-main/
+├── src/
+│   ├── components/          # React components
+│   │   ├── Pages/          # Page components (NFTs, Tasks, Home)
+│   │   ├── NFT/            # NFT-related components
+│   │   ├── Layout/         # Header, Footer
+│   │   └── ...
+│   ├── config/             # Configuration files
+│   │   ├── chains.ts       # Network definitions (9 chains)
+│   │   ├── networks.ts     # Display configuration
+│   │   ├── rpc.ts          # RPC endpoints
+│   │   ├── tasks.ts        # Task definitions by network
+│   │   └── programs.ts     # Testnet programs
+│   ├── hooks/              # Custom React hooks
+│   │   ├── useMintStats.ts # Mint count fetching
+│   │   ├── useWallet.ts    # Wallet connection
+│   │   └── ...
+│   ├── lib/                # Core utilities
+│   │   ├── i18n.ts         # Translation system
+│   │   ├── supabase.ts     # Database client
+│   │   └── client.ts       # Web3 clients
+│   ├── utils/              # Helper functions
+│   │   ├── fetchMintCount.ts  # Backend mint API
+│   │   ├── formatPrice.ts     # Price formatting (7 decimals)
+│   │   └── ...
+│   └── App.tsx             # Root component with React Router
+├── server/                 # Express backend
+│   ├── index.ts           # API server
+│   └── mintStats.ts       # Backend RPC for mint counts
+├── locales/               # i18n translations
+│   ├── en.json            # English
+│   └── tr.json            # Turkish
+├── supabase/              # Database
+│   ├── migrations/        # SQL migrations
+│   └── *.sql              # NFT data scripts
+└── memory-bank/           # Project documentation
+    ├── activeContext.md   # Current work
+    ├── progress.md        # Status tracker
+    └── ...
 ```
 
-## API Endpoints
+---
+
+## 🌐 Supported Networks
+
+### Mainnet (7 Networks)
+
+| Network | Chain ID | Currency | RPC Endpoint | Status |
+|---------|----------|----------|--------------|--------|
+| **Base** | 8453 | ETH | base.blockpi.network | ✅ Live |
+| **Optimism** | 10 | ETH | optimism.blockpi.network | ✅ Live |
+| **Sei** | 1329 | SEI | evm-rpc.sei-apis.com | ✅ Live |
+| **Zora** | 7777777 | ETH | rpc.zora.energy | ✅ Live |
+| **Ink** | 57073 | ETH | rpc-gel.inkonchain.com | ✅ Live |
+| **Soneium** | 1868 | ETH | rpc.soneium.org | ✅ Live |
+| **Mode** | 34443 | ETH | mainnet.mode.network | ✅ Live |
+
+### Testnet (2 Networks)
+
+| Network | Chain ID | Currency | Purpose |
+|---------|----------|----------|---------|
+| **Pharos** | 20241022 | PHRS | Airdrop farming testnet |
+| **GIWA Sepolia** | 9873 | ETH | Alternative testnet |
+
+---
+
+## 🎯 Core Features
+
+### 1. NFT Discovery & Minting
+
+**Browse Collections**
+- Grid view with images, titles, descriptions
+- Network tabs (auto-filtered by mainnet/testnet)
+- Real-time mint count badges (prefetched on mount)
+- Price display with correct currency symbols
+
+**Smart Filtering**
+- Search by name
+- Filter by tags (art, gaming, free, etc.)
+- Hide already-minted NFTs (wallet-based)
+- Sort by price, newest, name
+
+**Mint Statistics**
+- Backend-powered RPC calls (no CORS issues)
+- Strategy 1: `totalSupply()` method (fast)
+- Strategy 2: Event scanning with chunking (fallback)
+- 15-minute cache to prevent rate limits
+- 8-second timeout with "N/A" fallback
+
+### 2. Task Management
+
+**Network-Specific Tasks**
+- Organized by network (9 task arrays)
+- Categories: Faucets, NFT mints, Swaps, Liquidity
+- Direct links to external platforms
+- Internal navigation to NFTs/Faucets pages
+
+**Task Cards**
+- Clear instructions per task
+- Visual network badges with colors
+- Manual completion checkmarks
+- External link icons
+
+### 3. URL Persistence & Routing
+
+**React Router Integration**
+- Deep linking: `/nfts?network=base`
+- Browser history support (back/forward)
+- F5 refresh maintains page & network selection
+- Shareable URLs with network state
+
+**State Management**
+- URL parameters for network selection
+- localStorage for user preferences
+- No Redux/Zustand (hooks + local state)
+
+### 4. Pretty Price Formatting
+
+**Smart Decimal Handling**
+```typescript
+// Examples:
+0.0100000 SEI → 0.01 SEI    (trailing zeros trimmed)
+1.0000000 ETH → 1 ETH        (whole number)
+0.0000001 PHRS → 0.0000001 PHRS (preserved)
+```
+
+**Features**
+- Up to 7 decimal places
+- Automatic trailing zero removal
+- Preserves tiny values
+- Dynamic currency symbols
+- FREE badge for 0 price
+
+### 5. Internationalization (i18n)
+
+**Synchronous Loading**
+- Translations bundled with app
+- No key flashing on first render
+- Instant language switching
+- +11 KB bundle size (worth it for UX)
+
+**Languages**
+- 🇬🇧 English (100% complete)
+- 🇹🇷 Turkish (100% complete)
+
+**Implementation**
+```typescript
+import { useTranslation } from './lib/i18n';
+
+const { t } = useTranslation(language);
+<h1>{t('brand')}</h1> // "Airdrop Scout"
+```
+
+---
+
+## 🔧 Technical Highlights
+
+### Backend Mint Statistics API
+
+**Problem Solved**: Browser-based RPC calls hit CORS restrictions and rate limits.
+
+**Solution**: Express backend proxy for RPC calls
+
+**Endpoint**: `GET /api/mints?chain=base&address=0x...`
+
+**Response**:
+```json
+{
+  "ok": true,
+  "minted": "12345",
+  "cached": false
+}
+```
+
+**Features**:
+- 3 retry attempts per request
+- 20-second timeout
+- 15-minute in-memory cache
+- Chunked event scanning (8k blocks)
+- Supports all 9 networks
+
+### RPC Optimization Strategy
+
+**Chunked Queries**
+```typescript
+// Split large block ranges
+for (let start = fromBlock; start <= toBlock; start += 8000n) {
+  const logs = await client.getLogs({ ... });
+  await sleep(120); // Rate limit protection
+}
+```
+
+**Smart Fallback**
+1. Try `totalSupply()` first (1 call, instant)
+2. Fall back to `getLogs` event scanning (slower but reliable)
+3. Cache result for 15 minutes
+4. Return "N/A" on timeout (8 seconds)
+
+**Benefits**:
+- No 503/429 rate limit errors
+- Works with free public RPCs
+- Graceful degradation
+- User feedback at every step
+
+### Database Schema
+
+**NFTs Table** (`nfts`)
+```sql
+- id (uuid, PK)
+- title (text)
+- description (text)
+- network (enum: 'base', 'op', 'sei', ...)
+- contract_address (text)
+- token_id (text)
+- token_standard (text: ERC-721, ERC-1155)
+- price_eth (numeric)
+- currency (text: 'ETH', 'PHRS', 'SEI', 'GIWA')
+- tags (text[])
+- image_url (text)
+- external_link (text)
+- start_block (bigint, optional)
+- visible (boolean)
+- created_at (timestamp)
+```
+
+**View** (`nfts_view`)
+- Includes currency with fallback logic
+- Used by all frontend queries
+
+### Config-Driven Architecture
+
+**Adding a New Network** (15 minutes):
+
+1. `src/config/chains.ts` - Add chain definition
+2. `src/config/networks.ts` - Add display config
+3. `src/config/rpc.ts` - Add RPC endpoint
+4. `src/utils/price.ts` - Add currency mapping
+5. `src/config/tasks.ts` - Create task array
+6. `src/components/Pages/TasksPage.tsx` - Import tasks
+7. Supabase - Run `ALTER TYPE network_type ADD VALUE 'newchain'`
+
+✅ UI auto-updates from config!
+
+---
+
+## 📊 API Reference
 
 ### Public Endpoints
-- `GET /api/nfts?network=<network>&wallet=<address>&hideOwned=true` - Get filtered NFTs
-- `GET /api/networks` - Get network configurations
-- `POST /api/check-ownership` - Check NFT ownership
-- `GET /api/health` - Health check
 
-### Admin Endpoints
-- `GET /api/admin/nfts` - Get all NFTs (admin view)
-- `POST /api/admin/nfts` - Add new NFT
-- `PUT /api/admin/nfts/:id` - Update NFT
-- `DELETE /api/admin/nfts/:id` - Delete NFT
-
-## Usage Guide
-
-### For Users (Public View)
-1. Visit the application homepage
-2. Browse NFTs by network using the tab navigation
-3. Paste wallet address in the top-right input
-4. Check "Hide owned NFTs" to filter out owned tokens
-5. Click external links to view NFTs on marketplaces
-
-### For Admins
-1. Click "Admin Panel" in the header
-2. Use "Add NFT" to create new listings
-3. Edit or delete existing NFTs from the table
-4. Toggle visibility to show/hide NFTs from public view
-5. Use tags for better organization
-
-### Adding NFTs
-Required fields:
-- Title
-- Network (select from dropdown)
-- Contract Address (valid Ethereum address)
-- Token ID (numeric)
-- Token Standard (ERC-721 or ERC-1155)
-
-Optional fields:
-- Description
-- External Link (marketplace URL)
-- Tags (comma-separated)
-
-## Blockchain Integration
-
-### Ownership Verification
-- **ERC-721**: Uses `ownerOf(tokenId)` with `balanceOf(address)` fallback
-- **ERC-1155**: Uses `balanceOf(address, tokenId)` 
-- **Caching**: 5-minute cache for ownership queries
-- **Error Handling**: Graceful degradation for RPC failures
-
-### Smart Contract Interaction
-```typescript
-// ERC-721 Ownership Check
-const owner = await contract.ownerOf(tokenId);
-const isOwner = owner.toLowerCase() === walletAddress.toLowerCase();
-
-// ERC-1155 Ownership Check  
-const balance = await contract.balanceOf(walletAddress, tokenId);
-const isOwner = balance > 0;
+#### Get Mint Count
+```http
+GET /api/mints?chain=<chain>&address=<contract>
 ```
 
-## Performance Optimizations
+**Parameters:**
+- `chain` (required): Network slug (base, op, sei, etc.)
+- `address` (required): NFT contract address
 
-### Caching Strategy
-- **Redis Primary**: 5-minute TTL for ownership queries
-- **Memory Fallback**: In-memory cache when Redis unavailable
-- **Cache Keys**: `ownership:{network}:{contract}:{tokenId}:{wallet}`
-
-### Database Optimization
-- Indexed queries on network, visibility, and creation date
-- Unique constraints prevent duplicate entries
-- Row Level Security for secure multi-tenant access
-
-### Frontend Performance
-- Lazy loading and code splitting
-- Optimized re-renders with React hooks
-- Responsive design with minimal bundle size
-
-## Security Features
-
-### Input Validation
-- Ethereum address format validation (EIP-55)
-- Network whitelist validation
-- SQL injection prevention
-- XSS protection with input sanitization
-
-### Access Control
-- Row Level Security (RLS) on database
-- Public read access for visible NFTs only
-- Admin operations require authentication
-- Rate limiting on API endpoints
-
-## Deployment
-
-### Frontend (Vercel)
-```bash
-npm run build
-# Deploy dist folder to Vercel
+**Response:**
+```json
+{
+  "ok": true,
+  "minted": "1234",
+  "cached": true
+}
 ```
 
-### Backend Options
-- **Heroku**: `git push heroku main`
-- **DigitalOcean App Platform**: Connect repository
-- **Railway**: One-click deployment
-- **Render**: Auto-deploy from GitHub
+#### Health Check
+```http
+GET /api/health
+```
 
-### Database
-- Supabase managed PostgreSQL
-- Run migrations through Supabase dashboard
-- Configure RLS policies for security
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2025-10-14T12:00:00.000Z"
+}
+```
 
-## Monitoring & Maintenance
+---
 
-### Health Checks
-- `GET /api/health` endpoint for uptime monitoring
-- Database connection validation
-- Redis connectivity status
+---
 
-### Error Handling
-- Comprehensive error logging
-- User-friendly error messages
-- Graceful degradation for external dependencies
+## 🐛 Known Issues & Solutions
 
-### Cache Management
-- Automatic cache invalidation
-- Memory cleanup for in-memory fallback
-- TTL-based expiration policies
+### 1. RPC Rate Limits (Mitigated)
+**Issue**: Free RPC endpoints throttle requests
 
-## Contributing
+**Solutions Applied**:
+- ✅ Backend proxy (no browser CORS)
+- ✅ 15-minute caching
+- ✅ Chunked queries (8k blocks)
+- ✅ Lazy loading (prefetch on mount)
+- ✅ 120ms delay between requests
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+### 2. Mobile Wallet UX
+**Issue**: MetaMask mobile browser is clunky
 
-## License
+**Planned**: WalletConnect integration
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### 3. Supabase Enum Management
+**Issue**: Adding networks requires SQL migration
 
-## Support
+**Workaround**: Keep migration templates ready
 
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section below
-- Review API documentation
+---
 
-## Troubleshooting
+## 📈 Performance Metrics
 
-### Common Issues
+### Bundle Size
+- **Frontend**: ~924 KB (includes React Router)
+- **Gzipped**: ~300 KB
+- **Critical CSS**: Inlined
 
-**RPC Errors**
-- Check network connectivity
-- Verify RPC endpoints are accessible
-- Consider using premium RPC providers for production
+### Load Times (Good Connection)
+- **Initial Load**: < 2 seconds
+- **Page Navigation**: < 500ms (client-side routing)
+- **Mint Count**: 2-3 seconds (cached after first load)
 
-**Database Connection**
-- Verify Supabase credentials in `.env`
-- Check RLS policies are correctly configured
-- Ensure migrations have been run
+### Caching
+- **Mint Stats**: 15 minutes (in-memory)
+- **Static Assets**: Browser cache
+- **RPC Responses**: viem built-in cache
 
-**Caching Issues**
-- Redis connection timeout → Falls back to memory cache
-- Clear cache manually if ownership data seems stale
-- Monitor cache hit rates for optimization
+---
 
-**Ownership Check Failures**
-- Contract might not implement standard interfaces
-- Token might not exist or be burned
-- Network RPC might be temporarily unavailable
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **viem** - Modern Ethereum library
+- **Supabase** - Backend-as-a-Service
+- **Bolt.host** - Seamless deployment
+- **TailwindCSS** - Beautiful utility-first CSS
+- **Lucide** - Icon library
+
+---
+
+## 📞 Support
+
+### Get Help
+- 📖 [Documentation](memory-bank/) - Comprehensive project docs
+- 🐛 [Report Bug](https://github.com/ozzy35410/AirdropScout/issues) - GitHub Issues
+- 💡 [Request Feature](https://github.com/ozzy35410/AirdropScout/issues) - Feature requests
+
+### Project Links
+- **Live Site**: [AirdropScout](https://airdrop-scout-lax0.bolt.host/)
+- **GitHub**: [ozzy35410/AirdropScout](https://github.com/ozzy35410/AirdropScout)
+- **Documentation**: [Memory Bank](memory-bank/)
+
+---
+
+<div align="center">
+
+**Built with ❤️ by the AirdropScout Team**
+
+⭐ Star us on GitHub if you find this useful!
+
+</div>
