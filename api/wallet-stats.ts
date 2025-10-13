@@ -1,93 +1,28 @@
-/**
- * Wallet Stats endpoint for Bolt.host serverless
- * GET /api/wallet-stats?chain=base&address=0x...
- */
-import { fetchWalletStats } from '../src/lib/serverWallet';
-import { CHAINS } from '../src/config/chains';
-
-export default async function handler(req: Request): Promise<Response> {
-  // Parse query parameters
+export default async (req: Request) => {
   const url = new URL(req.url);
   const chain = url.searchParams.get('chain');
   const address = url.searchParams.get('address');
-  
-  // Validate inputs
-  if (!chain) {
-    return new Response(
-      JSON.stringify({
-        error: 'Missing required parameter: chain'
-      }),
-      {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
+
+  if (!chain || !address) {
+    return new Response(JSON.stringify({ error: 'missing_params' }), {
+      headers: { 'content-type': 'application/json' },
+      status: 400,
+    });
   }
-  
-  if (!address) {
-    return new Response(
-      JSON.stringify({
-        error: 'Missing required parameter: address'
-      }),
-      {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
-  }
-  
-  // Get chain metadata
-  const chainMeta = CHAINS[chain as keyof typeof CHAINS];
-  if (!chainMeta) {
-    return new Response(
-      JSON.stringify({
-        error: `Unknown chain: ${chain}. Supported chains: ${Object.keys(CHAINS).join(', ')}`
-      }),
-      {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
-  }
-  
-  try {
-    // Fetch wallet stats
-    const stats = await fetchWalletStats(address, chainMeta);
-    
-    return new Response(
-      JSON.stringify(stats),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=60' // 60 seconds cache
-        }
-      }
-    );
-  } catch (error) {
-    console.error('Error in wallet-stats handler:', error);
-    
-    return new Response(
-      JSON.stringify({
-        error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      }),
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache'
-        }
-      }
-    );
-  }
-}
+
+  // --- geçici demo veri (rotanın çalıştığını görmek için) ---
+  const demo = {
+    chain,
+    address,
+    interactions: { total: 7, out: 5, in: 2 },
+    interactedContracts: { unique: 3, deploys: 0 },
+    volume: { out: 0.12, fees: 0.0031 },
+    balance: 0.0456,
+    recent: [],
+  };
+
+  return new Response(JSON.stringify(demo), {
+    headers: { 'content-type': 'application/json' },
+    status: 200,
+  });
+};

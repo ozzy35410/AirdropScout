@@ -52,11 +52,23 @@ export function useWalletStats(
 
     try {
       const response = await fetch(
-        `/api/wallet-stats?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}`
+        `/api/wallet-stats?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}`,
+        {
+          headers: {
+            'accept': 'application/json'
+          }
+        }
       );
 
+      // Check if response is actually JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('API did not return JSON (route missing / 404 fallback)');
+      }
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       const result: WalletStatsResponse = await response.json();
