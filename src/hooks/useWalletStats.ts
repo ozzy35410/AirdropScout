@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { WalletStatsResponse } from '../types/wallet';
 
+// Use Cloudflare Workers API base URL
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
+
 interface UseWalletStatsOptions {
   enabled?: boolean;
   staleTime?: number;
@@ -52,7 +55,7 @@ export function useWalletStats(
 
     try {
       const response = await fetch(
-        `/api/wallet-stats?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}`,
+        `${API_BASE}/wallet-stats?chain=${encodeURIComponent(chain)}&address=${encodeURIComponent(address)}`,
         {
           headers: {
             'accept': 'application/json'

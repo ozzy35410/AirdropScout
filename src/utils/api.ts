@@ -1,16 +1,25 @@
 import { NFT, NFTListResponse, NetworkConfigs } from '../types';
 
-const API_BASE = '/api';
+// Use environment variable for API base URL (Cloudflare Workers)
+// Falls back to /api for local Bolt.host development
+const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 // Generic API call function
 async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...options?.headers,
     },
     ...options,
   });
+
+  // Check if response is actually JSON (not HTML 404 fallback)
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('API did not return JSON (route missing / 404 fallback)');
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
