@@ -18,6 +18,16 @@
 - **Supabase**: PostgreSQL database with real-time subscriptions
   - SDK: `@supabase/supabase-js`
   - Used for: NFT collections, user submissions, admin management
+- **Cloudflare Workers**: Serverless API backend (ADDED Oct 14, 2025)
+  - Endpoints: /api/ping, /api/mints, /api/wallet-stats
+  - Runtime: V8 isolates (edge computing, sub-100ms latency)
+  - Cache: 15-minute TTL on edge (Cloudflare cache API)
+  - CORS: Enabled for cross-origin requests (`access-control-allow-origin: *`)
+  - Location: Separate project directory (airdrop-api-worker/)
+  - Deployment: `npx wrangler deploy` (independent from frontend)
+  - Free tier: 100,000 requests/day, 10ms CPU time per request
+  - Dependencies: viem 2.13.7 (blockchain interactions)
+  - Configuration: wrangler.toml (name, main, compatibility_date)
 
 ### Development Tools
 - **ESLint 9.12.0**: Code linting
@@ -48,10 +58,20 @@ npm install
 
 ### Environment Variables
 ```env
-# .env file
+# .env file (NOT committed to Git - contains sensitive data)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# NEW (Oct 14, 2025): Cloudflare Workers API endpoint
+VITE_API_BASE=https://airdrop-api.<subdomain>.workers.dev
 ```
+
+**Important Notes**:
+- `.env` is in `.gitignore` (never commit secrets!)
+- `.env.example` shows required variables (committed to Git)
+- Bolt.host reads `.env` automatically during build
+- Frontend accesses via `import.meta.env.VITE_*`
+- Worker URL obtained after running `npm run deploy` in airdrop-api-worker/
 
 ### Development Server
 ```bash
@@ -77,6 +97,7 @@ AirdropScout-main/
 ├── src/
 │   ├── components/          # React components
 │   │   ├── Pages/          # Page-level components
+│   │   │   └── WalletStatsPage.tsx  # NEW: Wallet statistics UI
 │   │   ├── Layout/         # Header, Footer, etc.
 │   │   ├── NFT/            # NFT-related components
 │   │   ├── MintStats/      # Mint count badge
@@ -92,21 +113,26 @@ AirdropScout-main/
 │   ├── hooks/              # Custom React hooks
 │   │   ├── useMintStats.ts
 │   │   ├── useWallet.ts
+│   │   ├── useWalletStats.ts  # NEW: Fetch wallet stats from Worker
 │   │   ├── useProgress.ts
 │   │   └── ...
 │   ├── lib/                # Libraries/utilities
 │   │   ├── i18n.ts         # Translation system
 │   │   ├── supabase.ts     # Supabase client
 │   │   ├── client.ts       # Web3 clients
+│   │   ├── serverWallet.ts # NEW: Shared wallet logic (unused - moved to Worker)
 │   │   └── ...
 │   ├── types/              # TypeScript types
-│   │   └── index.ts
+│   │   ├── index.ts
+│   │   └── wallet.ts       # NEW: Wallet stats types
 │   ├── utils/              # Utility functions
 │   │   ├── mintStats.ts    # Blockchain queries
 │   │   ├── price.ts        # Price formatting
+│   │   ├── api.ts          # UPDATED: API wrapper with VITE_API_BASE
 │   │   └── ...
 │   ├── App.tsx             # Root component
 │   ├── main.tsx            # Entry point
+│   ├── vite-env.d.ts       # UPDATED: Added VITE_API_BASE type
 │   └── index.css           # Global styles
 ├── locales/                # i18n translations
 │   ├── en.json
@@ -116,8 +142,28 @@ AirdropScout-main/
 │   ├── migrations/        # SQL migrations
 │   └── *.sql              # NFT insertion scripts
 ├── memory-bank/           # AI agent memory (this)
+│   ├── projectbrief.md
+│   ├── productContext.md
+│   ├── activeContext.md
+│   ├── systemPatterns.md
+│   ├── techContext.md
+│   └── progress.md
 ├── docs/                  # Documentation
+├── api/                   # DEPRECATED: Old serverless stubs (Bolt.host doesn't support)
+│   ├── ping.ts            # Replaced by Cloudflare Workers
+│   └── wallet-stats.ts    # Replaced by Cloudflare Workers
+├── CLOUDFLARE_WORKERS_SETUP.md  # NEW: Deployment guide
+├── .env.example           # UPDATED: Added VITE_API_BASE template
 └── package.json           # Dependencies
+
+airdrop-api-worker/        # NEW: Cloudflare Workers API project
+├── src/
+│   ├── index.ts           # Main Worker (fetch handler)
+│   ├── rpc.ts             # RPC endpoints & chain metadata
+│   └── ercAbis.ts         # ERC721/1155 ABIs
+├── package.json           # Dependencies (viem, wrangler)
+├── wrangler.toml          # Cloudflare Workers config
+└── README.md              # API documentation
 ```
 
 ## Technical Constraints

@@ -3,25 +3,59 @@
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      User Interface                         │
-│  (React Components + TailwindCSS + i18n)                   │
-└─────────────┬───────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│             User Interface (Bolt.host SPA)                   │
+│       React Components + TailwindCSS + i18n                  │
+│       Auto-deploy from GitHub main branch                    │
+└─────────────┬────────────────────────────────────────────────┘
               │
-    ┌─────────┴─────────┐
-    │                   │
-┌───▼────────┐    ┌────▼─────────┐
-│   Config   │    │  Data Layer  │
-│  System    │    │  (Providers) │
-└───┬────────┘    └────┬─────────┘
-    │                  │
-    │         ┌────────┴────────────┐
-    │         │                     │
-┌───▼─────────▼───┐        ┌───────▼────────┐
-│   Blockchain    │        │   Supabase     │
-│   (viem/ethers) │        │   (PostgreSQL) │
-└─────────────────┘        └────────────────┘
+    ┌─────────┴──────────┐
+    │                    │
+┌───▼────────┐    ┌──────▼───────────┐
+│   Config   │    │  Data Layer      │
+│  System    │    │  (Providers)     │
+│  chains.ts │    │  Supabase        │
+│  rpc.ts    │    │  PostgreSQL      │
+└───┬────────┘    └──────────────────┘
+    │
+    │ VITE_API_BASE env var
+    │ (https://airdrop-api.<subdomain>.workers.dev)
+    │
+┌───▼────────────────────────────────────────┐
+│    Cloudflare Workers API (Serverless)     │
+│    Edge Functions (V8 Isolates)            │
+│    ┌─────────────────────────────────────┐ │
+│    │ /api/ping         (Health check)    │ │
+│    │ /api/mints        (NFT mint count)  │ │
+│    │ /api/wallet-stats (Balance & txs)   │ │
+│    └─────────────────────────────────────┘ │
+│    Features:                                │
+│    - 15-minute edge cache (Cloudflare)      │
+│    - CORS-enabled                           │
+│    - viem for blockchain interactions       │
+│    - Retry logic (3 attempts, 20s timeout)  │
+│    - Chunked log scanning (8k blocks)       │
+└────────┬───────────────────────────────────┘
+         │
+    ┌────▼────────────┐
+    │  Blockchain RPCs│
+    │  Base, OP, Zora │
+    │  Mode, Ink, Sei │
+    │  Soneium, GIWA  │
+    │  Pharos         │
+    │  viem library   │
+    │  (Public RPCs)  │
+    └─────────────────┘
 ```
+
+**Key Changes (Oct 14, 2025)**:
+- Moved API backend from Bolt.host (broken Express) to Cloudflare Workers (serverless)
+- Frontend on Bolt.host fetches from external Worker URL via `VITE_API_BASE` env var
+- CORS-enabled communication between SPA and API (cross-origin requests)
+- Environment variable (`VITE_API_BASE`) configures API endpoint dynamically
+- Two separate deployments: Frontend (Bolt.host) + API (Cloudflare Workers)
+- 15-minute edge cache reduces RPC load and improves response times
+- Free tier: 100,000 requests/day (sufficient for MVP)
 
 ## Key Technical Decisions
 
@@ -141,7 +175,7 @@ export function getCurrency(
 ### 6. Component Hierarchy
 
 ```
-App.tsx
+App.tsx (BrowserRouter wrapper - React Router)
 ├── HomePage
 │   └── Supported Networks (auto from CHAINS)
 ├── TasksPage
@@ -152,8 +186,19 @@ App.tsx
 │   ├── Search/Filter UI
 │   └── NFTCard[]
 │       └── MintCountBadge (lazy-loaded)
+├── WalletStatsPage (NEW - Cloudflare Workers integration)
+│   ├── Network tabs (mainnet/testnet toggle)
+│   ├── Address input
+│   ├── useWalletStats hook → fetch from VITE_API_BASE
+│   └── Stats display (balance, tx count, recent transactions)
 └── FaucetsPage
     └── Faucet Links by Network
+
+Routing (React Router v6):
+- URL-based navigation: /nfts?network=base
+- F5 preserves page and state
+- Browser back/forward buttons work
+- Shareable URLs with network selection
 ```
 
 ### 7. State Management Pattern

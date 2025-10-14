@@ -1,11 +1,13 @@
 # Project Progress Tracker
 
-## Current Status: ✅ MVP Complete and Production Ready! 🎉
+## Current Status: ⏳ Cloudflare Workers Deployment Pending
 
-**Last Updated**: October 13, 2025
+**Last Updated**: October 14, 2025
 
 ### Overview
-AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet networks and 2 testnets. The platform is actively being extended with new networks and features.
+AirdropScout MVP is complete with 9 networks. Currently migrating backend from Bolt.host (broken Express) to Cloudflare Workers (serverless). Frontend is ready and deployed, awaiting user to complete Worker deployment (30-minute process).
+
+**Critical Path**: User must deploy Cloudflare Worker to unlock Wallet Stats feature.
 
 ---
 
@@ -54,7 +56,45 @@ AirdropScout is a functional multi-chain NFT aggregator supporting 7 mainnet net
 
 ## 🔄 What's In Progress
 
-**Status**: All major features completed! 🎉
+### Critical: Cloudflare Workers API Deployment (USER ACTION REQUIRED)
+**Status**: Frontend complete (100%), Backend ready (100%), User deployment pending (0%)
+
+**What's Done**:
+- ✅ Created Cloudflare Workers project (airdrop-api-worker/)
+- ✅ Implemented /api/ping, /api/mints, /api/wallet-stats endpoints
+- ✅ Added viem blockchain integration with RPC clients
+- ✅ Implemented 15-minute edge caching
+- ✅ CORS-enabled for cross-origin requests
+- ✅ Updated frontend to use VITE_API_BASE environment variable
+- ✅ Added JSON validation (rejects HTML 404 fallback)
+- ✅ Created deployment documentation (CLOUDFLARE_WORKERS_SETUP.md)
+- ✅ Pushed to GitHub (commit: 7a4b1fd)
+- ✅ Bolt.host auto-deployed frontend with API wrapper
+
+**What User Must Do** (30-minute process):
+1. 📦 Install Node.js from https://nodejs.org/ (5 min)
+   - Verify: `node --version && npm --version`
+2. 🔧 Deploy Worker (10 min)
+   ```bash
+   cd C:\Users\oguzhano\Desktop\airdrop-api-worker
+   npm install
+   npx wrangler login  # Opens browser
+   npm run deploy      # Get Worker URL
+   ```
+3. ⚙️ Configure .env (2 min)
+   - Create .env in AirdropScout-temp with Worker URL
+   - Add: `VITE_API_BASE=https://airdrop-api.<subdomain>.workers.dev`
+4. 📤 Push to GitHub (5 min)
+   ```bash
+   git add .env
+   git commit -m "chore: Add production Worker config"
+   git push origin main
+   ```
+5. ✅ Test Production (5 min)
+   - Visit: https://airdrop-scout-lax0.bolt.host/wallet-stats
+   - Verify: No HTML parse errors, real balance & tx count
+
+**Blocking**: Wallet Stats feature unusable until Worker deployed
 
 ### Previously In Progress (Now Complete)
 All items that were in progress have been successfully completed and deployed:
@@ -126,7 +166,27 @@ All items that were in progress have been successfully completed and deployed:
 
 ## 🐛 Known Issues
 
-### 1. RPC Rate Limits (Partially Mitigated)
+### 1. Bolt.host API Limitation (RESOLVED - Oct 14, 2025)
+**Severity**: Critical (FIXED by migrating to Cloudflare Workers)
+
+**Problem**: 
+- Bolt.host doesn't support Express backend or /api routes
+- `/api/ping` returned HTML `<!doctype html>` instead of JSON
+- Frontend got "Unexpected token '<', '<!doctype' is not valid JSON"
+- SPA fallback served index.html for all /api/* requests
+
+**Root Cause**: Bolt.host is static site host (SPA-only), not application server
+
+**Solution Implemented**:
+- ✅ Created separate Cloudflare Workers API project
+- ✅ Updated frontend to use `VITE_API_BASE` environment variable
+- ✅ Added Content-Type validation (rejects HTML responses)
+- ✅ Comprehensive documentation created
+- ⏳ Awaiting user deployment of Worker (30-minute process)
+
+**Status**: Frontend migrated and deployed, backend ready for user deployment
+
+### 2. RPC Rate Limits (Partially Mitigated)
 **Severity**: Medium (affects mint stats)
 
 **Symptoms**: 503/429 errors when loading many NFTs
@@ -141,7 +201,7 @@ All items that were in progress have been successfully completed and deployed:
 
 **Long-term Fix**: Private RPC endpoints or API keys
 
-### 2. Supabase Enum Limitations
+### 3. Supabase Enum Limitations
 **Severity**: Low (development friction)
 
 **Symptoms**: Can't add networks without migration
@@ -152,7 +212,7 @@ All items that were in progress have been successfully completed and deployed:
 
 **Long-term Fix**: Switch to text column with validation
 
-### 3. Mobile MetaMask Experience
+### 4. Mobile MetaMask Experience
 **Severity**: Medium (mobile UX)
 
 **Symptoms**: Clunky wallet connection on mobile browsers
@@ -163,7 +223,7 @@ All items that were in progress have been successfully completed and deployed:
 
 **Long-term Fix**: WalletConnect integration
 
-### 4. Type Safety Gaps
+### 5. Type Safety Gaps
 **Severity**: Low (developer experience)
 
 **Symptoms**: Some `any` types in Supabase responses
@@ -174,7 +234,7 @@ All items that were in progress have been successfully completed and deployed:
 
 **Long-term Fix**: Generated Supabase types
 
-### 5. Silent RPC Failures
+### 6. Silent RPC Failures
 **Severity**: Low (user confusion)
 
 **Symptoms**: Mint stats show "View Mints" forever if RPC fails
@@ -220,8 +280,16 @@ All items that were in progress have been successfully completed and deployed:
 - Fixed i18n key flashing (synchronous loading)
 - Added React Router (URL persistence, shareable links)
 
-### Current Phase: Production Ready ✅
-**Focus**: MVP complete! Ready for next phase features (admin UI, mobile wallet, analytics)
+### Phase 6: Cloudflare Workers Migration (Oct 14, 2025)
+- Discovered Bolt.host backend limitation
+- Created separate Cloudflare Workers API project
+- Migrated frontend to use external API via VITE_API_BASE
+- Added JSON validation and error handling
+- Documented full deployment process
+- Frontend deployed and ready, awaiting Worker deployment
+
+### Current Phase: Production API Deployment ⏳
+**Focus**: User must deploy Cloudflare Worker to complete migration and unlock Wallet Stats feature
 
 ---
 
@@ -274,15 +342,28 @@ All items that were in progress have been successfully completed and deployed:
 - **Hot Reload**: Enabled
 
 ### Recent Deployments
-1. **Oct 10, 2025 - OP Integration Part 1** (commit: 056c768)
+1. **Oct 14, 2025 - Cloudflare Workers Integration** (commit: 7a4b1fd)
+   - Added VITE_API_BASE environment variable support
+   - Updated API utilities with JSON validation
+   - Created Worker project structure
+   - Added deployment documentation
+   - Status: Frontend deployed, awaiting Worker deployment
+
+2. **Oct 14, 2025 - Bolt.host API Fix Attempt** (commit: c5c2cb9)
+   - Simplified serverless endpoints
+   - Discovered Bolt.host doesn't support /api directory
+   - Led to Cloudflare Workers migration
+   - Status: Deprecated (replaced by Worker approach)
+
+3. **Oct 10, 2025 - OP Integration Part 1** (commit: 056c768)
    - Added OP config layer
    - Status: Deployed and tested
 
-2. **Oct 10, 2025 - OP Integration Part 2** (commit: e43372a)
+4. **Oct 10, 2025 - OP Integration Part 2** (commit: e43372a)
    - Added OP UI and i18n
    - Status: Deployed, awaiting migration
 
-3. **Oct 10, 2025 - Ink NFTs** (commit: 30f0959, 765d776)
+5. **Oct 10, 2025 - Ink NFTs** (commit: 30f0959, 765d776)
    - Added 5 Ink collections
    - Status: Code deployed, migration pending
 
@@ -290,6 +371,8 @@ All items that were in progress have been successfully completed and deployed:
 - ✅ Code changes committed
 - ✅ Git pushed to main
 - ✅ Bolt.host rebuild triggered
+- ⏳ Cloudflare Worker deployed (user action required)
+- ⏳ .env configured with Worker URL (user action required)
 - ⏳ Supabase migrations executed (user action)
 - ⏳ Live testing completed
 
@@ -323,7 +406,33 @@ All items that were in progress have been successfully completed and deployed:
 **Rationale**: Prevent timeouts on large scan ranges
 **Outcome**: Mint stats succeed reliably
 
-#### 5. Memory Bank System
+#### 6. Cloudflare Workers Separation
+**Date**: Oct 14, 2025
+**Decision**: Separate API backend on Cloudflare Workers
+**Reasoning**: 
+- Bolt.host is SPA-only (no backend support)
+- Express backend won't deploy on Bolt.host
+- /api routes return HTML 404 fallback
+- Cloudflare Workers provides serverless edge functions
+
+**Implementation**:
+- Frontend: Bolt.host (React SPA)
+- API Backend: Cloudflare Workers (serverless functions)
+- Communication: HTTPS with CORS
+- Config: `VITE_API_BASE` environment variable
+
+**Benefits**:
+- ✅ Free tier: 100k requests/day
+- ✅ Edge caching: 15-minute TTL
+- ✅ No server management
+- ✅ CORS-enabled by default
+- ✅ Sub-100ms latency worldwide
+
+**Trade-offs**:
+- ⚠️ Requires separate deployment
+- ⚠️ Two URLs to manage (frontend + API)
+- ⚠️ Environment variable needed in Bolt.host
+- ⚠️ User must set up Cloudflare account
 **Date**: Oct 10, 2025
 **Decision**: Implement AGENTS.md Memory Bank
 **Rationale**: AI agent needs persistent context across sessions

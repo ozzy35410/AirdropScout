@@ -2,24 +2,59 @@
 
 ## Current Work Focus
 
-### 🎉 MVP Complete! (October 13, 2025)
+### 🚀 Cloudflare Workers API Migration (October 14, 2025)
 
-**Status**: All core features implemented and deployed!
+**Status**: Frontend prepared, awaiting user deployment of Worker backend
 
-**Completed Milestones**:
-- ✅ 9 networks fully integrated (Base, Sei, Zora, Ink, Soneium, Mode, OP, Pharos, GIWA)
-- ✅ 20+ NFT collections with real data
-- ✅ Database migrations executed (Optimism, Ink, Currency support)
-- ✅ Pretty price formatting (7 decimals, smart trimming)
-- ✅ i18n synchronous loading (no key flashing)
-- ✅ React Router (URL persistence, F5 maintains state)
-- ✅ All systems tested on live deployment
+**Current Milestone**: Wallet Stats Backend Conversion - Ready for User Action
+- ✅ Identified Bolt.host limitation (no Express backend support)
+- ✅ Created Cloudflare Workers project structure (airdrop-api-worker/)
+- ✅ Implemented serverless API endpoints (/api/ping, /api/mints, /api/wallet-stats)
+- ✅ Added viem blockchain integration with RPC clients
+- ✅ Implemented 15-minute edge caching
+- ✅ CORS-enabled for cross-origin requests
+- ✅ Updated frontend to support VITE_API_BASE environment variable
+- ✅ Added JSON validation to prevent HTML 404 fallback errors
+- ✅ Created comprehensive documentation (CLOUDFLARE_WORKERS_SETUP.md)
+- ✅ Updated all API hooks and utilities
+- ✅ Pushed frontend changes to GitHub (commit: 7a4b1fd)
+- 📦 **NEXT (User)**: Install Node.js from nodejs.org
+- 🚀 **NEXT (User)**: Deploy Worker: `cd airdrop-api-worker && npm install && npm run deploy`
+- ⚙️ **NEXT (User)**: Configure .env with Worker URL
+- 📤 **NEXT (User)**: Push .env to GitHub for Bolt.host rebuild
 
-**What This Means**:
-- Platform is production-ready
-- All user-facing features work correctly
-- No critical bugs or blockers
-- Ready for V1.0 feature additions
+**What Changed**:
+- Bolt.host doesn't support /api routes natively → Returns HTML instead of JSON
+- Express backend in server/ directory won't deploy on Bolt.host
+- Solution: Separate Cloudflare Workers API for RPC/blockchain logic
+- Frontend stays on Bolt.host, API on Cloudflare Workers (CORS-enabled)
+
+**Architecture Shift**:
+```
+BEFORE (Broken on Bolt.host):
+Bolt.host → /api/* → HTML 404 fallback → JSON parse error
+
+AFTER (Working with Cloudflare Workers):
+┌─────────────────┐
+│   Bolt.host     │ Frontend SPA (React)
+│  (Static Site)  │ 
+└────────┬────────┘
+         │ HTTPS (CORS-enabled)
+         │ VITE_API_BASE env var
+┌────────▼────────────┐
+│ Cloudflare Workers  │ Serverless API
+│  Edge Functions     │ 
+│  /api/ping          │ Health check
+│  /api/mints         │ NFT mint count
+│  /api/wallet-stats  │ Balance & tx count
+└─────────┬───────────┘
+          │ RPC Calls (viem)
+┌─────────▼──────────┐
+│  Blockchain RPCs   │
+│  Base, OP, Zora... │
+│  (Public endpoints)│
+└────────────────────┘
+```
 
 ### Previously Completed: React Router + URL Persistence
 **Date**: October 12, 2025
@@ -219,6 +254,146 @@ Fixed critical issue where mint counts would not load on Base and Optimism netwo
 
 ## Recent Changes (Last 7 Days)
 
+### Cloudflare Workers API Migration (Oct 14, PM)
+**Critical Infrastructure Change - Frontend Complete**
+
+**Problem Discovered**:
+- `/api/ping` returns HTML `<!doctype html>` instead of JSON on production
+- Bolt.host doesn't support serverless functions in /api directory
+- Express backend (server/index.ts) won't deploy on Bolt.host
+- Frontend fetches fail with "Unexpected token '<', '<!doctype' is not valid JSON"
+- SPA fallback serves index.html for all unknown routes (including /api/*)
+
+**Root Cause**:
+Bolt.host is a static site host (SPA-only), not an application server. It doesn't recognize /api as serverless routes like Vercel/Netlify do. The `/api` directory is ignored, and all requests fall back to serving index.html.
+
+**Solution Implemented**:
+1. **Created Separate Cloudflare Workers Project** (airdrop-api-worker/)
+   - Location: `C:\Users\oguzhano\Desktop\airdrop-api-worker\`
+   - Serverless endpoints: 
+     - `/api/ping` - Health check (returns JSON: `{ ok: true, time: Date.now() }`)
+     - `/api/mints?chain=<slug>&address=<contract>` - NFT mint count (totalSupply + log scanning)
+     - `/api/wallet-stats?chain=<slug>&address=<wallet>` - Balance & transaction count
+   - Uses viem 2.13.7 for blockchain interactions
+   - Public RPC endpoints: Base, OP, Zora, Mode, Ink, Soneium, Sei, GIWA, Pharos
+   - 15-minute edge cache (Cloudflare cache API)
+   - CORS-enabled for cross-origin requests (`access-control-allow-origin: *`)
+   - Supports all 9 networks
+   - Chunked log scanning (8k blocks per chunk, 200k block range)
+   - Retry logic (3 attempts, 20s timeout per request)
+
+2. **Updated Frontend for External API**:
+   - Added `VITE_API_BASE` environment variable
+   - Updated `src/vite-env.d.ts` with ImportMetaEnv interface:
+     ```typescript
+     interface ImportMetaEnv {
+       readonly VITE_SUPABASE_URL: string
+       readonly VITE_SUPABASE_ANON_KEY: string
+       readonly VITE_API_BASE?: string  // NEW
+     }
+     ```
+   - Modified `src/utils/api.ts`:
+     - Reads `import.meta.env.VITE_API_BASE` (falls back to `/api` for local dev)
+     - Added Content-Type validation (rejects HTML responses)
+     - Added Accept: application/json header
+   - Updated `src/hooks/useWalletStats.ts`:
+     - Uses `API_BASE` constant instead of hardcoded `/api`
+     - Content-Type check before parsing JSON
+     - Clear error: "API did not return JSON (route missing / 404 fallback)"
+   - Updated `.env.example` with Cloudflare Workers URL template
+
+3. **Enhanced Error Handling**:
+   - Content-Type validation (rejects HTML responses)
+   - Clear error messages: "API did not return JSON (route missing / 404 fallback)"
+   - Accept: application/json header in all API calls
+   - Timeout handling (8s for wallet stats, 20s for Worker RPC calls)
+
+4. **Documentation Created**:
+   - `CLOUDFLARE_WORKERS_SETUP.md` - Full deployment guide (architecture, setup steps, testing, troubleshooting)
+   - `airdrop-api-worker/README.md` - API documentation (endpoints, parameters, responses, caching, rate limits)
+   - Todo list with 7 clear steps for user to complete
+   - Cost estimates (free tier: 100k requests/day)
+
+**Files Changed**:
+- `.env.example` - Added VITE_API_BASE config
+- `src/vite-env.d.ts` - Added ImportMetaEnv interface
+- `src/utils/api.ts` - Environment variable support + JSON validation
+- `src/hooks/useWalletStats.ts` - API_BASE constant + Content-Type check
+- `CLOUDFLARE_WORKERS_SETUP.md` - New deployment guide
+- `airdrop-api-worker/` - New directory (Worker project):
+  - `package.json` - Dependencies (viem, wrangler)
+  - `wrangler.toml` - Cloudflare Workers config
+  - `src/index.ts` - Main Worker logic (fetch handler)
+  - `src/rpc.ts` - RPC endpoints & chain metadata
+  - `src/ercAbis.ts` - ERC721/1155 ABIs for event parsing
+  - `README.md` - API documentation
+
+**Git Commits**:
+- c5c2cb9: "fix: Simplify serverless endpoints for Bolt.host compatibility"
+- 7a4b1fd: "feat: Add Cloudflare Workers API integration"
+
+**Current Status**:
+- ✅ Frontend code complete and pushed to GitHub
+- ✅ Bolt.host auto-deployed with new API wrapper
+- ✅ Worker project created and documented
+- ⏳ Waiting for user to install Node.js
+- ⏳ Waiting for user to deploy Worker
+- ⏳ Waiting for production integration testing
+
+**Next Steps for User** (30-minute process):
+1. **Install Node.js** (5 min)
+   - Download from https://nodejs.org/ (LTS version recommended)
+   - Verify: `node --version && npm --version`
+
+2. **Deploy Cloudflare Worker** (10 min)
+   ```bash
+   cd C:\Users\oguzhano\Desktop\airdrop-api-worker
+   npm install
+   npx wrangler login  # Opens browser for Cloudflare auth
+   npm run deploy      # Deploys to edge, get Worker URL
+   ```
+
+3. **Configure Frontend Environment** (2 min)
+   ```bash
+   cd C:\Users\oguzhano\Desktop\AirdropScout-temp
+   # Create .env file:
+   VITE_API_BASE=https://airdrop-api.<subdomain>.workers.dev
+   VITE_SUPABASE_URL=https://your-project.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+4. **Push to GitHub** (5 min)
+   ```bash
+   git add .env
+   git commit -m "chore: Add production Cloudflare Workers API config"
+   git push origin main
+   # Wait 2-3 mins for Bolt.host rebuild
+   ```
+
+5. **Test Production Integration** (5 min)
+   - Visit: https://airdrop-scout-lax0.bolt.host/wallet-stats
+   - Test Worker directly: https://airdrop-api.<subdomain>.workers.dev/api/ping
+   - Verify: 
+     - /api/ping returns JSON `{ ok: true, time: ... }`
+     - Wallet Stats shows real balance & tx count
+     - No "Unexpected token '<'" errors in console
+     - URL persistence works (F5 stays on same page)
+
+**Benefits of This Architecture**:
+- ✅ Free tier: 100,000 requests/day (enough for MVP)
+- ✅ Edge caching: 15-minute TTL for fast responses
+- ✅ No server management (serverless)
+- ✅ CORS-enabled by default
+- ✅ Sub-100ms latency worldwide (Cloudflare edge network)
+- ✅ Frontend and backend deployed independently
+- ✅ Easy to update Worker without touching frontend
+
+**Trade-offs**:
+- ⚠️ Requires separate deployment (one-time setup)
+- ⚠️ Two URLs to manage (frontend + API)
+- ⚠️ Environment variable needed in Bolt.host (.env file)
+- ⚠️ User must create Cloudflare account (free)
+
 ### MVP Completion (Oct 13, PM)
 - Confirmed all Optimism migrations executed
 - Verified real OP NFT collections added
@@ -273,10 +448,44 @@ Fixed critical issue where mint counts would not load on Base and Optimism netwo
 
 ## Next Steps
 
-### Immediate (Ready to Start)
-**All MVP requirements met!** Platform is stable and ready for next phase.
+### Immediate (User Must Complete)
+**Cloudflare Workers Deployment** (Blocking production Wallet Stats)
 
-### V1.0 Features (Priority Order)
+1. **Install Node.js** (5 minutes)
+   - Download from https://nodejs.org/ (LTS version)
+   - Verify: `node --version && npm --version`
+
+2. **Deploy Worker** (10 minutes)
+   ```bash
+   cd C:\Users\oguzhano\Desktop\airdrop-api-worker
+   npm install
+   npx wrangler login  # Opens browser
+   npm run deploy      # Get Worker URL
+   ```
+
+3. **Configure Frontend** (2 minutes)
+   ```bash
+   cd C:\Users\oguzhano\Desktop\AirdropScout-temp
+   # Create .env file with:
+   VITE_API_BASE=https://airdrop-api.<subdomain>.workers.dev
+   VITE_SUPABASE_URL=...
+   VITE_SUPABASE_ANON_KEY=...
+   ```
+
+4. **Deploy to Production** (5 minutes)
+   ```bash
+   git add .env
+   git commit -m "chore: Add production Cloudflare Workers API config"
+   git push origin main
+   # Wait 2-3 mins for Bolt.host rebuild
+   ```
+
+5. **Test Production Integration** (5 minutes)
+   - Visit: https://airdrop-scout-lax0.bolt.host/wallet-stats
+   - Test Worker: https://airdrop-api.<subdomain>.workers.dev/api/ping
+   - Verify: No HTML parse errors, real balance & tx count displayed
+
+### V1.0 Features (After Worker Deployment)
 1. **Admin Panel UI** (High Priority)
    - React form for adding NFTs without SQL
    - Image preview and validation
@@ -308,6 +517,33 @@ Fixed critical issue where mint counts would not load on Base and Optimism netwo
 4. **Performance Optimization**: Code splitting, CDN
 
 ## Active Decisions and Considerations
+
+### Cloudflare Workers vs Bolt.host Backend
+**Decision**: Separate API backend on Cloudflare Workers
+**Reasoning**:
+- Bolt.host is SPA-only (no backend support)
+- Express backend won't deploy on Bolt.host
+- /api routes return HTML 404 fallback
+- Cloudflare Workers provides serverless edge functions
+
+**Implementation**:
+- Frontend: Bolt.host (React SPA)
+- API Backend: Cloudflare Workers (serverless functions)
+- Communication: HTTPS with CORS
+- Config: `VITE_API_BASE` environment variable
+
+**Benefits**:
+- ✅ Free tier: 100k requests/day
+- ✅ Edge caching: 15-minute TTL
+- ✅ No server management
+- ✅ CORS-enabled by default
+- ✅ Sub-100ms latency worldwide
+
+**Trade-offs**:
+- ⚠️ Requires separate deployment
+- ⚠️ Two URLs to manage (frontend + API)
+- ⚠️ Environment variable needed in Bolt.host
+- ⚠️ User must set up Cloudflare account
 
 ### RPC Endpoint Strategy
 **Decision**: Use public blockpi.network endpoints
@@ -417,7 +653,22 @@ Fixed critical issue where mint counts would not load on Base and Optimism netwo
 
 ## Current Challenges
 
-### 1. Supabase Enum Management
+### 1. Cloudflare Workers Deployment (USER ACTION REQUIRED - BLOCKING)
+**Issue**: API backend not deployed yet
+**Impact**: Wallet Stats broken, returns HTML instead of JSON
+**Solution**: Cloudflare Workers API (serverless backend)
+**Status**: Frontend ready, awaiting user deployment
+**Priority**: 🔴 CRITICAL - Blocks production Wallet Stats feature
+**ETA**: 30 minutes after user completes 5-step setup process
+
+**User Must Do**:
+1. Install Node.js from https://nodejs.org/ (5 minutes)
+2. Deploy Worker: `cd airdrop-api-worker && npm install && npm run deploy` (10 minutes)
+3. Create .env with Worker URL (2 minutes)
+4. Push to GitHub: `git add .env && git push` (5 minutes)
+5. Test production (5 minutes)
+
+### 2. Supabase Enum Management
 **Issue**: Adding networks requires SQL migrations
 **Impact**: Can't add network from UI
 **Workaround**: Keep migration templates ready
@@ -430,7 +681,7 @@ Fixed critical issue where mint counts would not load on Base and Optimism netwo
 ### 3. Mobile Wallet
 **Issue**: MetaMask mobile browser not smooth
 **Impact**: Mobile users have poor experience
-**Plan**: Add WalletConnect integration
+**Plan**: Add WalletConnect integration (after Worker deployment)
 
 ### 4. Admin Workflow
 **Issue**: Adding NFTs requires SQL knowledge
